@@ -1,0 +1,2097 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+
+  <!-- Localization area. We can define aliases for each language we would like to use. In case we want to use eg. "en", 
+       we would at first look if we have a key defined for "en-GB" and take this. In case we cannot find this key,
+       we will look for "en-US" and so on. In case we cannot find anything, we will continue with "de-DE" and so on... 
+       Default Culture will here be "de-DE" (for eg. time and date formats and so on...) -->
+  <LOCALIZATION>
+    <L02>
+      <!-- Simplified Chinese -->
+
+      <!-- Main page-->
+      <Key Id="Std.MainPage.Home" >
+        <C01 Value="主页"/>
+      </Key>
+      <Key Id="Std.MainPage.Sortplans" >
+        <C01 Value="分拣计划"/>
+      </Key>
+      <Key Id="Std.MainPage.ExceptionChutes" >
+        <C01 Value="异常滑槽"/>
+      </Key>
+      <Key Id="Std.MainPage.Configuration" >
+        <C01 Value="系统配置"/>
+      </Key>
+      <Key Id="Std.MainPage.BarcodeTypePrefix" >
+        <C01 Value="条码类型/前缀"/>
+      </Key>
+      <Key Id="Std.MainPage.FlyerBagBarcode" >
+        <C01 Value="小件包条码"/>
+      </Key>
+      <Key Id="Std.MainPage.Bags" >
+        <C01 Value="小件包"/>
+      </Key>
+      <Key Id="Std.MainPage.ItemInfo" >
+        <C01 Value="货件信息"/>
+      </Key>
+      <Key Id="Std.MainPage.EventTrace" >
+        <C01 Value="事务/跟踪"/>
+      </Key>
+      <Key Id="Std.MainPage.Dashboard" >
+        <C01 Value="统计报表"/>
+      </Key>
+      <Key Id="Std.MainPage.Messages" >
+        <C01 Value="消息"/>
+      </Key>
+      <Key Id="Std.MainPage.ChuteInformation" >
+        <C01 Value="滑槽信息"/>
+      </Key>
+      <Key Id="Std.MainPage.PrinterConfig" >
+        <C01 Value="打印机"/>
+      </Key>
+      <Key Id="Std.MainPage.ImportUsbData" >
+        <C01 Value="USB 数据导入"/>
+      </Key>
+      <Key Id="Std.MainPage.Logout" >
+        <C01 Value="退出"/>
+      </Key>
+      <Key Id="Std.MainPage.About" >
+        <C01 Value="关于"/>
+      </Key>
+      <Key Id="Std.MainPage.UpdateAvaible" >
+        <C01 Value="有新的更新，请重启MFC进行更新"/>
+      </Key>
+      <Key Id="Std.MainPage.PlattformNotSupported" >
+        <C01 Value="有新的更新需要最新的Silverlight版本，如需更新请访问MFC控制主页进行更新."/>
+      </Key>
+
+      <!-- ABOUT -->
+      <Key Id="Std.About.ProductText">
+        <C01 Value="产品"/>
+      </Key>
+      <Key Id="Std.About.VersionText">
+        <C01 Value="版本"/>
+      </Key>
+      <Key Id="Std.About.OperatorIDText">
+        <C01 Value="用户ID "/>
+      </Key>
+      <Key Id="Std.About.InstanceIDText">
+        <C01 Value="实例ID "/>
+      </Key>
+      <Key Id="Std.About.ServiceText">
+        <C01 Value="来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息来自远程的产品服务信息"/>
+      </Key>
+      <Key Id="Std.About.LicensedToText">
+        <C01 Value="授权给 "/>
+      </Key>
+      <Key Id="Std.About.ContracedIDText">
+        <C01 Value="合约号"/>
+      </Key>
+      <Key Id="Std.About.LicenseKeyText">
+        <C01 Value="授权码"/>
+      </Key>
+      <Key Id="Std.About.SetLicenseButton">
+        <C01 Value="设置授权信息"/>
+      </Key>
+      <Key Id="Std.About.clName">
+        <C01 Value="名称"/>
+      </Key>
+      <Key Id="Std.About.clType">
+        <C01 Value="类型"/>
+      </Key>
+      <Key Id="Std.About.clEnabled">
+        <C01 Value="激活"/>
+      </Key>
+      <Key Id="Std.About.clVersion">
+        <C01 Value="版本"/>
+      </Key>
+
+      <!-- Base messages-->
+      <Key Id="Std.Base.DiscardChangesCaption">
+        <C01 Value="放弃更改"/>
+      </Key>
+      <Key Id="Std.Base.DiscardChanges">
+        <C01 Value="离开当前页面将放弃所有更改. 继续?"/>
+      </Key>
+
+      <!-- Clearing Broker -->
+      <Key Id="Std.ClearingBroker.ActionProceed">
+        <C01 Value="已处理"/>
+      </Key>
+      <Key Id="Std.ClearingBroker.ActionStop">
+        <C01 Value="停止"/>
+      </Key>
+      <Key Id="Std.ClearingBroker.ErrorDruingClearing">
+        <C01 Value="清除操作中出错: "/>
+      </Key>
+      <Key Id="Std.ClearingBroker.DescError">
+        <C01 Value="当前扫描条码引起未知异常. 请至VISION.MFC 日志文件中寻求更多信息."/>
+      </Key>
+      <Key Id="Std.ClearingBroker.Info">
+        <C01 Value="箱号 “1298129812” 于 01.02.2012 16:34:01进入分拣机. 应当被分拣至滑槽45但是被分拣到滑槽101. 分拣机回复原始滑槽状态信息为“滑槽已满” 且分拣状态为“已分拣”"/>
+      </Key>
+      <Key Id="Std.ClearingBroker.SpecialErrorcode">
+        <C01 Value="附加可用信息: '{0}'"/>
+
+        <Key Id="Std.ClearingBroker.InfoMessage">
+          <C01 Value="清除 1.0. 所有清除货箱已被处理..."/>
+        </Key>
+
+        <!-- Do not localize this key. -->
+        <Key Id="Std.TSUStart.WeighingScaleURI" >
+          <C01 Value="http://localhost/weight?scale=1"/>
+        </Key>
+
+
+        <!-- Message Types -->
+        <Key Id="MESSAGE_TYPE_CONFIRMATION" >
+          <C01 Value="确认"/>
+        </Key>
+
+        <Key Id="MESSAGE_TYPE_INFO" >
+          <C01 Value="信息"/>
+        </Key>
+
+        <Key Id="MESSAGE_TYPE_WARNING" >
+          <C01 Value="警告"/>
+        </Key>
+
+        <Key Id="MESSAGE_TYPE_ERROR" >
+          <C01 Value="错误"/>
+        </Key>
+      </Key>
+
+      <!-- Configuration Broker-->
+      <Key Id="Std.ConfigBroker.Exception">
+        <C01 Value="请指定或配置CONFIG节点内有效IConfigParam值."/>
+      </Key>
+      <Key Id="Std.ConfigBroker.Message">
+        <C01 Value="来自GetConfigValue'{0}' , 查询参数 {1}的请求."/>
+      </Key>
+      <Key Id="Std.ConfigBroker.Message2">
+        <C01 Value="来自SetConfigValue '{0}', 设置参数{1} 值为{2}的请求."/>
+      </Key>
+      <Key Id="Std.ConfigBroker.Message3">
+        <C01 Value="来自 RefreshConfigValues '{0}'的刷新请求"/>
+      </Key>
+
+      <!-- Change Login Password Screen-->
+      <Key Id="Std.ChangeLoginPasswordScreen.CancelButton" >
+        <C01 Value="取消"/>
+      </Key>
+      <Key Id="Std.ChangeLoginPasswordScreen.OKButton" >
+        <C01 Value="确定"/>
+      </Key>
+      <Key Id="Std.ChangeLoginPasswordScreen.newPassword" >
+        <C01 Value="新密码:"/>
+      </Key>
+      <Key Id="Std.ChangeLoginPasswordScreen.validatePassword" >
+        <C01 Value="有效密码"/>
+      </Key>
+      <Key Id="Std.ChangeLoginPasswordScreen.tbHead" >
+        <C01 Value="输入新密码:"/>
+      </Key>
+      <Key Id="Std.ChangeLoginPasswordScreen.noMatch" >
+        <C01 Value="!! 密码不匹配 !!"/>
+      </Key>
+      <Key Id="Std.ChangeLoginPasswordScreen.ErrorDialogCaption">
+        <C01 Value= "密码错误"/>
+      </Key>
+      <Key Id="Std.ChangeLoginPasswordScreen.PasswordToShort">
+        <C01 Value= "密码太短.长度至少为6位."/>
+      </Key>
+      <Key Id="Std.ChangeLoginPasswordScreen.IncorrectKeyText">
+        <C01 Value="有效密码:"/>
+      </Key>
+
+      <!-- Login Page -->
+      <Key Id="Std.Login.OldPasswordError.Caption" >
+        <C01 Value="无效重用密码"/>
+      </Key>
+      <Key Id="Std.Login.OldPasswordError.Text" >
+        <C01 Value="不允许使用之前已使用过的密码!"/>
+      </Key>
+
+      <!-- Bfw User Management-->
+      <Key Id="MFC_BFWUSERMANAGEMENT_LOGINFAILED" >
+        <C01 Value="登录失败:"/>
+      </Key>
+      <Key Id="MFC_BFWUSERMANAGEMENT_WRONGUSERNAMEORPW" >
+        <C01 Value="请检查您的账号或密码，请确认CAPS LOCK键没有打开."/>
+      </Key>
+      <Key Id="MFC_BFWUSERMANAGEMENT_ERRORTITLE">
+        <C01 Value="登录失败."/>
+      </Key>
+      <Key Id="MFC_BFWUSERMANAGEMENT_GETUSERACCOUNTFAILED">
+        <C01 Value="读取用户账户信息失败."/>
+      </Key>
+      <Key Id="MFC_BFWUSERMANAGEMENT_GUERRORTITLE">
+        <C01 Value="不能读取用户信息."/>
+      </Key>
+      <Key Id="MFC_BFWUSERMANAGEMENT_ACCESSRIGHTSERR">
+        <C01 Value="读取用户权限信息失败."/>
+      </Key>
+      <Key Id="MFC_BFWUSERMANAGEMENT_ACCESSRIGHTSTITLE">
+        <C01 Value="不能读取用户权限."/>
+      </Key>
+      <Key Id="MFC_BFWUSERMANAGEMENT_SETUSERACCOUNT_TITLE">
+        <C01 Value="用户数据未更改."/>
+      </Key>
+      <Key Id="MFC_BFWUSERMANAGEMENT_SETUSERACCOUNT">
+        <C01 Value="修改用户数据过程中出错. 当前修改未生效."/>
+      </Key>
+      <Key Id="MFC_BFWUSERMANAGEMENT_DELETEU_TITLE">
+        <C01 Value="删除用户出错."/>
+      </Key>
+      <Key Id="MFC_BFWUSERMANAGEMENT_DELETEU">
+        <C01 Value="删除用户出错. 用户未被删除."/>
+      </Key>
+
+      <!-- SessionTimeout -->
+      <Key Id="MFC_BACKEND_ERROR">
+        <C01 Value="Vision.MFC 拒绝执行最新命令."/>
+      </Key>
+      <Key Id="MFC_NO_SESSION">
+        <C01 Value="当前对话已过期，请重新登录然后再次尝试."/>
+      </Key>
+      <Key Id="MFC_UNKNOWN_ERROR">
+        <C01 Value="不可预见情况出现导致Vision.MFC 拒绝执行最新命令. 请重试."/>
+      </Key>
+
+      <!-- Night Job Scheduler -->
+      <Key Id="MFC_NJS_JOBHASPROBLEM">
+        <C01 Value="任务 '{0}' 返回 '{1}' 预示有问题发生. "/>
+      </Key>
+      <Key Id="MFC_NJS_JOBTHREWEXECPTION">
+        <C01 Value="任务 '{0}' 抛出异常预示有问题发生."/>
+      </Key>
+
+      <Key Id="MFC_NJS_STOPONERROR">
+        <C01 Value="NightJobScheduler 被配置为如果有一个错误发生将自动停止. 因此剩下任务将不会被执行. 请检查日志文件并修复这个错误。你可能需要重启MFC以便修复有效."/>
+      </Key>
+      <Key Id="MFC_NJS_CONTONERROR">
+        <C01 Value="NightJobScheduler被配置为即使有错误发生也会继续执行剩下任务，你可能需要重启MFC."/>
+      </Key>
+      <Key Id="MFC_NJS_TITLE">
+        <C01 Value="NightJobScheduler"/>
+      </Key>
+      <Key Id="MFC_NJS_NJREPERROR">
+        <C01 Value="一个自动任务脚本报错."/>
+      </Key>
+      <Key Id="MFC_NJS_NONJATALL">
+        <C01 Value="NightJobScheduler 在 {0} ms内成功执行.没有自动任务被配置."/>
+      </Key>
+      <Key Id="MFC_NJS_LONELYNJ">
+        <C01 Value="唯一配置自动任务 '{0}' 在 {1} ms内成功执行."/>
+      </Key>
+      <Key Id="MFC_NJS_MANY">
+        <C01 Value="合计 {0}自动任务在 {1} ms内成功执行."/>
+      </Key>
+      <Key Id="MFC_NJS_ALLOK">
+        <C01 Value="所有自动任务已成功执行."/>
+      </Key>
+      <Key Id="MFC_NJS_ERRORSCHECKLOG">
+        <C01 Value="在执行过程中出现错误. 请检查日志文件."/>
+      </Key>
+      <Key Id="MFC_NJS_FINISHED">
+        <C01 Value="NightJobManager已结束."/>
+      </Key>
+      <Key Id="MFC_WEB_SERVICE_REQUEST_TASK_TIMEOUT">
+        <C01 Value="一个服务请求不能及时响应. 该请求已被取消."/>
+      </Key>
+
+      <!-- CONFIGURATION DLG -->
+      <Key Id="MFC_CFGDLG_MAX_RECIRC_VALUE">
+        <C01 Value="最大循环圈数"/>
+      </Key>
+      <Key Id="MFC_CFGDLG_MAX_RECIRC_VALUE_INFO">
+        <C01 Value="单个货件被分配到异常滑槽之前的最大循环圈数. 值的范围为 0 (循环功能被关闭) 或者 1-9999"/>
+      </Key>
+      <Key Id="MFC_CFGDLG_WEIGHING_SCALE">
+        <C01 Value="称重计W1 (房间 C, '03.03.03') 和 W2 (房间 B, '02.03.03'):"/>
+      </Key>
+      <Key Id="MFC_CFGDLG_WEIGHING_SCALE_INFO">
+        <C01 Value="请确认称重计 W1(房间 C, '03.03.03') 和 W2 (房间 B, '02.03.03')应该被关闭还是打开. 关闭称重计会导致MFC忽略称重错误信息例如称重计不可用"/>
+      </Key>
+      <Key Id="MFC_CFGDLG_WEIGHING_SCALE_OFF">
+        <C01 Value="称重计已关闭"/>
+      </Key>
+      <Key Id="MFC_CFGDLG_WEIGHING_SCALE_ON">
+        <C01 Value="称重计已打开"/>
+      </Key>
+
+      <!-- Dashboard page -->
+      <Key Id="Std.Dashboard.RefreshButton">
+        <C01 Value="刷新"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.ObservationSpan">
+        <C01 Value="观察间隔"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.Last5Minutes">
+        <C01 Value="最后5分钟"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.Last30Minutes">
+        <C01 Value="最后30分钟"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.LastHour">
+        <C01 Value="最后一小时"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.LastDay">
+        <C01 Value="最后一天"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.Last1000Items">
+        <C01 Value="最后1000件"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.Overall">
+        <C01 Value="总体"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.WaybillsReceived">
+        <C01 Value="条码已收到"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.BagsPacked">
+        <C01 Value="已打包"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.ItemsInducted">
+        <C01 Value="货件已导入"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.SystemThroughput">
+        <C01 Value="系统吞吐量"/>
+      </Key>
+
+      <Key Id="Std.Dashboard.AtrReadRate">
+        <C01 Value="ATR读码率"/>
+      </Key>
+
+      <!-- TODO: Check. Maybe we need to remove then-->
+      <Key Id="MFC_DASHBRD_SORTREASON">
+        <C01 Value="分拣原因"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_TOTAL">
+        <C01 Value="合计"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_SORTEDCORRECTLY">
+        <C01 Value="分拣成功"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_DESTTOOLATE">
+        <C01 Value="目的地回复太晚"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_CHUTEFULL">
+        <C01 Value="滑槽已满"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_UNEXPECTED">
+        <C01 Value="未知"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_FAILEDDIVERT">
+        <C01 Value="分拣失败"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_GAPTOOSMALL">
+        <C01 Value="条件无效 (间距太短)"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_NODEST">
+        <C01 Value="未收到目的地"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_GREADS">
+        <C01 Value="已读"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_NREADS">
+        <C01 Value="未读"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_DUPLICATE">
+        <C01 Value="重复标签信息"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_CURDUPRATE">
+        <C01 Value="当前重复标签率 %"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_CURDUPLABELRATE">
+        <C01 Value="当前重复标签率"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_PERFECT_0">
+        <C01 Value="成功率 (0%)"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_CURREADRATE">
+        <C01 Value="当前读码率 %"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_CHKSCANNER">
+        <C01 Value="请立即检查扫描仪 (0%)"/>
+      </Key>
+      <Key Id="MFC_DASHBRD_PERFECT_100">
+        <C01 Value="成功率 (100%)"/>
+      </Key>
+
+
+      <!-- FILE INFORMATION -->
+      <Key Id="MFC_FILEINFO_ERROR_TITLE">
+        <C01 Value="不能读取文件信息"/>
+      </Key>
+      <Key Id="MFC_FILEINFO_ERROR">
+        <C01 Value="不能读取文件信息."/>
+      </Key>
+
+      <!-- INFO MESSAGE -->
+      <Key Id="MFC_INFOMESSAGE_CREATEFAILED_TITLE">
+        <C01 Value="不能创建消息."/>
+      </Key>
+      <Key Id="MFC_INFOMESSAGE_CREATEFAILED">
+        <C01 Value="消息不能创建."/>
+      </Key>
+      <Key Id="MFC_INFOMESSAGE_UPDATEFAILED_TITLE">
+        <C01 Value="消息不能更新."/>
+      </Key>
+      <Key Id="MFC_INFOMESSAGE_UPDATEFAILED">
+        <C01 Value="单条或多条消息不能被更新."/>
+      </Key>
+      <Key Id="MFC_INFOMESSAGE_DELETEFAILED_TITLE">
+        <C01 Value="不能删除信息."/>
+      </Key>
+      <Key Id="MFC_INFOMESSAGE_DELETEFAILED">
+        <C01 Value="单条或多条消息不能被删除."/>
+      </Key>
+      <Key Id="MFC_INFOMESSAGE_QUERYFAILED_TITLE">
+        <C01 Value="信息不能检索."/>
+      </Key>
+      <Key Id="MFC_INFOMESSAGE_QUERYFAILED">
+        <C01 Value="单条或多条消息不能被检索."/>
+      </Key>
+
+      <!-- CONFIG -->
+      <Key Id="MFC_CONFIG_SETCONFIGFAILED_TITLE">
+        <C01 Value="不能保存配置信息."/>
+      </Key>
+      <Key Id="MFC_CONFIG_SETCONFIGFAILED">
+        <C01 Value="配置不能保存."/>
+      </Key>
+      <Key Id="Std.Config.SaveButton">
+        <C01 Value="保存"/>
+      </Key>
+      <Key Id="Std.Config.descprition">
+        <C01 Value="描述"/>
+      </Key>
+      <Key Id="Std.Config.Name">
+        <C01 Value="名称"/>
+      </Key>
+      <Key Id="Std.Config.UnsavedChanges">
+        <C01 Value="有未保存的变更，你想保存吗?"/>
+      </Key>
+      <Key Id="Std.Config.Warning">
+        <C01 Value="警告"/>
+      </Key>
+      <Key Id="Std.Config.GetErrorMessage">
+        <C01 Value="不能读取配置信息."/>
+      </Key>
+      <Key Id="Std.Config.SetErrorMessage">
+        <C01 Value="不能保存你所作的变更."/>
+      </Key>
+      <Key Id="Std.Config.GetErrorDetails">
+        <C01 Value="您的当前会话已过期或者Vision.MFC已停止运行. 请重新登录然后再次尝试."/>
+      </Key>
+      <Key Id="Std.Config.SetErrorDetails">
+        <C01 Value="请检查您输入的值或者您的当前会话已过期或者Vision.MFC已停止运行. 请重新登录然后再次尝试."/>
+      </Key>
+      <Key Id="Std.Config.NoAccess">
+        <C01 Value="不允许访问"/>
+      </Key>
+      <Key Id="Std.Config.clConfigPara">
+        <C01 Value="配置参数"/>
+      </Key>
+      <Key Id="Std.Config.clValue">
+        <C01 Value="值"/>
+      </Key>
+
+      <!-- text localization-->
+      <Key Id="MFC_WEB_SERVICE_ERROR_TEXTLOCALIZATION_GETLOCALIZATION" >
+        <C01 Value="服务请求失败."/>
+      </Key>
+
+      <!--Enter License Screen-->
+      <Key Id="Std.EnterLicenseScreen.CancelButton">
+        <C01 Value="取消"/>
+      </Key>
+      <Key Id="Std.EnterLicenseScreen.OkButton">
+        <C01 Value="确定"/>
+      </Key>
+      <Key Id="Std.EnterLicenseScreen.lblName">
+        <C01 Value="公司名字"/>
+      </Key>
+      <Key Id="Std.EnterLicenseScreen.lblKey">
+        <C01 Value="公司编码"/>
+      </Key>
+      <Key Id="Std.EnterLicenseScreen.lblNumber">
+        <C01 Value="合同编号"/>
+      </Key>
+      <Key Id="Std.EnterLicenseScreen.lblKeyIncorrect">
+        <C01 Value="!!无效授权码 !!"/>
+      </Key>
+      <Key Id="Std.EnterLicenseScreen.InputInvalid">
+        <C01 Value="输入有效"/>
+      </Key>
+      <Key Id="Std.EnterLicenseScreen.CompanyNameError">
+        <C01 Value="请输入合法的公司名称."/>
+      </Key>
+      <Key Id="Std.EnterLicenseScreen.ContractNumberError">
+        <C01 Value="请输入合法的合同号."/>
+      </Key>
+      <Key Id="Std.EnterLicenseScreen.LicenseKeyError">
+        <C01 Value="请输入合法的授权码."/>
+      </Key>
+      <!-- Error Screen -->
+      <Key Id="Std.ErrorScreen.OkButton">
+        <C01 Value="确定"/>
+      </Key>
+      <Key Id="Std.ErrorScreen.IntroductoryText">
+        <C01 Value="来自Vision的附加信息."/>
+      </Key>
+      <Key Id="Std.ErrorScreen.Title">
+        <C01 Value="通知"/>
+      </Key>
+      <Key Id="Std.ErrorScreen.lblText">
+        <C01 Value="错误明细"/>
+      </Key>
+
+      <!-- PrinterConfig -->
+      <Key Id="Std.PrinterConfig.NoAccess">
+        <C01 Value="不允许访问."/>
+      </Key>
+      <Key Id="Std.PrinterConfig.InsufficientAccesRights">
+        <C01 Value="权限不够."/>
+      </Key>
+      <Key Id="Std.PrinterConfig.Chute">
+        <C01 Value="滑槽"/>
+      </Key>
+      <Key Id="Std.PrinterConfig.DefaultPrinter">
+        <C01 Value="默认打印机"/>
+      </Key>
+      <Key Id="Std.PrinterConfig.BackupPrinter">
+        <C01 Value="备用打印机"/>
+      </Key>
+      <Key Id="Std.PrinterConfig.ValidateError">
+        <C01 Value="请检查所有滑槽都已配置默认和备用打印机且两者不指向同一设备"/>
+      </Key>
+      <Key Id="Std.PrinterConfig.ValidationErrorName">
+        <C01 Value="验证错误"/>
+      </Key>
+      <Key Id="Std.PrinterConfig.SaveButton">
+        <C01 Value="保存"/>
+      </Key>
+
+      <!-- FlyerBagBarcode -->
+      <Key Id="Std.FlyerBagBarcode.NoAccess">
+        <C01 Value="不允许访问."/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.InsufficientAccesRights">
+        <C01 Value="权限不够."/>
+      </Key>
+
+      <Key Id="Std.FlyerBagBarcode.Refresh">
+        <C01 Value="刷新"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.BarcodeRanges">
+        <C01 Value="条码范围"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.CurrentBarcode">
+        <C01 Value="当前条码"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Type">
+        <C01 Value="类型"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Range1">
+        <C01 Value="范围 1"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Range2">
+        <C01 Value="范围 2"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Start">
+        <C01 Value="起始号码"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.End">
+        <C01 Value="结尾号码"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Warning">
+        <C01 Value="警戒点"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Active">
+        <C01 Value="激活"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.SaveButton">
+        <C01 Value="保存"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.CreatedBarcodes">
+        <C01 Value="创建打印条码"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Id">
+        <C01 Value="编号"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.ChuteName">
+        <C01 Value="滑槽"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Barcode1">
+        <C01 Value="条码 1"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Barcode2">
+        <C01 Value="条码 2"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Barcode3">
+        <C01 Value="条码 3"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Barcode4">
+        <C01 Value="条码 4"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Barcode5">
+        <C01 Value="条码 5（最新的）"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Reprint">
+        <C01 Value="重打所选标签"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.RePrintSuccess">
+        <C01 Value="重打标签成功"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.RePrintFailure">
+        <C01 Value="标签未重新打印"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Success">
+        <C01 Value="成功"/>
+      </Key>
+      <Key Id="Std.FlyerBagBarcode.Failure">
+        <C01 Value="失败"/>
+      </Key>
+      <!-- Messages -->
+      <Key Id="Std.Messages.clDate">
+        <C01 Value="日期"/>
+      </Key>
+      <Key Id="Std.Messages.clFrom">
+        <C01 Value="来自"/>
+      </Key>
+      <Key Id="Std.Messages.clHeader">
+        <C01 Value="标题"/>
+      </Key>
+      <Key Id="Std.Messages.MessageType">
+        <C01 Value="消息类型"/>
+      </Key>
+      <Key Id="Std.Messages.clMessages">
+        <C01 Value="消息"/>
+      </Key>
+      <Key Id="Std.Messages.DeleteButton">
+        <C01 Value="删除"/>
+      </Key>
+      <Key Id="Std.Messages.RefreshButton">
+        <C01 Value="刷新"/>
+      </Key>
+      <Key Id="Std.Messages.ExportButton">
+        <C01 Value="导出"/>
+      </Key>
+      <Key Id="Std.Messages.MarkAsReadButton">
+        <C01 Value="标记为已读"/>
+      </Key>
+      <Key Id="Std.Messages.AllButton">
+        <C01 Value="所有"/>
+      </Key>
+      <Key Id="Std.Messages.UnreadButton">
+        <C01 Value="未读"/>
+      </Key>
+      <Key Id="Std.Messages.NoAccess">
+        <C01 Value="不能访问"/>
+      </Key>
+      <Key Id="Std.Messages.Confirmation">
+        <C01 Value="确认"/>
+      </Key>
+      <Key Id="Std.Messages.Info">
+        <C01 Value="信息"/>
+      </Key>
+      <Key Id="Std.Messages.Warning">
+        <C01 Value="警告"/>
+      </Key>
+      <Key Id="Std.Messages.Error">
+        <C01 Value="错误"/>
+      </Key>
+
+      <!-- Messages Window -->
+      <Key Id="Std.MessageWindow.CancelButton">
+        <C01 Value="取消"/>
+      </Key>
+      <Key Id="Std.MessageWindow.OkButton">
+        <C01 Value="确定"/>
+      </Key>
+      <Key Id="Std.MessageWindow.HeadText">
+        <C01 Value="标题"/>
+      </Key>
+
+      <!-- YesNoCancelScreen -->
+      <Key Id="Std.YesNoCancelScreen.CancelButton">
+        <C01 Value="取消"/>
+      </Key>
+      <Key Id="Std.YesNoCancelScreen.YesButton">
+        <C01 Value="是"/>
+      </Key>
+      <Key Id="Std.YesNoCancelScreen.NoButton">
+        <C01 Value="否"/>
+      </Key>
+      <Key Id="Std.YesNoCancelScreen.MessageText">
+        <C01 Value="消息"/>
+      </Key>
+      <!-- Home Screen -->
+      <Key Id="Std.HomeScreen.clResource">
+        <C01 Value="资源"/>
+      </Key>
+      <Key Id="Std.HomeScreen.clName">
+        <C01 Value="名称"/>
+      </Key>
+      <Key Id="Std.HomeScreen.clHost">
+        <C01 Value="主机"/>
+      </Key>
+      <Key Id="Std.HomeScreen.clState">
+        <C01 Value="状态"/>
+      </Key>
+      <!-- Generic message - nothing to translate -->
+      <Key Id="MFC_GEN_MSG">
+        <C01 Value="{0}" />
+      </Key>
+	  
+      <!-- FileCopyBase messages -->
+      <Key Id="MFC_FCB_SENDER">
+        <C01 Value="SFTP 模式" />
+      </Key>
+      <Key Id="MFC_FCB_COMMERR_CAP">
+        <C01 Value="一个应用程序错误发生." />
+      </Key>
+      <Key Id="MFC_FCB_CONN_CAP">
+        <C01 Value="警告:紧急情况！ " />
+      </Key>
+      <Key Id="MFC_FCB_CONN_MSG">
+        <C01 Value="连接包裹中心被断开: {0}" />
+      </Key>
+	  <Key Id="MFC_FCB_LOCK_CAP">
+        <C01 Value="不能完全锁定目标目录。." />
+      </Key>
+
+      <Key Id="MFC_FCB_LOCK_MSG">
+        <C01 Value="一个SFTP目标目录不能锁定.请检查SFTP目录" />
+      </Key>
+      <!--Broker message-->
+      <!-- CsvFileGeneratorBroker  broker messages -->
+      <Key Id="MFC_CSV_SENDER">
+        <C01 Value="CSV文件模块" />
+      </Key>
+
+      <Key Id="MFC_CSV_NEWFILE_CAP">
+        <C01 Value="在启动时发现未完成的文件" />
+      </Key>
+
+      <Key Id="MFC_CSV_NEWFILE_MSG">
+        <C01 Value="在启动时发现未完成的文件'{0}' . CSV文件模块奔溃?" />
+      </Key>
+
+      <Key Id="MFC_CSV_MOVEERROR">
+        <C01 Value="移动文件出错." />
+      </Key>
+
+      <!-- region SortingPlanBroker messages -->
+
+      <!-- region Sorting plans -->
+
+      <Key Id="MFC_SPB_ModifiedInMeanTime">
+        <C01 Value="该分拣计划正在被别人修改，请刷新再重试." />
+      </Key>
+
+      <Key Id="MFC_SPB_ExistWithSameName">
+        <C01 Value="已存在相同名字的分拣计划" />
+      </Key>
+
+      <Key Id="MFC_SPB_ExistWithSameAssign">
+        <C01 Value="已存在相同 D2LD 和 LD2C表的分拣计划" />
+      </Key>
+
+      <Key Id="MFC_SPB_D2LDNotEntered">
+        <C01 Value="分拣计划必须有D2LD表."/>
+      </Key>
+
+      <Key Id="MFC_SPB_LD2CNotEntered">
+        <C01 Value="分拣计划必须有LD2C表."/>
+      </Key>
+
+      <Key Id="MFC_SPB_PlanAssignNotExist">
+        <C01 Value="分配给分拣计划的D2LD， LD2C表已不存在或者已经从后台删除了." />
+      </Key>
+
+      <Key Id="MFC_SPB_PlanNotIdle">
+        <C01 Value="分拣计划非空闲状态，不能删除！" />
+      </Key>
+
+      <Key Id="MFC_SPB_PlanNotExist">
+        <C01 Value="分拣计划不存在或者已经从后台删除了." />
+      </Key>
+
+      
+      <!-- end region -->
+
+      <!-- region D2LD -->
+
+      <Key Id="MFC_SPB_D2ldUsedInActivePlan">
+        <C01 Value="不能修改D2LD表，已被被激活的分拣计划使用." />
+      </Key>
+
+      <Key Id="MFC_SPB_D2ldUsedInPlan">
+        <C01 Value="不能删除D2LD表，已被一个或多个分拣计划使用." />
+      </Key>
+
+      <Key Id="MFC_SPB_D2ldExist">
+        <C01 Value="已存在相同D2LD表名." />
+      </Key>
+
+      <!-- end region -->
+
+      <!-- region D2LD Details -->
+
+      <Key Id="MFC_SPB_D2ldNotExist">
+        <C01 Value="目的地与逻辑目的地匹配关系不存在，或者已经从后台删除了" />
+      </Key>
+
+      <Key Id="MFC_SPB_D2ldDetailDestOrLogDestMissing">
+        <C01 Value="D2LD必须包含目的地与逻辑目的地" />
+      </Key>
+
+      <Key Id="MFC_SPB_D2ldDetailDestinationsNotUnique">
+        <C01 Value="D2LD 明细中目的地不能重复." />
+      </Key>
+
+      <Key Id="MFC_SPB_D2ldDetailTooManyDestinationsPerLogDestination">
+        <C01 Value="单个逻辑目的地最大只能支持 10,000个目的地." />
+      </Key>
+
+      <Key Id="MFC_SPB_D2ldDetailExist">
+        <C01 Value="D2LD明细已存在相同目的地与逻辑目的地匹配关系" />
+      </Key>
+
+      <!-- end region -->
+
+      <!-- region LD2C -->
+
+      <Key Id="MFC_SPB_LD2CUsedInActivePlan">
+        <C01 Value="不能修改LD2C表，已被被激活的分拣计划使用." />
+      </Key>
+
+      <Key Id="MFC_SPB_LD2CUsedInPlan">
+        <C01 Value="不能删除LD2C表，已被被激活的分拣计划使用." />
+      </Key>
+
+      <Key Id="MFC_SPB_Ld2cExist">
+        <C01 Value="已存在相同LD2C表名" />
+      </Key>
+
+      <Key Id="MFC_SPB_Ld2cDetailTooManyChutesPerLogDestination">
+        <C01 Value="单个逻辑目的地最大只能设置6个滑槽" />
+      </Key>
+
+      <!-- end region -->
+
+      <!-- region LD2C Details -->
+
+      <Key Id="MFC_SPB_LD2CNotExist">
+        <C01 Value="逻辑目的地与滑槽匹配关系不存在，或者已经从后台删除了." />
+      </Key>
+
+      <Key Id="MFC_SPB_LD2CDetailLogDestOrChuteMissing">
+        <C01 Value="LD2C明细必须包含逻辑目的地和滑槽" />
+      </Key>
+
+      <Key Id="MFC_SPB_LD2CDetailChutesNotUnique">
+        <C01 Value="LD2C明细中滑槽不能重复" />
+      </Key>
+
+      <Key Id="MFC_SPB_LD2CDetailTooManyChutesPerLogDestination">
+        <C01 Value="单个逻辑目的地最大只能设置6个滑槽" />
+      </Key>
+
+      <Key Id="MFC_SPB_LD2CDetailInvalidChuteCode">
+        <C01 Value="滑槽号码不存在，或者已经从后台删除了" />
+      </Key>
+
+      <Key Id="MFC_SPB_LD2CDetailExceptionChute">
+        <C01 Value="不能使用异常滑槽" />
+      </Key>
+
+      <!--<Key Id="MFC_SPB_D2ldDetailExist">
+        <C01 Value="[CN]D2LD detail with same destination and logical destination already exists." />
+      </Key>-->
+
+      <!-- end region -->
+
+      <Key Id="MFC_SPB_D2ldDetailNotExist">
+        <C01 Value="D2LD明细ID不存在，请检查!" />
+      </Key>
+
+      <Key Id="MFC_SPB_Ld2cDetailExist">
+        <C01 Value="Ld2c明细已存在相同逻辑目的地和滑槽匹配关系" />
+      </Key>
+
+      <Key Id="MFC_SPB_Ld2cDetailNotExist">
+        <C01 Value="LD2C明细ID不存在，请检查 !" />
+      </Key>
+
+      <Key Id="MFC_SPB_ExistActPlan">
+        <C01 Value="已存在激活或者激活中的分拣计划, !" />
+      </Key>
+
+      <Key Id="MFC_SPB_PlanWithoutAssign">
+        <C01 Value="分拣计划未分配D2LD或者LD2C，请检查然后在保存!" />
+      </Key>
+
+      <Key Id="MFC_SPB_PlanNotActive">
+        <C01 Value="分拣计划非激活状态，请检查！" />
+      </Key>
+
+      <!-- end region -->
+
+      <!-- region ExceptionChutes page -->
+
+      <Key Id="MFC_EXC_ChuteExeptionType_1">
+        <C01 Value="目的地不在分拣计划中" />
+      </Key>
+
+      <Key Id="MFC_EXC_ChuteExeptionType_2">
+        <C01 Value="最大再循环" />
+      </Key>
+
+      <Key Id="MFC_EXC_ChuteExeptionType_3">
+        <C01 Value="迷路物品(LLC原因固定滑槽)" />
+      </Key>
+
+      <Key Id="MFC_EXC_ChuteExeptionType_4">
+        <C01 Value="多条码" />
+      </Key>
+
+      <Key Id="MFC_EXC_ChuteExeptionType_5">
+        <C01 Value="条形码无目的地信息" />
+      </Key>
+
+      <Key Id="MFC_EXC_ChuteExeptionType_6">
+        <C01 Value="系统超时" />
+      </Key>
+
+      <Key Id="MFC_EXC_ChuteExeptionType_7">
+        <C01 Value="VCS 补码员操作超时" />
+      </Key>
+
+      <Key Id="MFC_EXC_ChuteExeptionType_8">
+        <C01 Value="VCS排队超时" />
+      </Key>
+
+      <Key Id="MFC_EXC_ChuteExeptionType_9">
+        <C01 Value="VCS补码拒绝" />
+      </Key>
+
+      <Key Id="MFC_EXC_ChuteExeptionType_10">
+        <C01 Value="条形码未能读取" />
+      </Key>
+
+      <Key Id="MFC_EXC_ChuteExeptionType_11">
+        <C01 Value="MES拒绝" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.NoAccess">
+        <C01 Value="非法访问."/>
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.InsufficientAccesRights">
+        <C01 Value="权限不够. "/>
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.Title">
+        <C01 Value="异常滑槽" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.ExceptionCode">
+        <C01 Value="错误原因" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.ExceptionDescription">
+        <C01 Value="描述" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.Area1Chutes">
+        <C01 Value="滑槽 (区域 1)" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.Area2Chutes">
+        <C01 Value="滑槽 (区域 2)" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.Area1FallbackChutes">
+        <C01 Value="降效模式滑槽 (滑槽1)" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.Area2FallbackChutes">
+        <C01 Value="降效模式滑槽 (区域 2)" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.DataError">
+        <C01 Value="有些列数据有错误" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.TooManyChutesPerReasonError">
+        <C01 Value="每个异常原因最大只能设置4个滑槽" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.ActiveSortPlanExists">
+        <C01 Value="当分拣计划处于激活状态时异常滑槽不能配置" />
+      </Key>
+
+      <Key Id="Std.ExceptionChutes.SaveButton">
+        <C01 Value="保存" />
+      </Key>
+
+      <!-- end region -->
+
+      <!-- UI localization - GridView Control -->
+
+      <Key Id="GridViewAlwaysVisibleNewRow">
+        <CO1 Value="点击此处添加新项"/>
+      </Key>
+      <Key Id="GridViewClearFilter">
+        <CO1 Value="清除过滤"/>
+      </Key>
+      <Key Id="GridViewFilter">
+        <CO1 Value="过滤"/>
+      </Key>
+      <Key Id="GridViewFilterAnd">
+        <CO1 Value="与"/>
+      </Key>
+      <Key Id="GridViewFilterContains">
+        <CO1 Value="包含"/>
+      </Key>
+      <Key Id="GridViewFilterDoesNotContain">
+        <CO1 Value="不包含"/>
+      </Key>
+      <Key Id="GridViewFilterEndsWith">
+        <CO1 Value="止于"/>
+      </Key>
+      <Key Id="GridViewFilterIsContainedIn">
+        <CO1 Value="包含"/>
+      </Key>
+      <Key Id="GridViewFilterIsEqualTo">
+        <CO1 Value="等于"/>
+      </Key>
+      <Key Id="GridViewFilterIsGreaterThan">
+        <CO1 Value="大于"/>
+      </Key>
+      <Key Id="GridViewFilterIsGreaterThanOrEqualTo">
+        <CO1 Value="大于等于"/>
+      </Key>
+      <Key Id="GridViewFilterIsNotContainedIn">
+        <CO1 Value="不包含"/>
+      </Key>
+      <Key Id="GridViewFilterIsLessThan">
+        <CO1 Value="小于"/>
+      </Key>
+      <Key Id="GridViewFilterIsLessThanOrEqualTo">
+        <CO1 Value="小于等于"/>
+      </Key>
+      <Key Id="GridViewFilterIsNotEqualTo">
+        <CO1 Value="不等于"/>
+      </Key>
+      <Key Id="GridViewFilterMatchCase">
+        <CO1 Value="部分匹配"/>
+      </Key>
+      <Key Id="GridViewFilterOr">
+        <CO1 Value="或"/>
+      </Key>
+      <Key Id="GridViewFilterSelectAll">
+        <CO1 Value="全选"/>
+      </Key>
+      <Key Id="GridViewFilterShowRowsWithValueThat">
+        <CO1 Value="显示值为的列"/>
+      </Key>
+      <Key Id="GridViewFilterStartsWith">
+        <CO1 Value="起始于"/>
+      </Key>
+      <Key Id="GridViewFilterIsNull">
+        <CO1 Value="为NULL"/>
+      </Key>
+      <Key Id="GridViewFilterIsNotNull">
+        <CO1 Value="不为NULL"/>
+      </Key>
+      <Key Id="GridViewFilterIsEmpty">
+        <CO1 Value="为空"/>
+      </Key>
+      <Key Id="GridViewFilterIsNotEmpty">
+        <CO1 Value="不为空"/>
+      </Key>
+      <Key Id="GridViewFilterDistinctValueNull">
+        <CO1 Value="[无结果]"/>
+      </Key>
+      <Key Id="GridViewFilterDistinctValueStringEmpty">
+        <CO1 Value="[空]"/>
+      </Key>
+      <Key Id="GridViewGroupPanelText">
+        <CO1 Value="拖住一列的标题然后放入此处将按照该列分组"/>
+      </Key>
+      <Key Id="GridViewGroupPanelTopText">
+        <CO1 Value="分组标题"/>
+      </Key>
+      <Key Id="GridViewGroupPanelTopTextGrouped">
+        <CO1 Value="分组:"/>
+      </Key>
+
+      <!-- UI localization - BusyIndicator -->
+      <Key Id="BusyIndicatorProcessingRequest">
+        <CO1 Value="请求处理中"/>
+      </Key>
+
+      <Key Id="BusyIndicatorCancelingRequest">
+        <CO1 Value="取消请求"/>
+      </Key>
+
+      <!-- region Import USB data - operation complete messages -->
+
+      <Key Id="ImportUsbTitle">
+        <CO1 Value="导入USB数据"/>
+      </Key>
+
+      <Key Id="ImportUsbSuccessHeader">
+        <CO1 Value="成功"/>
+      </Key>
+
+      <Key Id="ImportUsbErrorHeader">
+        <CO1 Value="错误"/>
+      </Key>
+
+      <Key Id="ImportUsbSuccessMessage">
+        <CO1 Value="成功从文件{1}中导入{0}记录."/>
+      </Key>
+
+      <Key Id="ImportUsbNoRecordsImportedErrorMessage">
+        <CO1 Value="没有记录导入到系统中，请检查文件内容格式."/>
+      </Key>
+
+      <Key Id="ImportUsbNoRecordsInFileErrorMessage">
+        <CO1 Value="导入文件中没有记录可被导入"/>
+      </Key>
+
+      <Key Id="ImportUsbGenericErrorMessage">
+        <CO1 Value="上传文件出错"/>
+      </Key>
+
+      <Key Id="ImportUsbFileTooLargeErrorMessage">
+        <CO1 Value="文件太大."/>
+      </Key>
+
+      <Key Id="ImportUsbFileTooLargeErrorDetailedMessage">
+        <CO1 Value="文件超过最大允许值. 允许值: {0}, 实际: {1:0.00}"/>
+      </Key>
+
+      <!-- endregion -->
+
+      <!-- Exceptional exceptions; if we see theese, something went very wrong -->
+      <Key Id="XXBrokerNotInstantiated">
+        <CO1 Value="Broker 未实例化"/>
+      </Key>
+
+      <!-- XAPUI Configuration Dialog -->
+      <!--Commom used -->
+      <Key Id="SFX.ConfigChoice.Group.Enabled">
+        <CO1 Value="启用"/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group.Disabled">
+        <CO1 Value="禁用"/>
+      </Key>
+
+      <!--BarcodePrefix -->
+      <Key Id="SFX.ConfigParams.BarcodePrefix.Desc">
+        <CO1 Value="小件包条码前缀"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.BarcodePrefix.Ext">
+        <CO1 Value="定义小件包条码前缀."/>
+      </Key>
+
+      <!--FallBackLifeTime -->
+      <Key Id="SFX.ConfigParams.FallBackLifeTime.Desc">
+        <CO1 Value="降效标签生命周期"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.FallBackLifeTime.Ext">
+        <CO1 Value="定义降效标签的生命周期"/>
+      </Key>
+
+      <!--FacilityCode -->
+      <Key Id="SFX.ConfigParams.FacilityCode.Desc">
+        <CO1 Value="场地编码"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.FacilityCode.Ext">
+        <CO1 Value="定义将被用到的场地编码"/>
+      </Key>
+
+      <!--MaxRecirculations -->
+      <Key Id="SFX.ConfigParams.MaxRecirculations.Desc">
+        <CO1 Value="最大循环圈数"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.MaxRecirculations.Ext">
+        <CO1 Value="定义货件被分拣到对应异常滑槽之前在分拣机上面最大循环圈数."/>
+      </Key>
+
+      <!--MaxScanns -->
+      <Key Id="SFX.ConfigParams.MaxScanns.Desc">
+        <CO1 Value="最大再扫描数"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.MaxScanns.Ext">
+        <CO1 Value="定义货件被分拣到对应异常滑槽之前扫描最大次数"/>
+      </Key>
+
+      <!--SortVersion -->
+      <Key Id="SFX.ConfigParams.SortVersion.Desc">
+        <CO1 Value="分拣机版本"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.SortVersion.Ext">
+        <CO1 Value="当前分拣机版本信息."/>
+      </Key>
+
+      <!--IsFallBackModule -->
+      <Key Id="SFX.ConfigParams.IsFallBackModule.Desc">
+        <CO1 Value="启用降效模式"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.IsFallBackModule.Ext">
+        <CO1 Value="定义分拣过程中是否采用降效标签."/>
+      </Key>
+
+      <!--VCSOnline -->
+      <Key Id="SFX.ConfigParams.VCSOnline.Desc">
+        <CO1 Value="启用视屏编码"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.VCSOnline.Ext">
+        <CO1 Value="定义是否启用视频编码. 备注: 视频编码当前不可用."/>
+      </Key>
+
+      <!--DistributationStrategy -->
+      <Key Id="SFX.ConfigParams.DistributationStrategy.Desc">
+        <CO1 Value="分拣策略"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.DistributationStrategy.Ext">
+        <CO1 Value="定义分拣机使用那个分拣策略分拣."/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group7.NearestStrategy">
+        <CO1 Value="就近式"/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group7.RoundRobinStrategy">
+        <CO1 Value="循环式"/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group7.WaterfallStrategy">
+        <CO1 Value="瀑布式"/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group7.PriorityWaterfallStrategy">
+        <CO1 Value="优先顺序瀑布式"/>
+      </Key>
+
+      <!--FallBackValidityType-->
+      <Key Id="SFX.ConfigParams.FallBackValidityType.Desc">
+        <CO1 Value="降效模式验证类型"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.FallBackValidityType.Ext">
+        <CO1 Value="定义降效标签验证类型."/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group8.None">
+        <CO1 Value="无"/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group8.Both">
+        <CO1 Value="两者"/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group8.LifeTime">
+        <CO1 Value="生命周期"/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group8.FacilityCode">
+        <CO1 Value="场地编码"/>
+      </Key>
+
+      <!-- Printer direction (paper) -->
+      <Key Id="SFX.ConfigParams.PrinterDirection.Desc">
+        <CO1 Value="打印方向 (纸)"/>
+      </Key>
+
+      <Key Id="SFX.ConfigParams.PrinterDirection.Ext">
+        <CO1 Value="定义打印机打印方向."/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group9.Horizontal">
+        <CO1 Value="水平"/>
+      </Key>
+
+      <Key Id="SFX.ConfigChoice.Group9.Vertical">
+        <CO1 Value="垂直"/>
+      </Key>
+
+      <!-- CHUTE INFORMATION PAGE -->
+      <Key Id="Std.ChuteInformation.Chute">
+        <C01 Value="滑槽"/>
+      </Key>
+
+      <Key Id="Std.ChuteInformation.DestinationCode">
+        <C01 Value="目的地"/>
+      </Key>
+
+      <Key Id="Std.ChuteInformation.ItemsInChute">
+        <C01 Value="货件数量"/>
+      </Key>
+
+      <Key Id="Std.ChuteInformation.BagNumber">
+        <C01 Value="小件包号"/>
+      </Key>
+
+      <Key Id="Std.ChuteInformation.PrinterDirection">
+        <C01 Value="打印方向"/>
+      </Key>
+
+      <Key Id="Std.ChuteInformation.ChuteAssigned">
+        <C01 Value="分配滑槽"/>
+      </Key>
+
+      <Key Id="Std.ChuteInformation.ItemWaybills">
+        <C01 Value="货件条码"/>
+      </Key>
+
+      <Key Id="Std.ChuteInformation.RefreshButton">
+        <C01 Value="刷新"/>
+      </Key>
+
+      <Key Id="Std.ChuteInformation.PrinterDirection.Right">
+        <C01 Value="右" />
+      </Key>
+      <Key Id="Std.ChuteInformation.PrinterDirection.Left">
+        <C01 Value="左" />
+      </Key>
+      <Key Id="Std.ChuteInformation.ChuteAssigned.Yes">
+        <C01 Value="是" />
+      </Key>
+      <Key Id="Std.ChuteInformation.ChuteAssigned.No">
+        <C01 Value="否" />
+      </Key>
+
+
+
+      <!-- TRACE/EVENTS PAGE -->
+	  <Key Id="Std.TraceEvents.GroupBoxHeader.TraceEvents">
+        <C01 Value="事务跟踪"/>
+      </Key>
+      <Key Id="Std.TraceEvents.NoAccess">
+        <C01 Value="非法访问"/>
+      </Key>
+      <Key Id="Std.TraceEvents.InsufficientAccesRights">
+        <C01 Value="访问权限不够"/>
+      </Key>
+
+      <Key Id="Std.TraceEvents.FilterButton">
+        <C01 Value="过滤"/>
+      </Key>
+
+      <Key Id="Std.TraceEvents.RefreshButton">
+        <C01 Value="刷新"/>
+      </Key>
+
+      <Key Id="Std.TraceEvents.Airwaybill">
+        <C01 Value="条码号"/>
+      </Key>
+
+      <Key Id="Std.TraceEvents.Id">
+        <C01 Value="编号"/>
+      </Key>
+
+      <Key Id="Std.TraceEvents.Created">
+        <C01 Value="创建时间"/>
+      </Key>
+
+      <Key Id="Std.TraceEvents.LogLevel">
+        <C01 Value="日志级别"/>
+      </Key>
+
+      <Key Id="Std.TraceEvents.Source">
+        <C01 Value="来源"/>
+      </Key>
+
+      <Key Id="Std.TraceEvents.Details">
+        <C01 Value="明细"/>
+      </Key>
+
+      <Key Id="Std.TraceEvents.ExportButton">
+        <C01 Value="导出"/>
+      </Key>
+
+      <!-- SORTPLAN PAGE -->
+      <Key Id="Std.Sortplan.NoAccess">
+        <C01 Value="非法访问."/>
+      </Key>
+      <Key Id="Std.Sortplan.InsufficientAccesRights">
+        <C01 Value="访问权限不够"/>
+      </Key>
+
+
+      <Key Id="Std.Sortplan.Add">
+        <C01 Value="新增"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Remove">
+        <C01 Value="删除"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Activate">
+        <C01 Value="激活"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Deactivate">
+        <C01 Value="关闭"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.ForceIdle">
+        <C01 Value="强制关闭"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Save">
+        <C01 Value="保存"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Name">
+        <C01 Value="名称"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Status">
+        <C01 Value="状态"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.LastActivationTime">
+        <C01 Value="上次激活时间"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Operator">
+        <C01 Value="操作员"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.AssignedD2Ld">
+        <C01 Value="分配 D2LD"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.AssignedLd2C">
+        <C01 Value="分配 LD2C"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Assign">
+        <C01 Value="分配"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.TableName">
+        <C01 Value="表名"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Import">
+        <C01 Value="导入"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Export">
+        <C01 Value="导出"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Destination">
+        <C01 Value="目的地"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.LogicalDestination">
+        <C01 Value="逻辑目的地"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.LogicalDestinationAlias">
+        <C01 Value="逻辑目的地别名"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Chute">
+        <C01 Value="滑槽"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.GroupBoxHeader.Sortplan">
+        <C01 Value="可用分拣计划"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.GroupBoxHeader.D2Ld">
+        <C01 Value="D2LD (目的地到逻辑目的地)"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.GroupBoxHeader.D2LdDetails">
+        <C01 Value="D2LD 明细"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.GroupBoxHeader.Ld2C">
+        <C01 Value="LD2C (逻辑目的地到滑槽)"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.GroupBoxHeader.Ld2CDetails">
+        <C01 Value="LD2C明细"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Validation.SortplanNameEmpty">
+        <C01 Value="分拣计划名称不能为空"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Validation.TableNameEmpty">
+        <C01 Value="表名不能为空"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Validation.Destination">
+        <C01 Value="目的地不能为空"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Validation.LogicalDestination">
+        <C01 Value="逻辑目的地不能为空"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Validation.LogicalDestinationAlias">
+        <C01 Value="逻辑目的地别名不能为空"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.Validation.Chute">
+        <C01 Value="滑槽不能为空"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.ErrorMessage.ExportError">
+        <C01 Value="导出数据出错."/>
+      </Key>
+
+      <Key Id="Std.Sortplan.ErrorMessage.ImportError">
+        <C01 Value="导入数据出错"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.ErrorMessage">
+        <C01 Value="错误"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.WarningMessage">
+        <C01 Value="警告"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.WarningMessage.ImportLd2C">
+        <C01 Value="导入LD2C明细将会覆盖现有数据"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.WarningMessage.ImportL2Ld">
+        <C01 Value="导入D2LD明细将会覆盖现有数据"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.WarningMessage.ForceIdle">
+        <C01 Value="你确定要强制将分拣计划变为“空闲”状态？请在点击确定前清除分拣机上所有的货件！！！"/>
+      </Key>
+
+      <Key Id="Std.Sortplan.WarningMessage.ExceptionChuteAssigned">
+        <C01 Value="确定分配分拣计划包含异常滑槽？" />
+      </Key>
+
+      <!-- ITEM INFO PAGE -->
+      <Key Id="Std.ItemInfo.NoAccess">
+        <C01 Value="非法访问."/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.InsufficientAccesRights">
+        <C01 Value="访问权限不够"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.FallbackMode">
+        <C01 Value="降效模式"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.InductTimestamp">
+        <C01 Value="导入时间"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.SortTimestamp">
+        <C01 Value="分拣时间"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.Weight">
+        <C01 Value="重量"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.IdCode">
+        <C01 Value="编号 code"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.InfeedId">
+        <C01 Value="导入线编号"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.CarrierId">
+        <C01 Value="小车号"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.TimestampScanner1">
+        <C01 Value="扫码器1扫描时间"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.TimestampScanner2">
+        <C01 Value="扫码器2扫描时间"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.IdScanner3">
+        <C01 Value="扫码器3编号"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.TimestampScanner3">
+        <C01 Value="扫码器3扫描时间"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.HighLevelRejectReason">
+        <C01 Value="系统退回原因"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.ChuteId">
+        <C01 Value="滑槽号"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.Length">
+        <C01 Value="长"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.Width">
+        <C01 Value="宽"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.Height">
+        <C01 Value="高"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.FilterButton">
+        <C01 Value="过滤"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.EnterIdCodeLabel">
+        <C01 Value="输入条码编号:"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.RefreshButton">
+        <C01 Value="刷新"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.ExportButton">
+        <C01 Value="导出"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.InfoItemGoupBox">
+        <C01 Value="货件信息"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.Yes">
+        <C01 Value="是"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.No">
+        <C01 Value="否"/>
+      </Key>
+
+      <Key Id="Std.ItemInfo.NoSearchPerformed">
+        <C01 Value="请输入货件条码号进行查找"/>
+      </Key>
+
+      <!-- BARCODE TYPE PREFIX PAGE -->
+      <Key Id="Std.BarcodeTypePrefix.NoAccess">
+        <C01 Value="非法访问."/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.InsufficientAccesRights">
+        <C01 Value="访问权限不够."/>
+      </Key>
+
+      <Key Id="Std.BarcodeTypePrefix.AddButton">
+        <C01 Value="新增"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.RemoveButton">
+        <C01 Value="删除"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.UpButton">
+        <C01 Value="向上"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.DownButton">
+        <C01 Value="向下"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.SaveButton">
+        <C01 Value="保存"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.Priority">
+        <C01 Value="优先级"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.Type">
+        <C01 Value="类型"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.Prefix">
+        <C01 Value="前缀"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.BarcodeBlacklist">
+        <C01 Value="条码过滤清单"/>
+      </Key>
+
+      <Key Id="Std.BarcodeTypePrefix.Validation.CellEmpty">
+        <C01 Value="单元格值不能为空"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.Validation.TypeDuplicated">
+        <C01 Value="重复类型"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.Validation.InvalidBarcodePrefix">
+        <C01 Value="无效条码前缀"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.Validation.BarcodePrefixDuplicated">
+        <C01 Value="重复前缀"/>
+      </Key>
+      <Key Id="Std.BarcodeTypePrefix.Validation.BlacklistBarcode">
+        <C01 Value="无效黑名单条码"/>
+      </Key>
+
+      <!-- BAGS PAGE -->
+      <Key Id="Std.Bags.Chute">
+        <C01 Value="滑槽"/>
+      </Key>
+      <Key Id="Std.Bags.Bag">
+        <C01 Value="小件包"/>
+      </Key>
+      <Key Id="Std.Bags.Items">
+        <C01 Value="货件"/>
+      </Key>
+      <Key Id="Std.Bags.RefreshButton">
+        <C01 Value="刷新"/>
+      </Key>
+
+      <!-- IMPORT USB DATA PAGE -->
+      <Key Id="Std.ImportUsbData.ImportButton">
+        <C01 Value="导入"/>
+      </Key>
+
+      <!-- ERROR CODE FOR GHOST ITEMS -->
+      <Key Id="LiveParcelBroker.ErrorGhostItem">
+        <C01 Value="货件被分拣机已预订 (幽灵)."/>
+      </Key>
+
+      <!-- Info messages page -->
+      <Key Id="MFC_GTW_ETL_DES">
+        <C01 Value="Gateway 加载目的地"/>
+      </Key>
+      <Key Id="MFC_GTW_ETL_DES_FAILED">
+        <C01 Value="目的地加载失败."/>
+      </Key>
+
+      <Key Id="MFC_GTW_ETL_NCDATA">
+        <C01 Value="Gateway 加载NC数据"/>
+      </Key>
+      <Key Id="MFC_GTW_ETL_NCDATA_FAILED">
+        <C01 Value="加载NC数据失败."/>
+      </Key>
+
+      <Key Id="MFC_GTW_FILEUPLOAD">
+        <C01 Value="Gateway 从USB文件导入目的地信息"/>
+      </Key>
+      <Key Id="MFC_GTW_FILEUPLOAD_CREATION_FAILED">
+        <C01 Value="文件{0}不能写入磁盘"/>
+      </Key>
+      <Key Id="MFC_GTW_FILEUPLOAD_SIZE">
+        <C01 Value="文件大小为 {0}, 大于 {1}."/>
+      </Key>
+      <Key Id="MFC_GTW_FILEUPLOAD_FAILED">
+        <C01 Value="从USB导入目的数据失败."/>
+      </Key>
+      <Key Id="MFC_GTW_FILEUPLOAD_FIELD_LENGTH">
+        <C01 Value="{1}行中字段{0}长度大于{2}."/>
+      </Key>
+      <Key Id="MFC_GTW_FILEUPLOAD_FIELD_TYPE">
+        <C01 Value="{1}行中字段{0}类型错误，应该为: {2}."/>
+      </Key>
+      <Key Id="MFC_GTW_LOG_DEST">
+        <C01 Value="Gateway 登记目的地的"/>
+      </Key>
+      <Key Id="MFC_GTW_LOG_DEST_FAILED">
+        <C01 Value="登记目的地失败."/>
+      </Key>
+      <Key Id="MFC_GTW_LOG_NCDATA">
+        <C01 Value="Gateway 登记NC数据"/>
+      </Key>
+      <Key Id="MFC_GTW_LOG_NCDATA_FAILED">
+        <C01 Value="登记NC数据失败."/>
+      </Key>
+      <Key Id="MFC_GTW_LOG_PARCELS">
+        <C01 Value="Gateway 登记分拣报告"/>
+      </Key>
+      <Key Id="MFC_GTW_LOG_PARCELS_FAILED">
+        <C01 Value="分拣报告登记失败."/>
+      </Key>
+      <Key Id="MFC_GTW_LOG_PARCEL_NOT_VALID">
+        <C01 Value="快件分拣结果无效 ，请查阅日志获取更多信息."/>
+      </Key>
+      <Key Id="MFC_GTW_LOG_PKG_INFO">
+        <C01 Value="Gateway登记打包报告"/>
+      </Key>
+      <Key Id="MFC_GTW_LOG_PKG_INFO_FAILED">
+        <C01 Value="登记打包报告失败."/>
+      </Key>
+      <Key Id="MFC_GTW_LOG_PKG_INFO_NOT_VALID">
+        <C01 Value="快件打包结果无效 ，请查阅日志获取更多信息."/>
+      </Key>
+      <Key Id="MFC_GTW_HSK">
+        <C01 Value="Gateway 数据清理"/>
+      </Key>
+      <Key Id="MFC_GTW_HSK_NCDATA_FAILED">
+        <C01 Value="清除Nc数据失败."/>
+      </Key>
+      <Key Id="MFC_GTW_HSK_DEST_FAILED">
+        <C01 Value="清除目的地数据失败."/>
+      </Key>
+      <Key Id="MFC_DTX5_VALIDATION">
+        <C01 Value="DTX-5 验证"/>
+      </Key>
+      <Key Id="MFC_DTX5_ADDITEM">
+        <C01 Value="DTX-5 新增货件"/>
+      </Key>
+      <Key Id="MFC_DTX5_CHUTE_NOEXISTS">
+        <C01 Value="不存在滑槽: {0}."/>
+      </Key>
+      <Key Id="MFC_DTX5_ADDITEM_FAILED">
+        <C01 Value="新增货件失败."/>
+      </Key>
+      <Key Id="MFC_DTX5_REMOVEITEM">
+        <C01 Value="DTX-5 移除货件"/>
+      </Key>
+      <Key Id="MFC_DTX5_COMPLEMENTARY">
+        <C01 Value="DTX-5 补码"/>
+      </Key>
+      <Key Id="MFC_DTX5_COMPLEMENTARY_PARCELONTHESORTER">
+        <C01 Value="货件: {0} 仍然在分拣机上面."/>
+      </Key>
+      <Key Id="MFC_DTX5_COMPLEMENTARY_FAILED">
+        <C01 Value="补码失败."/>
+      </Key>
+      <Key Id="MFC_DTX5_DATETIME_ERROR">
+        <C01 Value="扫描时间 {0} 格式错误."/>
+      </Key>
+      <Key Id="MFC_DTX5_WAYBILLNO_ERROR">
+        <C01 Value="条码. {0} 格式错误."/>
+      </Key>
+      <Key Id="MFC_DTX5_DES_ERROR">
+        <C01 Value="目的地 {0} 格式错误."/>
+      </Key>
+      <Key Id="MFC_DTX5_CHUTECODE_ERROR">
+        <C01 Value="滑槽编码 {0} 格式错误."/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_STAT">
+        <C01 Value="PLC 滑槽状态"/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_STAT_FAILED">
+        <C01 Value="处理滑槽状态失败."/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_AVAIL">
+        <C01 Value="PLC滑槽可用"/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_AVAIL_FAILED">
+        <C01 Value="处理滑槽可用失败."/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_PRNT_REQ">
+        <C01 Value="PLC 打印请求"/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_PRINTREQUESTED_FAILED">
+        <C01 Value="设置滑槽: {0}打印请求失败"/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_PRNT_REQ_CHUTE_ERROR">
+        <C01 Value="滑槽: {0} 不存在."/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_PRNT_REQ_FAILED">
+        <C01 Value="打印请求失败."/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_BARC_WARNING">
+        <C01 Value="PLC 条码错误"/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_BARC_WARNING_FAILED">
+        <C01 Value="发送条码警告失败."/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_PRNT_STAT">
+        <C01 Value="PLC 打印机状态"/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_PRNT_STAT_FAILED">
+        <C01 Value="发送打印机状态失败."/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_MES_STAT">
+        <C01 Value="PLC MES 状态"/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_SSS_STAT">
+        <C01 Value="PLC SSS 状态"/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_MES_STAT_FAILED">
+        <C01 Value="发送MES状态失败."/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_SSS_STAT_FAILED">
+        <C01 Value="发送SSS状态失败."/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_PCKG_STAT">
+        <C01 Value="PLC 打包请求"/>
+      </Key>
+      <Key Id="MFC_PLC_LOGIC_PCKG_STAT_FAILED">
+        <C01 Value="发送打包请求失败."/>
+      </Key>
+      <Key Id="MFC_BPI">
+        <C01 Value="BPI"/>
+      </Key>
+      <Key Id="MFC_BPI_FAILED">
+        <C01 Value="BPI 失败."/>
+      </Key>
+      <Key Id="MFC_BPI_UKNOWN_REPORTTYPE">
+        <C01 Value="{0} 报告不支持."/>
+      </Key>
+      <Key Id="MFC_INDUCT_PARCEL_FAILED">
+        <C01 Value="货件创建失败."/>
+      </Key>
+      <Key Id="MFC_INDUCT_PARCEL_FAILED_ERROR">
+        <C01 Value="货件导入:{0}失败."/>
+      </Key>
+      <Key Id="MFC_IDENT_PARCEL_FAILED">
+        <C01 Value="货件识别失败."/>
+      </Key>
+      <Key Id="MFC_IDENT_PARCEL_FAILED_ERROR">
+        <C01 Value="Guid为:{0},hostPic为：{1}货件识别失败."/>
+      </Key>
+      <Key Id="MFC_RECIRC_PARCEL_FAILED">
+        <C01 Value="处理货件循环报告失败."/>
+      </Key>
+      <Key Id="MFC_RECIRC_PARCEL_FAILED_ERROR">
+        <C01 Value="处理Guid为:{0},hostData为：{1}货件循环报告失败."/>
+      </Key>
+      <Key Id="MFC_DIV_PARCEL_FAILED">
+        <C01 Value="货件分拣失败."/>
+      </Key>
+      <Key Id="MFC_DIV_PARCEL_FAILED_ERROR">
+        <C01 Value="hostData为：{0}货件分拣失败报告."/>
+      </Key>
+      <Key Id="MFC_TEMPSORT_PARCEL_FAILED">
+        <C01 Value="货件临时分拣报告."/>
+      </Key>
+      <Key Id="MFC_TEMPSORT_PARCEL_FAILED_ERROR">
+        <C01 Value="处理hostData为：{0}货件临时分拣报告失败."/>
+      </Key>
+      <Key Id="MFC_FINALSORT_PARCEL_FAILED">
+        <C01 Value="货件分拣报告."/>
+      </Key>
+      <Key Id="MFC_FINALSORT_PARCEL_FAILED_FAILED">
+        <C01 Value="处理hostData为：{0}货件分拣报告失败."/>
+      </Key>
+      
+      <!--Operation log for FedEx-->
+      <Key Id="TimeStamp">
+        <CO1 Value="时间"/>
+      </Key>
+      <Key Id="User name">
+        <CO1 Value="用户名"/>
+      </Key>
+      <Key Id="Action">
+        <CO1 Value="操作"/>
+      </Key>
+      <Key Id="Old value">
+        <CO1 Value="原值"/>
+      </Key>
+      <Key Id="New value">
+        <CO1 Value="新值"/>
+      </Key>
+      <Key Id="IDS_OPER_EDIT_SORTPLAN_NAME">
+        <CO1 Value="分拣计划{0}的名称被从{1}改变到{2}"/>
+      </Key>
+      <Key Id="IDS_OPER_CREATE_SORTPLAN">
+        <CO1 Value="分拣计划{0}被创建"/>
+      </Key>
+      <Key Id="IDS_OPER_COPY_SORTPLAN">
+        <CO1 Value="分拣计划被复制"/>
+      </Key>
+      <Key Id="IDS_OPER_DEACTIVATE_SORTPLAN">
+        <CO1 Value="分拣计划{0}被关闭"/>
+      </Key>
+      <Key Id="IDS_OPER_ACTIVATE_SORTPLAN">
+        <CO1 Value="分拣计划{0}被激活"/>
+      </Key>
+      <Key Id="IDS_OPER_CHANGE_SORTPLAN_RULECODE">
+        <CO1 Value="分拣计划{0}的规则编码被从{1}改变到{2}"/>
+      </Key>
+      <Key Id="IDS_OPER_CHANGE_SORTPLAN_EXTRARULECODE">
+        <CO1 Value="分拣计划{0}的额外规则编码被从{1}改变到{2}"/>
+      </Key>
+      <Key Id="IDS_OPER_CHANGE_SORTPLAN_RULECHUTE">
+        <CO1 Value="分拣计划{0}的规则编码{1}的滑槽被从{2}改变到{3}"/>
+      </Key>
+      <Key Id="IDS_OPER_CREATE_SORTPLAN_RULE">
+        <CO1 Value="分拣计划{0}新建规则编码{1}，额外编码{2}，分配滑槽{3}"/>
+      </Key>
+      <Key Id="IDS_OPER_DELETE_SORTPLAN_RULE">
+        <CO1 Value="删除分拣计划{0}的规则编码{1}的规则"/>
+      </Key>
+      <Key Id="IDS_OPER_INTERCEPTION_IMPORT">
+        <CO1 Value="导入拦截件列表，导入文件：{0}"/>
+      </Key>
+      <Key Id="IDS_OPER_LOGOUT">
+        <CO1 Value="用户退出（IP地址：{0}）"/>
+      </Key>
+      <Key Id="IDS_OPER_LOGIN">
+        <CO1 Value="用户登陆"/>
+      </Key>
+      <Key Id="IDS_OPER_SELHANDLING_CODE_IMPORT">
+        <CO1 Value="导入文件Selection/Handling列表{0}"/>
+      </Key>
+      <Key Id="IDS_OPER_CHANGE_SELFPICKUP_DESCRIPTION">
+        <CO1 Value="修改分拣机{0}自提列表{1}的描述从{2}到{3}"/>
+      </Key>
+      <Key Id="IDS_OPER_CHANGE_SELFPICKUP_CHUTE">
+        <CO1 Value="修改分拣机{0}自提列表{1}的滑槽从{2}到{3}"/>
+      </Key>
+      <Key Id="IDS_OPER_SELFPICKUP_IMPORT">
+        <CO1 Value="导入自提件列表"/>
+      </Key>
+      <Key Id="IDS_OPER_CHANGE_EXCEPTION_CHUTE">
+        <CO1 Value="异常处理滑道被更改"/>
+      </Key>
+      <!--System Log for FedEx-->
+      <Key Id="TimeStamp Created">
+        <CO1 Value="时间"/>
+      </Key>
+      <Key Id="Sorter / Process">
+        <CO1 Value="分拣机/流程"/>
+      </Key>
+      <Key Id="Message">
+        <CO1 Value="消息"/>
+      </Key>
+      <Key Id="IDS_INTERLIST_CANCELED">
+        <CO1 Value="当前有效的拦截件列表被强制作废"/>
+      </Key>
+      <Key Id="IDS_GET_SORT_REPORT">
+        <CO1 Value="消息：收到（分拣机：{1}，位置：{0}，Pic：{2}和Pic：{3}）分拣报告"/>
+      </Key>
+      <Key Id="IDS_PLC_DISCONNECTED">
+        <CO1 Value="PLC：{0}与MFC断开"/>
+      </Key>
+      <Key Id="IDS_PLC_CONNECTED">
+        <CO1 Value="PLC：{0} 连接到MFC"/>
+      </Key>
+      <Key Id="MFC_LOGEXCEEDED_1GB">
+        <CO1 Value="不能删除日志，因其大小已经超过1GB。"/>
+      </Key>
+      <Key Id="MFC_LOGERROR_CSV">
+        <CO1 Value="写入日志文件{0}时出错"/>
+      </Key>
+
+    </L02>
+  </LOCALIZATION>
+</MFC.NET>

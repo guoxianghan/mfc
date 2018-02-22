@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+    <CONTROLSET>
+        <PACKETIZER Type="VI.MFC.Components.Packetizer.SEPacketizer" Id="Zebra$EXT$Packetizer" Enabled="true">
+            <LENGTH>90</LENGTH>
+            <STARTDELIMITER>02</STARTDELIMITER>
+            <ENDDELIMITER>030D0A</ENDDELIMITER>
+            <MAXPACKETLENGTH>90</MAXPACKETLENGTH>
+            <MINIMALANALYSISLENGTH>10</MINIMALANALYSISLENGTH>
+        </PACKETIZER>
+
+
+        <!-- Example for using a label applicator, here: Zebra printer. -->
+        <ZEBRA Type="VI.MFC.COM.ZebraCom" Enabled="true" Id="ZEBRA_$EXT$" Name="Zebra Printer $EXT$" ResourceType="LABEL APPLICATOR">
+
+            <!-- Specify which sequences should be sent to the printer for clearing it's memory, before sending label information and
+                 after sending label information.-->
+            <CONFIG Packetizer="Zebra$EXT$Packetizer" ClearCommand="~JA" PreLabelCommand="^CI28" PostLabelCommand=""></CONFIG>
+            <!-- Specify the watchdog timeout and the command string to send to the printer in order to
+                 get some data back. -->
+            <WATCHDOG Enabled="true" TimeoutInSecs="60" CommandToSend="~HI" RetriesBeforeDisconnection="3"></WATCHDOG>
+            <!--<TEMPLATES>
+                <TEMPLATE FullyQualifiedFilename="D:\Projects\XXX\dev\mfc\mfc\MFC\ShippingTemplates\GLSFR.TPL" NameInPrinterMemory="GLSFR.GRF" Id="04"></TEMPLATE>
+                <TEMPLATE FullyQualifiedFilename="D:\Projects\XXX\dev\mfc\mfc\MFC\ShippingTemplates\GLSNL.TPL" NameInPrinterMemory="GLSNL.GRF" Id="05"></TEMPLATE>
+                <TEMPLATE FullyQualifiedFilename="D:\Projects\XXX\dev\mfc\mfc\MFC\ShippingTemplates\NOREAD.TPL" NameInPrinterMemory="NOREAD.GRF" Id="NOREAD"></TEMPLATE>
+                <TEMPLATE FullyQualifiedFilename="D:\Projects\XXX\dev\mfc\mfc\MFC\ShippingTemplates\UNKNOWN.TPL" NameInPrinterMemory="UNKNOWN.GRF" Id="UNKNOWN"></TEMPLATE>
+                <TEMPLATE FullyQualifiedFilename="D:\Projects\XXX\dev\mfc\mfc\MFC\ShippingTemplates\TNT.TPL" NameInPrinterMemory="TNT.GRF" Id="01"></TEMPLATE>
+                <TEMPLATE FullyQualifiedFilename="D:\Projects\XXX\dev\mfc\mfc\MFC\ShippingTemplates\PARCELFORCE.TPL" NameInPrinterMemory="PARCELFORCE.GRF" Id="03"></TEMPLATE>
+                <TEMPLATE FullyQualifiedFilename="D:\Projects\XXX\dev\mfc\mfc\MFC\ShippingTemplates\DHL.TPL" NameInPrinterMemory="DHL.GRF" Id="02"></TEMPLATE>
+            </TEMPLATES>
+            -->
+            <CONNECTION>
+                <TCPIP>
+                    <!-- Host (network interface) to connect to. Can be name or IP-Address -->
+                    <!-- <HOST>172.19.208.145</HOST>-->
+                    <HOST>$HOST$</HOST>
+
+                    <!-- Defines which network card should be used for the local endpoint
+                         in eg. a cluster environment -->
+                    <LOCALENDPOINT>$LOCALENDPOINT$ </LOCALENDPOINT>
+                    <!-- V4- use IPV4
+                         V6- use IPV6 -->
+                    <IPVERSION>V6</IPVERSION>
+
+                    <CLIENT>
+                        <!-- Port to use on remote computer <HOST> to connect to. -->
+                        <PORT>$PORT$</PORT>
+                        <!-- Different socket options. See socket api for reference. Change only in case you
+                             have a good reason to do so. -->
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <!-- Size in bytes of the receive buffer. 16384 should be ok. -->
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <!-- Size in bytes of the sending buffer. 16384 should be ok. -->
+                        <SENDBUFFERSIZE>262144</SENDBUFFERSIZE>
+                        <!-- YES- close object once disconnected (rarely used)
+                             NO- do not close object once disconnected (standard) -->
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <!-- Time to wait ins ms between connection attempts -->
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <!-- Can be set to None, Normal (ASCII dump), UTF8, HexOnly or Mixed (binary values replaced by [0xXX] characters).
+                             Incoming data will be logged starting with '>'.
+                             Outgoing data will be logged starting with '<'.
+                             Trash bytes (non packet data) will be logged starting with '#>'
+                             Packetized data (one interpreted data packet) will be logged starting with 'P>'
+
+                             'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                             Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                             support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                             ethernet frame).
+
+                             'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                             Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                             support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                             ethernet frame). -->
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+                    </CLIENT>
+                </TCPIP>
+            </CONNECTION>
+        </ZEBRA>
+    </CONTROLSET>
+</MFC.NET>

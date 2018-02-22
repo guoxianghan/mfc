@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+    <CONTROLSET>
+        <PACKETIZER Type="VI.MFC.Components.Packetizer.SEPacketizer" Id="B$AREA$G$AISLE$BeewenPacketizerEmu" Enabled="true">
+            <STARTDELIMITER>02</STARTDELIMITER>
+            <ENDDELIMITER>03</ENDDELIMITER>
+            <MAXPACKETLENGTH>$MAXTELLEN$</MAXPACKETLENGTH>
+            <MINIMALANALYSISLENGTH>24</MINIMALANALYSISLENGTH>
+        </PACKETIZER>
+        <SEQUENCEHANDLER Type ="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="B$AREA$G$AISLE$SequencerInboundEmu" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <SEQUENCEHANDLER Type ="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="B$AREA$G$AISLE$SequencerOutboundEmu" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <PARSER Type="VI.MFC.Components.Parser.Beewen.BeewenParser" Id="B$AREA$G$AISLE$ParserEmu" Enabled="true">
+            <CONFIG CommModule="B$AREA$G$AISLE$Emu" TelegramDescriptions="BeewenTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+
+        <BEEWENLOGIC Assembly="$EMUASS$" Type="VI.MFC.Emulation.Logic.BeewenLogic" Id="B$AREA$G$AISLE$R01LogicEmu" Enabled="true">
+            <CONFIG CommModule="B$AREA$G$AISLE$Emu" Parser="B$AREA$G$AISLE$ParserEmu" ResourceKey="B$AREA$G$AISLE$R$LIFT$" Emulation="EmuMain"></CONFIG>
+        </BEEWENLOGIC>
+
+        <BEEWENCRANE Type="VI.MFC.COM.Beewen.BeewenTCPServer" Enabled="true" Id="B$AREA$G$AISLE$Emu" Name="QS21 Module $EXT$ Emu" ResourceType="BEEWENQS21">
+            <CONFIG FieldValueConstants="BeewenFieldValues" SequencerInbound="B$AREA$G$AISLE$SequencerInboundEmu" SequencerOutbound="B$AREA$G$AISLE$SequencerOutboundEmu" Packetizer="B$AREA$G$AISLE$BeewenPacketizerEmu" Parser="B$AREA$G$AISLE$ParserEmu"></CONFIG>
+            <LOGIC Id="B$AREA$G$AISLE$R01LogicEmu"></LOGIC>
+            <CONNECTION>
+                <TCPIP>
+                    <HOST>$HOST$</HOST>
+                    <LOCALENDPOINT>$LOCALENDPOINT$</LOCALENDPOINT>
+                    <IPVERSION>V6</IPVERSION>
+                    <OPTIONS RepeatTimeoutInMs="500" RepeatCount="3"></OPTIONS>
+                    <SERVER>
+                        <PORT>$PORT$</PORT>
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+                    </SERVER>
+                </TCPIP>
+            </CONNECTION>
+        </BEEWENCRANE>
+    </CONTROLSET>
+</MFC.NET>

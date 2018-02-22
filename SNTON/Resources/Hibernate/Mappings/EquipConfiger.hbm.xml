@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.Equipments.EquipConfigerEntity" schema="SNTON" table="SNTON.EquipConfiger" xmlns="urn:nhibernate-mapping-2.2">
+    
+    <id name="ControlID">
+      <column name="ControlID" not-null="true" />
+      <generator class="identity" />
+    </id> 
+    <property name="EquipFlag" column="EquipFlag" />
+    <property name="LineStatus" column="LineStatus" />
+    <property name="Equip1Status" column="Equip1Status" />
+    <property name="Equip2Status" column="Equip2Status" />
+    <property name="TaskFlagDispatch" column="TaskFlagDispatch" />
+    <property name="DispatchStatus" column="DispatchStatus" />
+    <property name="IsEnable" column="IsEnable" />
+    <property name="PLCNo" column="PLCNo" />
+    <property name="LWCS" column="LWCS" />
+    <property name="LStatus" column="LStatus" />
+    <property name="EStatus2" column="EStatus2" />
+    <property name="EStatus1" column="EStatus1" />
+    <property name="WAStatus" column="WAStatus" />
+    <property name="AGVDisStatus" column="AGVDisStatus" />
+    <property name="Location" column="Location" />
+    <property name="StorageArea" column="StorageArea" />
+    <property name="AGVRoute" column="AGVRoute" />
+    <property name="PlantNo" column="PlantNo" />
+
+    <property name="BStation" column="BStation" />
+    <property name="AStation" column="AStation" />
+
+    <property name="Created" column="Created" />
+    <property name="Updated" column="Updated" />
+    <property name="Deleted" column="Deleted" />
+    <property name="IsDeleted" column="IsDeleted" />
+  </class>
+</hibernate-mapping>

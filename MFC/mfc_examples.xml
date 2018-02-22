@@ -1,0 +1,1899 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MFC.NET>
+    <APPLICATION>
+        <VERSION>Version 7.1</VERSION>
+        <NAME>VISION.MFC</NAME>
+        <TRAY>1</TRAY>
+        <OPERATORID>2001</OPERATORID>
+        <INSTANCEID>130011301</INSTANCEID>
+    </APPLICATION>
+
+    <GLOBAL_DEFINITIONS>
+        <DATABASE Name ="standard database">
+            <!-- Defines to use the given section name from the GLOBAL_DEFINITION section.-->
+            <!-- User: MFC51, Password: MFC51 
+      
+         NDS-NMFC-DEV =
+           (DESCRIPTION =
+              (ADDRESS_LIST =
+                (ADDRESS = (PROTOCOL = TCP)(HOST = NDS-NMFC)(PORT = 1521))
+              )
+              (CONNECT_DATA =
+                (SERVICE_NAME = ora112db)
+                (SERVER = DEDICATED)
+              )
+            )
+
+      -->
+
+            <CONNECTION Username="MFC70" Password="MFC70" Database="NDS-NMFC-DEV" Pooling="0" TimeoutInSecs="3"></CONNECTION>
+            <!--CONNECTION Username="MFC51" Password="NTETUZDNTE=" EncryptionProvider="VI.MFC.Encryption.VIOraclePassword" Database="NDS-NMFC-DEV" Pooling="0" TimeoutInSecs="3"></CONNECTION-->
+            <!-- ClientId helps the database administrator to filter/monitor performance or errors by application
+                 Should always be overloaded by a connection specific description. -->
+            <CLIENT_ID>XXX MFC</CLIENT_ID>
+            <!-- The database layer will always try to repeat the current transaction (telegram) for 'MaxTransactionRetries' times
+                 before up to 'MaxReconnectAttempts' will be made. After this, the next transaction (telegram) will be
+                 processed discarding the current one. -->
+            <ERRORHANDLING
+                MaxRetries="1"
+                MaxReconnectAttempts="1"
+                ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700"></ERRORHANDLING>
+            <!-- MaxHashtableEntries- how many Key/Value Pairs may we return from the database for a neutrino (max)?-->
+            <!-- MaxReturnBufferSize- how large may one value of a key/value pair become (in byte, max)?-->
+            <CONFIG MaxHashtableEntries="64" MaxReturnBufferSize="512"></CONFIG>
+            <!-- PACKAGE defines the Oracle(R) package in which the MFC's PL/SQL Execute(...) function resides. -->
+            <PACKAGE Name="SVCMFCPLC_STUB"></PACKAGE>
+        </DATABASE>
+
+        <PACKETIZER Name="standard packetizer">
+            <!-- Length in bytes of the data package -->
+            <LENGTH>90</LENGTH>
+            <!-- Can be specified as text using "" or 2 character hexadecimal bytes (eg. 02FF1003AA)-->
+            <STARTDELIMITER>02</STARTDELIMITER>
+            <!-- Can be specified as text using "" or hexadecimal, comma seperated bytes-->
+            <ENDDELIMITER>03</ENDDELIMITER>
+            <!-- Defines the maximum length of a data packet-->
+            <MAXPACKETLENGTH>90</MAXPACKETLENGTH>
+            <!-- Defines the minimal required receive buffer size before any anlysis will take place-->
+            <MINIMALANALYSISLENGTH>10</MINIMALANALYSISLENGTH>
+            <!-- Consider headerbytes when counting the packet length (IncludeHeader or ExcludeHeader) -->
+        </PACKETIZER>
+    </GLOBAL_DEFINITIONS>
+
+    <!-- Parameters configuring the Logistix Kernel -->
+    <KERNEL>
+        <!-- Fully featured Sessionhandling functionality.
+
+             Defines the parameters for the kernel session handling.
+             DefaultLeaseTimeInSecs- Timespan in seconds when a session will expire in any case.
+                                     0 means that sessions will never expire by default.
+             DefaultSessionTimeoutInSecs- Default timespan in seconds when a session will expire
+                                          in case it has not been used during this time.
+
+             SessionTimeoutThreadCyleInSecs- Timespan in seconds when a thread will remove expired sessions.
+             PersistencyProvider- If specified, the sessions will survive a restart of the MFC. So the users
+                                  will not have to login again after a system restart.
+                                  The Provider itself defines how the sessions will be stored (not at all, in NVRAM,
+                                  in an Oracle or SQLite database or wherever...)
+        -->
+
+        <SESSIONHANDLING
+            DefaultLeaseTimeInSecs="86400"
+            DefaultSessionTimeoutInSecs="3600"
+            SessionTimeoutThreadCyleInSecs="320"
+            PersistencyProvider="VI.MFC.SessionHandling.NVRAMPersistency"></SESSIONHANDLING>
+
+        <!-- Kernel functionality to persist small chunks of data even between restarts of the MFC.
+             Please note that this should be used for convenience only, that is, do not use it
+             for critical data. The given persistence may be deleted on purpose anytime between
+             MFC restarts. It may be used, eg. for persisting active session data. If the file was deleted
+             between MFC restarts, the users would simply have to relogin. Hope you got the idea, what
+             this module may be used for...
+
+             FilenameToUse - Filename, where to store persistency data.
+        -->
+
+        <NVRAM
+            FilenameToUse=".\NVRAM.SAV">
+        </NVRAM>
+
+        <!-- Kernel module the VIParser classes may be using to store all successfully parsed neutrinos.
+             Any module can make use of this NeutrinoCollector by adding itself into the chain of subscribers
+             for Neutrino, and therefore, system analysis. Examples of these subscribers are for example
+             modules offering small dashboard up to closeby BPI functionalities.
+
+             UpdateTimeoutInMs  - Defines, how often subscribers will be informed about newly arrived neutrinos.
+                                  0= Subscribers will immediately be informed about arriving neutrinos.
+                                  >0- Minimum number of milliseconds to wait before the chain of subscribers will be given the
+                                  next list of new neutrinos. Default is 0 ms.
+
+             CollectRawNeutrinos - Defines if Neutrinos without having any field information but the raw data field
+                                   shall be handed over to the collector at all. For example, a TCP/IP stream containing
+                                   only .XML data in the "Neutrino.rawPacket" field with an empty "Neutrino.theHashtable"
+                                   will not be handed over in case this parameter is "false".
+
+                                   true (default)- Hand over even "rawPacket"-Neutrinos to the collector even when the
+                                   Neutrino's 'theHashtable' is empty. Note: This is time consuming when handling
+                                   pure .XML neutrinos only.
+
+
+             ProfileSubscribers -  Defines if we want to measure the time it takes to copy and hand over the list of
+                                   neutrinos to each subscriber. true = Profiling ein, false= profiling aus.
+                                   Default is "false".
+
+
+             MaxProcessingTimeInMs - This parameter is only used in case the parameter 'ProfileSubscribers' is true.
+                                     Defines the maximum time in milliseconds it may take for a subscriber to handle the
+                                     list of given neutrinos. Default is 50ms.
+
+                                   In case it takes longer than the specified amount of time, the profiling logfile output
+                                   will print out an Warning message instead of an information message. So it will attract the
+                                   viewer of the logfile more because the message may be written in, eg. yellow.
+        -->
+
+        <NeutrinoCollector
+            UpdateTimeoutInMs="7000"
+            CollectRawNeutrinos="false"
+            ProfileSubscribers="true"
+            MaxProcessingTimeInMs="50">
+        </NeutrinoCollector>
+
+    </KERNEL>
+
+    <!-- Loadable Kernel Modules are optional kernel modules which may not always be initiated but in case they are used,
+         should be instantiated and be available before any non-kernel component will be started.
+         So they will be available directly after having started all the kernel modules and before any supporting or
+         working components 
+  -->
+    <CONTROLSETS>
+        <CONTROLSET Name ="TelegramDescriptions" Enabled ="true" path =".\Controlsets\TelDescControlset.xml"/>
+        <CONTROLSET Name ="PLC1" Enabled ="true" path =".\Controlsets\PLCCLientControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$PORT$" Value="4000"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="PLC1Emu" Enabled ="true" path =".\Controlsets\PLCEmuControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$PORT$" Value="4000"/>
+                <VARIABLE Name="$EMUASS$" Value="..\..\..\TestEnvironment\bin\debug\TESTENVIRONMENT.DLL"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="SITPLC1" Enabled ="true" path =".\Controlsets\SITPLCControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$CLIENTPORT$" Value="6001"/>
+                <VARIABLE Name="$SERVERPORT$" Value="5001"/>
+                <VARIABLE Name="$TELEGRAMLENGTH$" Value="90"/>
+                <VARIABLE Name="$UDPNOTIFICATIONPORT$" Value="2008"/>
+                <VARIABLE Name="$STATUSTELEGRAMID$" Value="61"/>
+                <VARIABLE Name="$SENDSTATUS$" Value="false"/>
+                <VARIABLE Name="$SENDWATCHDOG$" Value="true"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="FSC1" Enabled ="false" path =".\Controlsets\FSCControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$CLIENTPORT$" Value="6002"/>
+                <VARIABLE Name="$SERVERPORT$" Value="5002"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="AdaptoCrane1" Enabled ="false" path =".\Controlsets\AdaptoControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$CLIENTPORT$" Value="5000"/>
+                <VARIABLE Name="$SERVERPORT$" Value="5001"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="FSCStats1" Enabled ="false" path =".\Controlsets\FSCStatsControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$PORT$" Value="6000"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="FSCStatsEmu1" Enabled ="false" path =".\Controlsets\FSCStatsEmuControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$PORT$" Value="6000"/>
+                <VARIABLE Name="$EMUASS$" Value="..\..\..\TestEnvironment\bin\debug\TESTENVIRONMENT.DLL"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="mshuttle1" Enabled ="true" path =".\Controlsets\mshuttleControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$PORT$" Value="4000"/>
+                <VARIABLE Name="$AREA$" Value="01"/>
+                <VARIABLE Name="$AISLE$" Value="01"/>
+                <VARIABLE Name="$CONTROLLER$" Value="01"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="mshuttleemu1" Enabled ="false" path =".\Controlsets\mshuttleemuControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$PORT$" Value="4000"/>
+                <VARIABLE Name="$MAXTELLEN$" Value="146"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="QS1" Enabled ="false" path =".\Controlsets\qs21Controlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$PORT$" Value="4100"/>
+                <VARIABLE Name="$MAXTELLEN$" Value="146"/>
+                <VARIABLE Name="$AREA$" Value="01"/>
+                <VARIABLE Name="$AISLE$" Value="02"/>
+                <VARIABLE Name="$LIFT$" Value="01"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="QSEmu1" Enabled ="false" path =".\Controlsets\qs21EmuControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$PORT$" Value="4100"/>
+                <VARIABLE Name="$EMUASS$" Value="..\..\..\TestEnvironment\bin\debug\TESTENVIRONMENT.DLL"/>
+                <VARIABLE Name="$MAXTELLEN$" Value="146"/>
+                <VARIABLE Name="$AREA$" Value="01"/>
+                <VARIABLE Name="$AISLE$" Value="02"/>
+                <VARIABLE Name="$LIFT$" Value="01"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="KbsPtlController1" Enabled ="false" path =".\Controlsets\KbsControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="01"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$WINKOMMBASISID$" Value="001"/>
+                <VARIABLE Name="$MFCID$" Value="050"/>
+                <VARIABLE Name="$CLIENTPORT$" Value="4100"/>
+                <VARIABLE Name="$SERVERPORT$" Value="4101"/>
+                <VARIABLE Name="$PACKINGENABLED$" Value="true"/>
+            </VARIABLES>
+        </CONTROLSET>
+        <CONTROLSET Name ="Zebra printer 1" Enabled ="false" path =".\Controlsets\ZebraControlset.xml">
+            <VARIABLES>
+                <VARIABLE Name="$EXT$" Value="1"/>
+                <VARIABLE Name="$HOST$" Value="localhost"/>
+                <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+                <VARIABLE Name="$PORT$" Value="5101"/>
+            </VARIABLES>
+        </CONTROLSET>
+    </CONTROLSETS>
+
+    <LOADABLE_KERNEL_MODULES>
+
+        <!-- The hibernate components supports a common, fast and easy handling of errors which may require reconnects
+             and it supports a real session pool. This is needed by eg. high speed WebServices where we will not
+             wait for single request being served one after the other but in parallel.
+             There may be multiple <HIBERNATE> nodes witin this section in case more than one database (eg. Oracle and SQLITE)
+             or multiple schemata of the same database are to be used.
+
+             "Enabled", "Id"       -    see standard VIRuntime component handling rule information.
+             "Configuration"       -    Hibernate configuration filename of the resource file residing within the
+                                        "VI.MFC.Resources.Hibernate" tree of the project. For an introduction to
+                                        hibernate configuration files, please see the nhibernate documentation
+                                        for reference. The correct path for an eg. "Hibernate.cfg.xml" would therefore
+                                        be "VI.MFC.Resources.Hibernate.Hibernate.cfg.xml".
+                                        Important: Please make sure to mark the file(s) being an "Embedded Resource" within the
+                                        file property dialog in VS2010 and up.
+
+             "InitialNumberOfSessions"    -  Initial number of database sessions to create.
+             "MaxNumberOfSessions"        -  Maximum number of sessions. In case more sessions are needed, threads
+                                             requesting a session will have to wait for sessions to become available
+                                             again.
+
+             "MaxBusyTimeoutInMs"  -   Timeout in milliseconds, after which a warning message will be logged in case a session is
+                                       busy/held for longer than the specified time. Useful for eg. detecting slow and
+                                       badly performing queries.
+
+             "DeadSessionDetectionTimeoutInSecs" - Timeout in seconds after which a session will be declared "frozen" and a new
+                                                  session be recreated. Frozen sessions will never be reused.
+                                                "0" means that the DeadSessionDetection will be switched off.
+             "RenewSessionTimeoutInSecs"  -      Timeout in seconds after which a session will be closed and reopened when
+                                                it is currently not in use. This is to help a database free resources which
+                                                which may have been associated with this session. Use "0" in order to disable
+                                                session renewing.
+             "SessionTimeoutThreadCyleInSecs" - Defines how often the sentry (control-) thread runs and checks for the given
+                                                session timeouts.
+             "MaxRetries"                     - Defines how often a database transaction should be repeated before the
+                                                programmer is informed about the maximum number of retries being reached.
+             "MaxReconnectAttempts              - Defines how often the database pool should try to reconnect to the database
+                                                before reporting an error back to the programmer. In this case the returned
+                                                Session Object will be NULL in a call to "HandleError(...)".
+             "RetryErrorCodes"                - Errors which may be handled by simply retrying the same transaction again.
+                                                In this case the session pool will not renew the session but the session will
+                                                be untouched.
+             "MaxNumberOfSessionsToDropPerCycle"  -  Number of sessions to "renew" per cycle.
+
+             "StatisticsThreadCycleInSecs"    - Defines interval in number of seconds when an update of the statistics data
+                                                will be recalculated. "0" means no calculation will ever be done.
+
+         -->
+
+        <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="true" Id="OracleDatabase">
+            <!--      <CONFIG Configuration="Oracle.cfg.xml" Embeddedconfiguration="false" InitialNumberOfSessions="10" MaxBusyTimeoutInMs="1000"
+                          DeadSessionDetectionTimeoutInSecs="3600"  RenewSessionTimeoutInSecs="3600" MaxNumberOfSessionsToDropPerCycle="1"
+                          SessionTimeoutThreadCycleInSecs="5" MaxRetries="1" MaxReconnectAttempts="1" RetryErrorCodes="" MaxNumberOfSessions="10"
+                          StatisticsThreadCycleInSecs="999999"
+                          ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700">
+            -->
+            <CONFIG Configuration="VI.Resources.Hibernate.Oracle.cfg.xml" ConfigAssembly="mfclib.dll" EmbeddedConfiguration="true" InitialNumberOfSessions="10" MaxBusyTimeoutInMs="1000"
+                    DeadSessionDetectionTimeoutInSecs="3600"  RenewSessionTimeoutInSecs="3600" MaxNumberOfSessionsToDropPerCycle="1"
+                    SessionTimeoutThreadCycleInSecs="999" MaxRetries="1" MaxReconnectAttempts="1" MaxNumberOfSessions="10"
+                    StatisticsThreadCycleInSecs="999999"
+                    ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700">
+
+
+                <!-- Optional SESSION_PROFILING. Will use special MaxBusyTimeoutInMs instead of the globally defined one above.
+                     "TaskDescription" - The task description specified when getting the session object.
+                     "MaxBusyTimeoutInMs" - Timeout in milliseconds, after which a warning message will be logged in case a session is
+                                           busy/held for longer than the specified time. Useful for eg. detecting slow and
+                                           badly performing queries.
+                -->
+                <SESSION_PROFILING>
+                    <PROFILE TaskDescription="CreateInfoMessage" MaxBusyTimeoutInMs="10"></PROFILE>
+                    <PROFILE TaskDescription="InfoMessageDataProvider: RawReadAllMessages" MaxBusyTimeoutInMs="10000"></PROFILE>
+                </SESSION_PROFILING>
+            </CONFIG>
+        </HIBERNATE>
+
+        <SEQUENCER Type="VI.MFC.Components.Sequencer.PersistentSequencer.FileBasedSequencer" Enabled="true" Id="UnknownTsuSequencer">
+            <CONFIG InitialSequenceNo="100000000000" StartSequenceNo="100000000000" EndSequenceNo="999999999999"
+                    SequencerFileName=".\unknowntsu.seq"></CONFIG>
+        </SEQUENCER>
+
+        <SEQUENCER Type="VI.MFC.Components.Sequencer.PersistentSequencer.FileBasedSequencer" Enabled="true" Id="InboundSequencer">
+            <CONFIG InitialSequenceNo="100000000000000000"
+                    StartSequenceNo="100000000000000000"
+                    EndSequenceNo="922337203685477506"
+                    SequencerFileName=".\inbound.seq"></CONFIG>
+        </SEQUENCER>
+
+        <SEQUENCER Type="VI.MFC.Components.Sequencer.PersistentSequencer.FileBasedSequencer" Enabled="true" Id="OutboundSequencer">
+            <CONFIG InitialSequenceNo="100000000000000000"
+                    StartSequenceNo="100000000000000000"
+                    EndSequenceNo="922337203685477506"
+                    SequencerFileName=".\outbound.seq"></CONFIG>
+        </SEQUENCER>
+
+        <!--
+            Same as Numeric Sequencer but this time the sequence will be persisted to a file so it
+            survives .MFC restarts...
+        -->
+        <SEQUENCER Type="VI.MFC.Components.Sequencer.PersistentSequencer.FileBasedSequencer" Enabled="true" Id="ReportBackToHostSequencer">
+            <CONFIG InitialSequenceNo="2999999" StartSequenceNo="3000000" EndSequenceNo="9999999999999999998"
+                    SequencerFileName=".\.seq"></CONFIG>
+        </SEQUENCER>
+
+
+        <!--
+          Localization functionality. We can query one or more strings in a specific language by a key. 
+    -->
+        <LOCALIZATION Type="VI.MFC.Components.Localization.TextProvider" Enabled="true" Id="$VISION.MFC_LOCALIZATION">
+            <CONFIG File="MFC.XML" RootElement="/MFC.NET/LOCALIZATION"/>
+        </LOCALIZATION>
+
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B02G03L01Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>Beewen HDS 3 Lift Thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B02G03R01Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>Beewen HDS 3 Shuttle 1 Thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B02G03R02Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>Beewen HDS 3 Shuttle 2 Thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B02G03R03Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>Beewen HDS 3 Shuttle 3 Thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B02G03R04Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>Beewen HDS 3 Shuttle 4 Thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B02G03R05Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>Beewen HDS 3 Shuttle 5 Thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B01G01R01Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>Beewen Sequencer 1 Thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B01G01R02Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>Beewen Sequencer 2 Thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B01G01R03Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>Beewen Sequencer 3 Thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B01G01R04Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>Beewen Sequencer 4 Thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.PLCDatabaseLayer" Id="FSC1Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>MFC FSC_01 thread</CLIENT_ID>
+        </DATABASE>
+
+        <MANAGER Type="VI.MFC.Manager.LocationManager" Enabled="false" Id="LocationManager">
+            <CONFIG UseLocationCacheFile ="false"
+                    UseFile="true"
+                    FileName=".\locations_msh.xml"
+                    WebserviceClients="WebserviceClients"
+                    CraneType="MSH"></CONFIG>
+        </MANAGER>
+
+    </LOADABLE_KERNEL_MODULES>
+
+    <!-- Module managing the new Version of discoverable WebServices.-->
+    <SERVICEHOSTER_COMPONENTS>
+        <!--
+       HOSTNAME:            Enter the Hostname or IP address of the hosting machine (MFC)                                        
+       TCPDISCOVERYPORT:    results in this discovery address -> net.tcp://<HOSTNAME>:<PORT>/Discovery                                      
+       TCPANNOUNCEMENTPORT: results in this announcement address -> net.tcp://<HOSTNAME>:<PORT>/Announcement
+       HTTPMONITORINGPORT:  results in this monitoring address -> http://<HOSTNAME>:<PORT>/Services
+       SILVERLIGHTPOLICYID: links the SILVERLIGHTPOLICYPROVIDER supporting component with this id to this discovery proxy
+                            and generates the wsdl provider for silverlight containing the list of hosted services. 
+                            The address is generated like this: -> <SILVERLIGHTPOLICYPROVIDER ADDRESS>/Services
+                            All Webservices hosted by a proxy will have the base address of the SILVERLIGHTPOLICYPROVIDER
+                            and add its id to the address and a GUID so you need to use the discovery mechanism. An Address
+                            will look like this: -> http://<SILVERLIGHTPOLICYPROVIDER ADDRESS>/<WEBSERVICEHOSTER ID>/<GUID>
+       TESTMODE:            The TestMode allows you to invoke a webservice without Sessionhandling if set to value = 1.
+       ATTENTION!!!         Do not re-use the same port numbers.
+      -->
+        <DISCOVERYPROXY Type="VI.MFC.ServiceHoster.DiscoveryService.VIDiscoveryComponent" Enabled="true" Id="Proxy_01">
+            <CONFIG TcpDiscoveryPort="8001" TcpAnnouncementPort="9021" HttpMonitoringPort="8002" SilverlightPolicyId="PolicyProxy_01"
+                    NumberOfThreads="10" ThreadTimeoutInMs="0" TestMode="0"></CONFIG>
+            <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.DashboardReport.DashboardReportWebSvc" Enabled="true" Id="DashboardReport">
+                <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+            </WEBSERVICEHOSTER>
+            <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.TextLocalization.TextLocalizationWebSvc" Enabled="true" Id="TextLocalization">
+                <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+            </WEBSERVICEHOSTER>
+            <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.Clearing.ClearingWebSvc" Enabled="true" Id="Clearing">
+                <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION" ClearingProviderId="ClearingProvider"/>
+            </WEBSERVICEHOSTER>
+            <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.Configuration.ConfigurationWebSvc" Enabled="true" Id="Configuration">
+                <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION" ConfigurationProviderId="OracleConfigProvider" />
+            </WEBSERVICEHOSTER>
+            <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.Messages.InfoMessagesWebSvc" Enabled="true" Id="InfoMessages">
+                <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION" InfoMessageProvider="StdInfoMessage"/>
+            </WEBSERVICEHOSTER>
+            <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.FileInformation.FileInformationWebSvc" Enabled="true" Id="FileInformation">
+                <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION" FileInformationBrokerId="FileInformationBroker"/>
+            </WEBSERVICEHOSTER>
+            <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.PtlInfo.PtlInfoWebSvc" Enabled="true" Id="PtlInfo">
+                <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+            </WEBSERVICEHOSTER>
+            <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.Logging.LoggingWebSvc" Enabled="true" Id="ServerSideLogging">
+                <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+            </WEBSERVICEHOSTER>
+            <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.Login.LoginWebSvc" Enabled="true" Id="Login">
+                <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+                <DATABASE Type="VI.MFC.Components.Database.Oracle.OracleTransactionDB">
+                    <USE_GLOBAL_DEFINITION>DATABASE</USE_GLOBAL_DEFINITION>
+                    <CLIENT_ID>UserManagement</CLIENT_ID>
+                    <PACKAGE Name="MFC_BfwUserManagement"></PACKAGE>
+                </DATABASE>
+            </WEBSERVICEHOSTER>
+            <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.UserManagement.UserManagementWebSvc" Enabled="true" Id="UserManagement">
+                <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+                <DATABASE Type="VI.MFC.Components.Database.Oracle.OracleTransactionDB">
+                    <USE_GLOBAL_DEFINITION>DATABASE</USE_GLOBAL_DEFINITION>
+                    <CLIENT_ID>UserManagement</CLIENT_ID>
+                    <PACKAGE Name="MFC_BfwUserManagement"></PACKAGE>
+                </DATABASE>
+            </WEBSERVICEHOSTER>
+        </DISCOVERYPROXY>
+    </SERVICEHOSTER_COMPONENTS>
+
+    <SUPPORTING_COMPONENTS>
+
+        <!-- Define all your supporting components here. You can specify a different ->Assembly in case the ->Type you
+         would like to be instantiated is hosted in a different file, eg. in a different .DLL.
+         
+         You can also enable/disable the instantiation of each supporting component by setting the ->Enabled 
+         attribute to "false".
+         
+         The ->Id defines the name of the supporting component which will be used in queries to the GLUE MFC Kernel component
+         which will return the instance of the specified component on return.
+         
+         You can also have the bootstrap loader instantiate the specified ->Type more than once: Just add the attribute
+         ->Instances and decribe how many instances should be created. If you defined a placeholder "%d" in the ->Id, this
+         will automatically be replaced by the instance number (1,2,3...), eg. "Sortation%dEngine" will become "Sortation1Engine".
+         If you specified to instantiate more than once instance but did not use the placeholder, "_%d" will be appended
+         to the ->Id automatically. Example: "SortationEngine" would become "SortationEngine_1", "SortationEngine_2", ...
+         
+         Use the <CONFIG> tag afterwards for your individual, module specific configuration. 
+         Feel free to add references to other Ids of supporting components within your configuration parameters 
+         which your component may want make use of (eg. file importer, LocalizationId="$VISION.MFC_LOCALIZATION" etc).
+     
+     -->
+
+        <!-- The mediator component. Useful for inter-component publish and subscribe designs. 
+         Another easy to use component helping to decouple designs even more... 
+         
+         TimeoutInMs- Number of milliseconds to check for new messages. This is just 
+                      a fallback value. In fact, message distribution takes place 
+                      immediately when a new message comes in. Default: 5000
+
+         ProfileSubscribers- Useful only while testing the system. It outputs the runtime
+                             of how long it takes to distribute the messages.
+                             Default: false
+         -->
+
+        <!--
+                 Sets up the emulation engine and its front end.
+    -->
+
+        <EMULATION Assembly="..\..\..\TestEnvironment\bin\debug\TESTENVIRONMENT.DLL" Type="VI.MFC.Emulation.EmuRuntime" Id="EmuMain" Enabled="true">
+            <CONFIG PlugInDirectory=".\Plugins"/>
+        </EMULATION>
+
+        <!--    Emulation database access -->
+        <EMULATIONDB Assembly="..\..\..\TestEnvironment\bin\Debug\TestEnvironment.dll"
+                     Type="VI.MFC.Emulation.EmuDbConnection"
+                     Enabled="false"
+                     Id="EmuCreatorDB">
+            <CONFIG TimeoutInSecs="10" UDPNotificationPort="20001"/>
+            <DATABASE>
+                <USE_GLOBAL_DEFINITION>DATABASE</USE_GLOBAL_DEFINITION>
+                <CLIENT_ID>Emu DB Connetion</CLIENT_ID>
+                <PACKAGE Name="SvcEmu"></PACKAGE>
+            </DATABASE>
+        </EMULATIONDB>
+
+
+        <BpiDataCollector Type="VI.MFC.Components.BpiHandler.BpiDataCollector" Id="BpiCollect" Enabled="true">
+            <Config BpiLog ="bpilog"/>
+            <COLLECTORS>
+                <COLLECTOR Pattern="PLC" Telegrams="01,99,98"/>
+                <COLLECTOR Pattern="FSC" Telegrams="StatusReport,StatisticalLocation"/>
+            </COLLECTORS>
+        </BpiDataCollector>
+
+        <BpiLogFileCreator Type="VI.MFC.Components.BpiHandler.BpiLogFileCreator" Id="BpiLog" Enabled="true">
+            <PATTERNLOGGERS>
+                <PATTERNLOGGER logger="BPIPLC" pattern="PLC"/>
+                <PATTERNLOGGER logger="BPIFSC" pattern="FSC"/>
+            </PATTERNLOGGERS>
+        </BpiLogFileCreator>
+
+        <!-- Webservice needed for Silverlight cross-domain access.-->
+        <SILVERLIGHTPOLICYPROVIDER Type="VI.MFC.ServiceHoster.PolicyProvider.SilverlightPolicyProvider" Enabled="true" Id="PolicyProxy_01">
+            <CONFIG HostName="127.0.0.1" Port="4712" />
+            <ALLOW-FROM><![CDATA[<domain uri="*"/>]]></ALLOW-FROM>
+            <GRANT-TO><![CDATA[<resource path="/" include-subpaths="true"/>]]></GRANT-TO>
+            <GRANT-TO><![CDATA[<socket-resource port="4502-4534" protocol="tcp" />]]></GRANT-TO>
+        </SILVERLIGHTPOLICYPROVIDER>
+
+        <FIELDPARSER Type="VI.MFC.Components.FieldParser.FieldParser" Enabled="false" Id="A">
+            <PARSEROBJECTS StartDelimiter="start" EndDelimiter="end" Delimiter="delimiter">
+                <PARSEROBJECT Description="routinglabel" Type="ROUTINGLABEL" Priority="1">
+                    <IDENTIFIERS>
+                        <IDENTIFIER IId="1" MinLength="13" MaxLength="29"/>
+                        <IDENTIFIER IId="2" Position="0" CheckValue="2L"/>
+                        <IDENTIFIER IId="3" Position="0" CheckValue="403"/>
+                    </IDENTIFIERS>
+                    <RULES>
+                        <RULE RId="1" IdentifierExpression="1.and.2" Priority="1">
+                            <FIELDS>
+                                <FIELD Name="BARCODE" RegEx=".*"/>
+                                <FIELD Name="ISOCOUNTRYCODE" Position="2" Length="2"/>
+                                <FIELD Name="POSTCODE" RegEx="(?&lt;=....).*(?=[+])"/>
+                                <FIELD Name="PRODUCTCODE" RegEx="(?&lt;=[+]).."/>
+                                <FIELD Name="FEATUREID" RegEx="(?&lt;=[+]......)..."/>
+                            </FIELDS>
+                        </RULE>
+                        <RULE RId="2" IdentifierExpression="1.and.3" Priority="2">
+                            <FIELDS>
+                                <FIELD Name="BARCODE" RegEx=".*"/>
+                                <FIELD Name="ISOCOUNTRYCODE" Position="3" Length="3"/>
+                                <FIELD Name="POSTCODE" RegEx="(?&lt;=......).*(?=[+])"/>
+                                <FIELD Name="PRODUCTCODE" RegEx="(?&lt;=[+]).."/>
+                                <FIELD Name="FEATUREID" RegEx="(?&lt;=[+]......)..."/>
+                            </FIELDS>
+                        </RULE>
+                    </RULES>
+                </PARSEROBJECT>
+                <PARSEROBJECT Description="legacyeuropackparcelid" Type="LEGACYEUROPACKPARCELID" Priority="2">
+                    <IDENTIFIERS>
+                        <IDENTIFIER IId="1" MinLength="12" MaxLength="12"/>
+                        <IDENTIFIER IId="2" RegEx="^(?!07)+.*" />
+                    </IDENTIFIERS>
+                    <RULES>
+                        <RULE RId="1" IdentifierExpression="1.and.2" Priority="1">
+                            <FIELDS>
+                                <FIELD Name="BARCODE" Position="0" Length="12"/>
+                            </FIELDS>
+                        </RULE>
+                    </RULES>
+                </PARSEROBJECT>
+                <PARSEROBJECT Description="legacyparcelid" Type="LEGACYPARCELID" Priority="3">
+                    <IDENTIFIERS>
+                        <IDENTIFIER IId="1" MinLength="12" MaxLength="12"/>
+                        <IDENTIFIER IId="2" RegEx="^(?=07)+.*" />
+                    </IDENTIFIERS>
+                    <RULES>
+                        <RULE RId="1" IdentifierExpression="1.and.2" Priority="1">
+                            <FIELDS>
+                                <FIELD Name="BARCODE" Position="0" Length="12"/>
+                                <FIELD Name="SERVICECODE" Position="0" Length="2"/>
+                            </FIELDS>
+                        </RULE>
+                    </RULES>
+                </PARSEROBJECT>
+                <PARSEROBJECT Description="legacyhubcodeandservicecentreid" Type="LEGACYHUBCODEANDSERVICECENTREID" Priority="4">
+                    <IDENTIFIERS>
+                        <IDENTIFIER IId="1" MinLength="7" MaxLength="7"/>
+                        <IDENTIFIER IId="2" RegEx="^...[0-9]{4}$" />
+                    </IDENTIFIERS>
+                    <RULES>
+                        <RULE RId="1" IdentifierExpression="1.and.2" Priority="1">
+                            <FIELDS>
+                                <FIELD Name="BARCODE" RegEx=".*"/>
+                                <FIELD Name="HUBCODE" Position="0" Length="3"/>
+                                <FIELD Name="SERVICECENTREID" Position="3" Length="4"/>
+                            </FIELDS>
+                        </RULE>
+                    </RULES>
+                </PARSEROBJECT>
+                <PARSEROBJECT Description="hdnluniqueparcelid" Type="HDNLUNIQUEPARCELID" Priority="5">
+                    <IDENTIFIERS>
+                        <IDENTIFIER IId="1" MinLength="16" MaxLength="16"/>
+                        <IDENTIFIER IId="2" RegEx="^[0-9][^+]*$" />
+                    </IDENTIFIERS>
+                    <RULES>
+                        <RULE RId="1" IdentifierExpression="1.and.2" Priority="1">
+                            <FIELDS>
+                                <FIELD Name="BARCODE" Position="0" Length="16"/>
+                                <FIELD Name="SERVICECODE" DefaultValue="99"/>
+                            </FIELDS>
+                        </RULE>
+                    </RULES>
+                </PARSEROBJECT>
+                <PARSEROBJECT Description="gs1-128" Type="GS1-128" Priority="6">
+                    <IDENTIFIERS>
+                        <IDENTIFIER IId="1" RegEx=".*"/>
+                    </IDENTIFIERS>
+                    <RULES>
+                        <RULE RId="1" IdentifierExpression="1" Priority="1">
+                            <FIELDS>
+                                <FIELD Name="PLZ" Position="4" Length="5"/>
+                                <FIELD Name="COUNTRY" Position="9" Length="10" TrimRight=" "/>
+                                <FIELD Name="POSTCODE" RegEx="(?&lt;=....).*(?=[+])"/>
+                                <FIELD Name="AI00" RegEx="(?&lt;=00)\d{18}"/>
+                                <FIELD Name="AI01" RegEx="(?&lt;=01)\d{14}"/>
+                                <FIELD Name="AI02" RegEx="(?&lt;=02)\d{14}"/>
+                                <FIELD Name="AI10" RegEx="(?&lt;=10)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,20}"/>
+                                <FIELD Name="AI11" RegEx="(?&lt;=11)\d{6}"/>
+                                <FIELD Name="AI12" RegEx="(?&lt;=12)\d{6}"/>
+                                <FIELD Name="AI13" RegEx="(?&lt;=13)\d{6}"/>
+                                <FIELD Name="AI15" RegEx="(?&lt;=15)\d{6}"/>
+                                <FIELD Name="AI17" RegEx="(?&lt;=17)\d{6}"/>
+                                <FIELD Name="AI20" RegEx="(?&lt;=20)\d{2}"/>
+                                <FIELD Name="AI21" RegEx="(?&lt;=21)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,20}"/>
+                                <FIELD Name="AI22" RegEx="(?&lt;=22)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,29}"/>
+                                <FIELD Name="AI230" RegEx="(?&lt;=230)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,19}"/>
+                                <FIELD Name="AI231" RegEx="(?&lt;=231)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,19}"/>
+                                <FIELD Name="AI232" RegEx="(?&lt;=232)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,19}"/>
+                                <FIELD Name="AI233" RegEx="(?&lt;=233)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,19}"/>
+                                <FIELD Name="AI234" RegEx="(?&lt;=234)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,19}"/>
+                                <FIELD Name="AI235" RegEx="(?&lt;=235)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,19}"/>
+                                <FIELD Name="AI236" RegEx="(?&lt;=236)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,19}"/>
+                                <FIELD Name="AI237" RegEx="(?&lt;=237)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,19}"/>
+                                <FIELD Name="AI238" RegEx="(?&lt;=238)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,19}"/>
+                                <FIELD Name="AI239" RegEx="(?&lt;=239)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,19}"/>
+                                <FIELD Name="AI240" RegEx="(?&lt;=240)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI241" RegEx="(?&lt;=241)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI242" RegEx="(?&lt;=242)\d{1,6}"/>
+                                <FIELD Name="AI250" RegEx="(?&lt;=250)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI251" RegEx="(?&lt;=251)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI253" RegEx="(?&lt;=253)\d{13}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{0,17}"/>
+                                <FIELD Name="AI254" RegEx="(?&lt;=254)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,20}"/>
+                                <FIELD Name="AI30" RegEx="(?&lt;=30)\d{1,8}"/>
+                                <FIELD Name="AI310" RegEx="(?&lt;=310)\d{7}"/>
+                                <FIELD Name="AI311" RegEx="(?&lt;=311)\d{7}"/>
+                                <FIELD Name="AI312" RegEx="(?&lt;=312)\d{7}"/>
+                                <FIELD Name="AI313" RegEx="(?&lt;=313)\d{7}"/>
+                                <FIELD Name="AI314" RegEx="(?&lt;=314)\d{7}"/>
+                                <FIELD Name="AI315" RegEx="(?&lt;=315)\d{7}"/>
+                                <FIELD Name="AI316" RegEx="(?&lt;=316)\d{7}"/>
+                                <FIELD Name="AI320" RegEx="(?&lt;=320)\d{7}"/>
+                                <FIELD Name="AI321" RegEx="(?&lt;=321)\d{7}"/>
+                                <FIELD Name="AI322" RegEx="(?&lt;=322)\d{7}"/>
+                                <FIELD Name="AI323" RegEx="(?&lt;=323)\d{7}"/>
+                                <FIELD Name="AI324" RegEx="(?&lt;=324)\d{7}"/>
+                                <FIELD Name="AI325" RegEx="(?&lt;=325)\d{7}"/>
+                                <FIELD Name="AI326" RegEx="(?&lt;=326)\d{7}"/>
+                                <FIELD Name="AI327" RegEx="(?&lt;=327)\d{7}"/>
+                                <FIELD Name="AI328" RegEx="(?&lt;=328)\d{7}"/>
+                                <FIELD Name="AI329" RegEx="(?&lt;=329)\d{7}"/>
+                                <FIELD Name="AI330" RegEx="(?&lt;=330)\d{7}"/>
+                                <FIELD Name="AI331" RegEx="(?&lt;=331)\d{7}"/>
+                                <FIELD Name="AI332" RegEx="(?&lt;=332)\d{7}"/>
+                                <FIELD Name="AI333" RegEx="(?&lt;=333)\d{7}"/>
+                                <FIELD Name="AI334" RegEx="(?&lt;=334)\d{7}"/>
+                                <FIELD Name="AI335" RegEx="(?&lt;=335)\d{7}"/>
+                                <FIELD Name="AI336" RegEx="(?&lt;=336)\d{7}"/>
+                                <FIELD Name="AI337" RegEx="(?&lt;=337)\d{7}"/>
+                                <FIELD Name="AI340" RegEx="(?&lt;=340)\d{7}"/>
+                                <FIELD Name="AI341" RegEx="(?&lt;=341)\d{7}"/>
+                                <FIELD Name="AI342" RegEx="(?&lt;=342)\d{7}"/>
+                                <FIELD Name="AI343" RegEx="(?&lt;=343)\d{7}"/>
+                                <FIELD Name="AI344" RegEx="(?&lt;=344)\d{7}"/>
+                                <FIELD Name="AI345" RegEx="(?&lt;=345)\d{7}"/>
+                                <FIELD Name="AI346" RegEx="(?&lt;=346)\d{7}"/>
+                                <FIELD Name="AI347" RegEx="(?&lt;=347)\d{7}"/>
+                                <FIELD Name="AI348" RegEx="(?&lt;=348)\d{7}"/>
+                                <FIELD Name="AI349" RegEx="(?&lt;=349)\d{7}"/>
+                                <FIELD Name="AI350" RegEx="(?&lt;=350)\d{7}"/>
+                                <FIELD Name="AI351" RegEx="(?&lt;=351)\d{7}"/>
+                                <FIELD Name="AI352" RegEx="(?&lt;=352)\d{7}"/>
+                                <FIELD Name="AI353" RegEx="(?&lt;=353)\d{7}"/>
+                                <FIELD Name="AI354" RegEx="(?&lt;=354)\d{7}"/>
+                                <FIELD Name="AI355" RegEx="(?&lt;=355)\d{7}"/>
+                                <FIELD Name="AI356" RegEx="(?&lt;=356)\d{7}"/>
+                                <FIELD Name="AI357" RegEx="(?&lt;=357)\d{7}"/>
+                                <FIELD Name="AI360" RegEx="(?&lt;=360)\d{7}"/>
+                                <FIELD Name="AI361" RegEx="(?&lt;=361)\d{7}"/>
+                                <FIELD Name="AI362" RegEx="(?&lt;=362)\d{7}"/>
+                                <FIELD Name="AI363" RegEx="(?&lt;=363)\d{7}"/>
+                                <FIELD Name="AI364" RegEx="(?&lt;=364)\d{7}"/>
+                                <FIELD Name="AI365" RegEx="(?&lt;=365)\d{7}"/>
+                                <FIELD Name="AI366" RegEx="(?&lt;=366)\d{7}"/>
+                                <FIELD Name="AI367" RegEx="(?&lt;=367)\d{7}"/>
+                                <FIELD Name="AI368" RegEx="(?&lt;=368)\d{7}"/>
+                                <FIELD Name="AI369" RegEx="(?&lt;=369)\d{7}"/>
+                                <FIELD Name="AI37" RegEx="(?&lt;=37)\d{8}"/>
+                                <FIELD Name="AI390" RegEx="(?&lt;=390)\d{1}\d{1,15}"/>
+                                <FIELD Name="AI391" RegEx="(?&lt;=391)\d{4}\d{1,15}"/>
+                                <FIELD Name="AI392" RegEx="(?&lt;=392)\d{1}\d{1,15}"/>
+                                <FIELD Name="AI393" RegEx="(?&lt;=393)\d{4}\d{1,15}" PostProcessor="VI.MFC.Components.FieldParser.PostProcessors.Ai393PostProcessor"/>
+                                <FIELD Name="AI400" RegEx="(?&lt;=400)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI401" RegEx="(?&lt;=401)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI402" RegEx="(?&lt;=402)\d{17}"/>
+                                <FIELD Name="AI403" RegEx="(?&lt;=403)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI410" RegEx="(?&lt;=410)\d{13}"/>
+                                <FIELD Name="AI411" RegEx="(?&lt;=411)\d{13}"/>
+                                <FIELD Name="AI412" RegEx="(?&lt;=412)\d{13}"/>
+                                <FIELD Name="AI413" RegEx="(?&lt;=413)\d{13}"/>
+                                <FIELD Name="AI414" RegEx="(?&lt;=414)\d{13}"/>
+                                <FIELD Name="AI415" RegEx="(?&lt;=415)\d{13}"/>
+                                <FIELD Name="AI420" RegEx="(?&lt;=420)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,20}"/>
+                                <FIELD Name="AI421" RegEx="(?&lt;=421)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,12}"/>
+                                <FIELD Name="AI422" RegEx="(?&lt;=422)\d{3}"/>
+                                <FIELD Name="AI423" RegEx="(?&lt;=423)\d{3}\d{1,12}"/>
+                                <FIELD Name="AI424" RegEx="(?&lt;=424)\d{3}"/>
+                                <FIELD Name="AI425" RegEx="(?&lt;=425)\d{3}"/>
+                                <FIELD Name="AI426" RegEx="(?&lt;=426)\d{3}"/>
+                                <FIELD Name="AI7001" RegEx="(?&lt;=7001)\d{13}"/>
+                                <FIELD Name="AI7002" RegEx="(?&lt;=7002)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI7003" RegEx="(?&lt;=7003)\d{10}"/>
+                                <FIELD Name="AI7004" RegEx="(?&lt;=7004)\d{4}"/>
+                                <FIELD Name="AI7030" RegEx="(?&lt;=7030)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,27}"/>
+                                <FIELD Name="AI7031" RegEx="(?&lt;=7031)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,27}"/>
+                                <FIELD Name="AI7032" RegEx="(?&lt;=7032)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,27}"/>
+                                <FIELD Name="AI7033" RegEx="(?&lt;=7033)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,27}"/>
+                                <FIELD Name="AI7034" RegEx="(?&lt;=7034)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,27}"/>
+                                <FIELD Name="AI7035" RegEx="(?&lt;=7035)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,27}"/>
+                                <FIELD Name="AI7036" RegEx="(?&lt;=7036)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,27}"/>
+                                <FIELD Name="AI7037" RegEx="(?&lt;=7037)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,27}"/>
+                                <FIELD Name="AI7038" RegEx="(?&lt;=7038)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,27}"/>
+                                <FIELD Name="AI7039" RegEx="(?&lt;=7039)\d{3}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,27}"/>
+                                <FIELD Name="AI8001" RegEx="(?&lt;=8001)\d{14}"/>
+                                <FIELD Name="AI8002" RegEx="(?&lt;=8002)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,20}"/>
+                                <FIELD Name="AI8003" RegEx="(?&lt;=8003)\d{14}[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{0,16}"/>
+                                <FIELD Name="AI8004" RegEx="(?&lt;=8004)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI8005" RegEx="(?&lt;=8005)\d{6}"/>
+                                <FIELD Name="AI8006" RegEx="(?&lt;=8006)\d{18}"/>
+                                <FIELD Name="AI8007" RegEx="(?&lt;=8007)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI8008" RegEx="(?&lt;=8008)\d{8}\d{0,4}"/>
+                                <FIELD Name="AI8018" RegEx="(?&lt;=8018)\d{18}"/>
+                                <FIELD Name="AI8020" RegEx="(?&lt;=8020)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,15}"/>
+                                <FIELD Name="AI8100" RegEx="(?&lt;=8100)\d{6}"/>
+                                <FIELD Name="AI8101" RegEx="(?&lt;=8101)\d{10}"/>
+                                <FIELD Name="AI8102" RegEx="(?&lt;=8102)\d{2}"/>
+                                <FIELD Name="AI8110" RegEx="(?&lt;=8110)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI8200" RegEx="(?&lt;=8200)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,70}"/>
+                                <FIELD Name="AI90" RegEx="(?&lt;=90)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI91" RegEx="(?&lt;=91)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI92" RegEx="(?&lt;=92)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI93" RegEx="(?&lt;=93)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI94" RegEx="(?&lt;=94)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI95" RegEx="(?&lt;=95)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI96" RegEx="(?&lt;=96)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI97" RegEx="(?&lt;=97)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI98" RegEx="(?&lt;=98)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                                <FIELD Name="AI99" RegEx="(?&lt;=99)[!&quot;%&amp;'()*+,-.\/:;&lt;=&gt;?_0-9a-zA-Z]{1,30}"/>
+                            </FIELDS>
+                        </RULE>
+                    </RULES>
+                </PARSEROBJECT>
+            </PARSEROBJECTS>
+        </FIELDPARSER>
+
+        <VISU Type="VI.MFC.Monitoring.VIVisualization" Enabled="true" Id="WebVisu" />
+
+
+        <!-- Finally! A component to make you see what is really going on. Use this component to
+         build up a parcel history of 'MaxCapacity' parcels in memory. Use the query features
+         to get a history of what happened to the specified parcel(s). 
+         
+         Write/use an appender for eg. HTML or use the webservice to query the information you need.
+         
+         Note:
+         IN case you are using the integrated webserver to display the Parcel History, feel free
+         to customize the template files according to your needs (localization etc).
+         The .HTML template files reside in: VI.MFC.Resources.Webpages.ParcelHistory. 
+         
+         
+         MaxCapacity- Number of parcels to keep in memory (default: 30000)
+         DeleteThreshold- In case the capacity is reached, this number described how many of the
+                          "oldest" parcels in the history will be deleted at once (default: 3000)
+         TimeoutThreadCycleInMs- Writeback buffer functionality. After the specified number of ms
+                                 has elapsed we will look for new parcel information to be copied
+                                 from the fast cache to the slower parcel dictionary (default: 500)
+     -->
+        <PARCELHISTORY Type="VI.MFC.Components.ParcelHistory.ParcelHistory" Enabled="true" Id="ParcelHistory">
+            <CONFIG MaxCapacity="30000" DeleteThreshold="5000" TimeoutThreadCyleInMs="500" LocalizationId="$VISION.MFC_LOCALIZATION"></CONFIG>
+        </PARCELHISTORY>
+
+        <!-- Webservice, enabling the use of the ParcelHistory component.
+   
+         WebServiceAddress-   Address the webservice can be reached
+         ParcelHistoryProvider- ComponentId responsible for delivering the data
+         TestMode - 1-Switches off session management, 0= do session management (not recommended!).
+    -->
+
+        <WEBSERVICEHOSTER Type="VI.MFC.Components.ParcelHistory.WebService.ParcelHistoryWebSvc" Enabled="true" Id="ParcelHistoryWebSvc">
+            <CONFIG  WebServiceAddress="http://localhost:4713/ParcelHistory" ParcelHistoryProviderId="ParcelHistory" TestMode="1"
+                     LocalizationId="$VISION.MFC_LOCALIZATION" />
+        </WEBSERVICEHOSTER>
+
+        <!--
+            This is the main webserver offering visualization information, RSS feeds as well as the
+            silverlight supervisor application (http://localhost, http://localhost/RSS, http://localhost/SVS).
+
+            Type: Type of webserver to use, here: 'VI.MFC.Components.HttpServer.HttpServer'
+            Enabled: true-  component is enabled
+                     false- component is disabled
+            Id: Glue-Id of this component
+            Port: TCP/IP Portnumber where the http server should be hosted, eg: 80 (HTTP)
+            AllowFileSystemAccess: true-  Use the specified 'FileSystemRoot' directory for reading in files (Debug)
+                                   false- Do not allow anybody to access files from the filesystem. Use the
+                                          specified Resource tree ('ResourceRoot') instead (default for production)
+            FileSystemRoot: Directory where to find the files in case 'AllowFileSystemAccess' is true.
+            ResourceRoot: Resource tree of this MFC.EXE application where to find the files in case 'AllowFileSystemAccess' is
+                          false (default for production).
+                          Note: Make sure that your files are included within the .EXE by choosing the build option
+                          'Embedded Resource' for these files.
+            InfoMessageProvider: If specified, you can use RSS-feeds by calling the IP-Adress of the server followed by a "/rss".
+            
+            
+      
+            ParcelHistoryProviderId: Id of the ParcelHistory Provider (if any)
+            MaxResultSetParcelHistoryProvider: In case the parcel history provider is used, this value limits the number of
+                                               results being shown to the user in order to eg. prevent too many information 
+                                               to be transferred through the browser.
+
+            Note:
+             IN case you are using the integrated webserver to display the Parcel History, feel free
+             to customize the template files according to your needs (localization etc).
+             The .HTML template files reside in: VI.MFC.Resources.Webpages.ParcelHistory. 
+            
+            Referrer: Please always specify the DNS name of the VISION.MFC here which will be used by the clients to call the VISION.MFC.
+                      This  will be put into the .HTML page returned by the VISION.MFC to specify a part of the URI to be
+                      called while eg. submitting a formular.
+
+                      Note: If you are using your own .HTML pages, the template name/placeholder within the .HTML page of 
+                            this parameter is {{{$SERVERIP}}}.
+            
+            IPVersion: Which IP-Version to use (4 or 6), default: 4
+            
+            ReceiveTimeoutInMs: Specifies how long the HTTP server will try to read from the receiving socket in ms. -1 means unchanged (unlimited).
+            
+            VisuId: If specified, you can use the {{{$VISUALIZATION}}} template token to have the visualization replace it with
+                    visualization .XML data "on the fly". Please see 'index.xml' for reference.
+        -->
+
+        <HTTPSERVER Type="VI.MFC.Components.HttpServer.HttpServer" Enabled="true" Id="Vision.MFC">
+            <CONFIG Port="80" AllowFileSystemAccess="false" FileSystemRoot="D:\Projects\VISION.MFC\MFC\Resources\Webpages\"
+                    Referrer="localhost" IPVersion="4" ReceiveTimeoutInMs="3000" LocalizationId="$VISION.MFC_LOCALIZATION"
+                    ResourceRoot="VI.Resources.Webpages." InfoMessageProvider="StdInfoMessage" VisuId="WebVisu"></CONFIG>
+        </HTTPSERVER>
+
+
+        <!--
+            This is another webserver configuration to show how to use it. Try it by calling "http://localhost:81"
+
+            Note:
+            In a productive environment this webserver does not make sense in case you did not change something so
+            please comment it out/remove the entry/resource files before copying it to the customer server. 
+
+            Type: Type of webserver to use, here: 'VI.MFC.Components.HttpServer.HttpServer'
+            Enabled: true-  component is enabled
+                     false- component is disabled
+        -->
+
+        <HTTPSERVER Type="VI.MFC.Components.HttpServer.HttpServer" Enabled="true" Id="MyCustomWebserver">
+            <CONFIG Port="81" AllowFileSystemAccess="false" FileSystemRoot="D:\Projects\VISION.MFC\MFC\Resources\CustomWebServer\"
+                    Referrer="localhost" IPVersion="4" ReceiveTimeoutInMs="3000" LocalizationId="$VISION.MFC_LOCALIZATION"
+                    ResourceRoot="VI.Resources.CustomWebServer."/>
+        </HTTPSERVER>
+
+        <!--
+            This is another example webserver configuration to show how to use JavaFX 2 GUIs. Try it by calling "http://localhost:82"
+            Note:
+            In a productive environment this webserver does not make sense in case you did not change something so
+            please comment it out/remove the entry/resource files before copying it to the customer server. 
+            
+            In order to make this demo work, the latest JRE/JDK (>=Java SE7 update update 6) has to be installed on 
+            the client machine.
+            
+       -->
+
+        <HTTPSERVER Type="VI.MFC.Components.HttpServer.HttpServer" Enabled="true" Id="JavaFX2Demo">
+            <CONFIG Port="82" AllowFileSystemAccess="false" FileSystemRoot="D:\Projects\VISION.MFC\MFC\Resources\JavaFX2\"
+                    Referrer="localhost" IPVersion="4" ReceiveTimeoutInMs="3000" LocalizationId="$VISION.MFC_LOCALIZATION"
+                    ResourceRoot="VI.Resources.JavaFX2."/>
+        </HTTPSERVER>
+
+        <!--
+             Multi File Importer Configuration Options
+             <CONFIG></CONFIG>
+                  PollingTimeInMS - Defines how often the importer will look for the specified files.
+                  ExclusiveLockRemoteFilename- If this filename existed on the remote directory, we will not import anything but try again later.
+                  ExclusiveLockFilename- We will create and delete this filename on the remote server as long as we are not done.
+                  WaitForFilesToBecomeAvailableTimeoutInMS- If the ExclusiveLockRemoteFilename was spotted, wait the given number of ms
+                                                            before trying again (Default: 500ms)
+                  WaitForFilesToBecomeAvailableCounter-     Wait a maximum of 'WaitForFilesToBecomeAvailableTimeoutInMS' before throwing an
+                                                            exception "Deadlock detected" and retry again.
+
+                <FILE></FILE> Single Entry for each file to import
+                 FileDirectory -  Directory of the file
+                 FilePattern   -  Filename or Filepattern
+                 IncludeSubDirectories - true=search subdirectories too false- do not search recursively (default)
+                 Note: There can be an unlimited number of <FILE> information.
+             <META></META>
+                 Key= User defineable key, like eg. "Separator"
+                 Value= Value of the defined key, like eg. ","
+                 Note: There can be an unlimited number of <META> information per <FILE>
+        -->
+
+        <FILEIMPORTER Type="VI.MFC.Components.FileImporter.Example.ReadRoutingDataFileExample" Id="ExampleRoutingDataFileReader" Enabled="false">
+            <CONFIG POLLINGTIMEINMS="10000" FileDirectory="D:\TEMP" INCLUDESUBDIRECTORIES="false" FILEPATTERN="RoutingData*.csv"
+                    NAMEAFTERPROCESSING="Done" LocalizationId="$VISION.MFC_LOCALIZATION"></CONFIG>
+        </FILEIMPORTER>
+
+        <FILEIMPORTER Type="VI.MFC.Components.FileImporter.Example.FileImporterExample" Id="ExampleFileImporter" Enabled="false">
+            <CONFIG PollingTimeInMS="10000" ExclusiveLockRemoteFilename=".serverLock" ExclusiveLockFilename=".clientLock"
+              WaitForFilesToBecomeAvailableTimeoutInMS="1000" WaitForFilesToBecomeAvailableCounter="5" LocalizationId="$VISION.MFC_LOCALIZATION">
+
+                <FILE FileDirectory="D:\TEMP" FilePattern="VERSION.TXT" IncludeSubDirectories="false">
+                    <META Key="Separator" Value=","></META>
+                    <META Key="VersionOffset" Value="1"></META>
+                    <META Key="VersionLength" Value="3"></META>
+                </FILE>
+                <FILE FileDirectory="D:\TEMP" FilePattern="ARCHI*.ZIP" IncludeSubDirectories="true">
+                    <META Key="Separator" Value=","></META>
+                </FILE>
+                <FILE FileDirectory="D:\TEMP" FilePattern="TEST*.DAT" IncludeSubDirectories="true">
+                    <META Key="Separator" Value=","></META>
+                </FILE>
+                <FILE FileDirectory="D:\TEMP" FilePattern="HINT.CSV" IncludeSubDirectories="false">
+                    <META Key="Separator" Value=","></META>
+                </FILE>
+            </CONFIG>
+        </FILEIMPORTER>
+
+
+        <!-- Data Information Broker for transfering a list of names and creation dates from files of a specific folder to a webservice -->
+        <FILEINFORMATION Type="VI.MFC.Web.Service.FileInformation.FileInformationBroker" Enabled="true" Id="FileInformationBroker">
+            <CONFIG HibernateSessionPoolToUse="OracleDatabase" LocalizationId="$VISION.MFC_LOCALIZATION"
+                    SourceDirectory=".\" DestinationDirectory=".\Scripts"
+                    WaitForFilesToBecomeAvailableTimeoutInMS="1000" WaitForFilesToBecomeAvailableCounter="5" ExclusiveLockFilename=".clientLock"/>
+        </FILEINFORMATION>
+
+        <!-- ARCHIVIST archives and/or deletes files. We will first archive all the files
+             files as specified. After successful archivation we will continue to delete
+             the files as specified.
+             StartTime24h= TOD when to start archiving and deletion
+             SourcePath= Fully Qualified Name to files which should be archived/deleted
+             ArchivePath= Fully Qualified Name to directory where to store archived files
+             FileMask= File mask describing the files to archive
+             ArchiveFilenamePrefix= Prefix of the archive file
+             AgeLimitInDays= Minimum age before file will be archived/deleted
+             Note: In case the ARCHIVE tag is missing, no archiving will be made.
+             In case the DELETE tag is missing, no deletion will be performed.
+             If you want different Start Times, simply create more ARCHIVIST entries...
+             Archivist thread(s) will have a 'BelowNormal' thread priority  -->
+
+        <ARCHIVIST Type="VI.MFC.Components.Archivist" Enabled="false" StartTime24h="03:00:00" IntervalInMinutes="0" Id="PrjArchivist">
+            <ARCHIVE SourcePath="D:\TEMP\LOG\PRIVATE" FileMask="MFCLOG*.*" ArchivePath="D:\TEMP\LOG\PRIVATE\ARCHIVE" ArchiveFilenamePrefix="MFCLOG_" AgeLimitInDays="1"></ARCHIVE>
+            <ARCHIVE SourcePath="D:\TEMP\LOG\PRIVATE\PLC-1" FileMask="PLC-1*.*" ArchivePath="D:\TEMP\LOG\PRIVATE\ARCHIVE" ArchiveFilenamePrefix="PLC-1_" AgeLimitInDays="1"></ARCHIVE>
+            <ARCHIVE SourcePath="D:\TEMP\LOG\PRIVATE\HDS\Module-3" FileMask="HDS-3*.*" ArchivePath="D:\TEMP\LOG\PRIVATE\ARCHIVE" ArchiveFilenamePrefix="HDS-3_" AgeLimitInDays="1"></ARCHIVE>
+            <ARCHIVE SourcePath="D:\TEMP\LOG\PRIVATE\HDS\Module-4" FileMask="HDS-4*.*" ArchivePath="D:\TEMP\LOG\PRIVATE\ARCHIVE" ArchiveFilenamePrefix="HDS-4_" AgeLimitInDays="1"></ARCHIVE>
+            <ARCHIVE SourcePath="D:\TEMP\LOG\PRIVATE\HDS\Module-5" FileMask="HDS-5*.*" ArchivePath="D:\TEMP\LOG\PRIVATE\ARCHIVE" ArchiveFilenamePrefix="HDS-5_" AgeLimitInDays="1"></ARCHIVE>
+            <ARCHIVE SourcePath="D:\TEMP\LOG\PRIVATE\HDS\Module-6" FileMask="HDS-6*.*" ArchivePath="D:\TEMP\LOG\PRIVATE\ARCHIVE" ArchiveFilenamePrefix="HDS-6_" AgeLimitInDays="1"></ARCHIVE>
+
+            <DELETE  SourcePath="D:\TEMP\LOG\PRIVATE" FileMask="MFCLOG*.*" AgeLimitInDays="1"></DELETE>
+            <DELETE  SourcePath="D:\TEMP\LOG\PRIVATE\PLC-1" FileMask="PLC-1*.*" AgeLimitInDays="1"></DELETE>
+            <DELETE  SourcePath="D:\TEMP\LOG\PRIVATE\HDS\Module-3" FileMask="HDS-3*.*" AgeLimitInDays="1"></DELETE>
+            <DELETE  SourcePath="D:\TEMP\LOG\PRIVATE\HDS\Module-4" FileMask="HDS-4*.*" AgeLimitInDays="1"></DELETE>
+            <DELETE  SourcePath="D:\TEMP\LOG\PRIVATE\HDS\Module-5" FileMask="HDS-5*.*" AgeLimitInDays="1"></DELETE>
+            <DELETE  SourcePath="D:\TEMP\LOG\PRIVATE\HDS\Module-6" FileMask="HDS-6*.*" AgeLimitInDays="1"></DELETE>
+
+            <DELETE  SourcePath="D:\TEMP\LOG\PRIVATE\ARCHIVE" FileMask="*.ZIP" AgeLimitInDays="20"></DELETE>
+
+        </ARCHIVIST>
+
+        <!-- An easy to use Scheduler for executing the given tasks at the specified time which works similar to the
+             Oracle job scheduler.
+             StartTime24h="[HH24:MM:SS]" Time format when to start the listed tasks
+             IntervalInMinutes= >0: Interval in minutes in which the nightjob will be run again after the StartTime24h
+                                    has been reached for the the first time.
+                               <=0: Just a "one shot" nightjob which will be run daily at the given StartTime24h only.
+             BreakOnError="true"- (Default) Stop executing any other tasks in case an error occured in the previous task
+                          "false"- in case an error occurs, keep working on the next task
+             InfoMessageProvider-The configured InfoMessageProvider to use while executing the job.
+        -->
+
+        <NIGHTJOBSCHEDULER Type="VI.MFC.Components.NightJobScheduler.NightJobScheduler" Enabled="true" Id="NightJob">
+            <CONFIG StartTime24h="05:30:00"  IntervalInMinutes="180" BreakOnError="false" InfoMessageProviderId="StdInfoMessage"
+                    LocalizationId="$VISION.MFC_LOCALIZATION" />
+        </NIGHTJOBSCHEDULER>
+
+        <!-- Add this component if you want to write messages from any of your code to a database using the specified Hiberate
+             session pool id. Optional but recommended is the webservice "INFOMESSAGE_SERVICE" which allows
+             access to all the messages through a webservice therefore enabling eg. Silverlight Applications to display
+             the messages and/or to mark them as read.
+
+             "Enabled", "Id"   - see standard VIRuntime component handling rule information.
+             "HibernateSessionPool" - Id of the Hibernate session pool to use (yes, it's that easy!)
+             "DeleteMessagesOlderThanInDays" - Defines a time span in days after which old messages will be removed (deleted). 0=never.
+             "DeleteBatchSize" - Number of messages to delete per cleanup thread cycle
+             "HouseKeepingThreadCycleInSecs" - Specifies how often the cleanup thread will be called.
+          -->
+
+        <INFOMESSAGE Type="VI.MFC.Components.InfoMessageProvider.InfoMessageProvider" Enabled="true" Id="StdInfoMessage">
+            <CONFIG HibernateSessionPoolToUse="OracleDatabase" DeleteMessagesOlderThanInDays="10" DeleteBatchSize="100" HouseKeepingThreadCycleInSecs="60"
+                    LocalizationId="$VISION.MFC_LOCALIZATION"/>
+        </INFOMESSAGE>
+
+
+        <!-- Specifies the module which will we used for handling clearing cases. This may differ from project to
+             project whereas the clearing user interface web service should stay the same in most cases... -->
+
+        <CLEARING Type="VI.MFC.Components.Clearing.ClearingBroker" Enabled="false" Id="ClearingProvider" >
+            <CONFIG ParcelBrokerId="ParcelBroker" WaveBrokerId="WaveBroker" LocalizationId="$VISION.MFC_LOCALIZATION"/>
+        </CLEARING>
+
+
+        <WEBSERVICEHOSTER Type="VI.MFC.Monitoring.MFCMonitoringWebService" Enabled="true" Id="MFCMonitoringService">
+            <CONFIG WebServiceAddress="http://localhost:4713/MFCMonitoringWebService" LocalizationId="$VISION.MFC_LOCALIZATION" />
+        </WEBSERVICEHOSTER>
+
+        <ASYNC Type="VI.MFC.Logic.VIAsynchronous" Id="AsyncHandler" Enabled="false">
+            <!-- Add if you need to handle asynchronous messages.
+                 TimeoutInSecs- specifies the time interval used when application starts reading out the asynchronous table
+                 UDPNotificationPort-  Which port shall be used for triggering the reading of the asynchronous table
+                 LogAllAsynchronousMessages- 2=all messages will be logged, 1=only number of asynchronous messages will be logged, 0=no logging
+                 AutoDelete- 1: Asynchronous messages will automatically be deleted after being put into processing queue
+            -->
+
+            <CONFIG TimeoutInSecs="10" UDPNotificationPort="2001" LogAllAsynchronousMessages="2"
+                    DatabaseLayer="asncdblayer" LocalizationId="$VISION.MFC_LOCALIZATION"></CONFIG>
+        </ASYNC>
+
+        <!-- Reads out configuration values from a database and rereads them in case the configuration changes.
+             Note: For information about how to set up the database connection, please see the MFC CT Wiki. -->
+
+        <CONFIGVALUES Type="VI.MFC.Components.ConfigValues.ConfigValues" Enabled="true" Id="OracleConfigProvider">
+            <CONFIG HibernateSessionPoolToUse="OracleDatabase" PackageName="SVCMFC_CONFIG" LocalizationId="$VISION.MFC_LOCALIZATION"/>
+        </CONFIGVALUES>
+
+
+        <EMAIL Type="VI.MFC.Components.Emailer.EmailerControl" Enabled="false" Id="EMailerControl">
+            <CONFIG
+                SmtpServer="lsg-mail"
+                Port="25"
+                SenderAddress="mfc-noreply@vanderlande.com"
+                DefaultSubject="Vision.MFC notification"
+                EmailAtStartup="false"
+                EmailAtShutdown="false"
+                LocalizationId="$VISION.MFC_LOCALIZATION"/>
+            <RECEIVER>
+                <ADDRESS>your.address@yourserver.com</ADDRESS>
+            </RECEIVER>
+        </EMAIL>
+
+        <!-- Silverlight Policy Provider
+             This Webservice is used to deliver the policy file to the request of a silverlight application
+             which is automatically be sent when the client's silverlight runtime wants to build up a
+             connection.
+
+             WebServiceAddress- Address of the webservice. Should always be the root directory of the webservices
+                                requesting the policy.
+
+             ALLOW-FROM-        Kind of firewall setting for silverlight applications
+             GRANT-TO-          dito. Please see http://msdn.microsoft.com/de-de/library/cc645032%28v=vs.95%29.aspx for
+                                reference.     -->
+
+        <WEBSERVICEHOSTER Type="VI.MFC.Web.Service.PolicyProvider.SilverlightPolicyProvider" Enabled="true" Id="PolicyProvider">
+            <CONFIG WebServiceAddress="http://localhost:4713" LocalizationId="$VISION.MFC_LOCALIZATION"/>
+            <ALLOW-FROM><![CDATA[<domain uri="*"/>]]></ALLOW-FROM>
+            <GRANT-TO><![CDATA[<resource path="/" include-subpaths="true"/>]]></GRANT-TO>
+            <GRANT-TO><![CDATA[<socket-resource port="4502-4534" protocol="tcp" />]]></GRANT-TO>
+        </WEBSERVICEHOSTER>
+
+
+        <!--  We will need sequences within our tiers. This is a very simple but effective thread safe
+              numeric sequencer which will give us sequence numbers of the specified range as unsigned long
+              ((64-Bit)-1)) values. We will automatically do a wrap around when EndSequence is
+              reached, so the next sequence number issued will again be the StartSequence.
+              (eg. StartSequenceNo="1" EndSequenceNo="999": "998,999,1,2,3...")
+              You can also specify an InitialSequenceNo which will only be issued when
+              the class itself is instantiated (once during MFC startup, eg
+              same example as above but with additional InitialSequenceNo="0":
+              "[MFC restart occured] 0,1,2,...998,999,1,2,3,...)".
+
+              Defaults: InitialSequenceNo=0
+                        StartSequenceNo=0
+                        EndSequenceNo=0xFFFFFFFFFFFFFFFE;
+
+        -->
+        <NUMERICSEQUENCER Type="VI.MFC.Components.Sequencer.NumericSequencer" Enabled="true" Id="HostPicSequencer">
+            <CONFIG InitialSequenceNo="0" StartSequenceNo="1" EndSequenceNo="999" LocalizationId="$VISION.MFC_LOCALIZATION"></CONFIG>
+        </NUMERICSEQUENCER>
+
+        <NUMERICSEQUENCER Type="VI.MFC.Components.Sequencer.NumericSequencer" Enabled="true" Id="LocationIdSequencer">
+            <CONFIG InitialSequenceNo="1" StartSequenceNo="1" EndSequenceNo="9999999999999999999" LocalizationId="$VISION.MFC_LOCALIZATION"></CONFIG>
+        </NUMERICSEQUENCER>
+
+
+        <!-- Simple component helping to match entry points triggered by photocells to eg. InfeedIDs required by
+             the customer host. Simple Key-Value pair seperated from code.
+             Simply use different module Ids in case you have multiple different mappings.
+
+             Explanation:
+             MAPPING Value= Anything you want to map the photocell to...
+             PHOTOCELL Key= Entrance point description or photocell name or whatever you like and what should map
+             to previously specified 'Value'.
+        -->
+        <PHOTOCELLMAPPING Type="VI.MFC.Components.PhotocellMappings.PhotocellMappings" Enabled="false" Id="EntrancepointToInfeedIDMapping">
+            <MAPPING Value="001">
+                <PHOTOCELL Key="UPD01_SR1133"/>
+                <PHOTOCELL Key="UPD01_BF1134"/>
+                <PHOTOCELL Key="UPD01_BF1135"/>
+                <PHOTOCELL Key="UPD01_BF1136"/>
+                <PHOTOCELL Key="UPD01_BF1137"/>
+                <PHOTOCELL Key="UPD02_BF1137"/>
+                <PHOTOCELL Key="UPD01_BF1138"/>
+                <PHOTOCELL Key="UPD01_BF1139"/>
+                <PHOTOCELL Key="UPD01_BF1140"/>
+                <PHOTOCELL Key="UPD01_BF1141"/>
+            </MAPPING>
+            <MAPPING Value="002">
+                <PHOTOCELL Key="UPD01_SR1233"/>
+                <PHOTOCELL Key="UPD01_BF1234"/>
+                <PHOTOCELL Key="UPD01_BF1235"/>
+                <PHOTOCELL Key="UPD01_BF1236"/>
+                <PHOTOCELL Key="UPD01_BF1237"/>
+                <PHOTOCELL Key="UPD02_BF1237"/>
+                <PHOTOCELL Key="UPD01_BF1238"/>
+                <PHOTOCELL Key="UPD01_BF1239"/>
+                <PHOTOCELL Key="UPD01_BF1240"/>
+                <PHOTOCELL Key="UPD01_BF1241"/>
+            </MAPPING>
+            <MAPPING Value="003">
+                <PHOTOCELL Key="UPD01_SR1333"/>
+                <PHOTOCELL Key="UPD01_BF1334"/>
+                <PHOTOCELL Key="UPD01_BF1335"/>
+                <PHOTOCELL Key="UPD01_BF1336"/>
+                <PHOTOCELL Key="UPD01_BF1337"/>
+                <PHOTOCELL Key="UPD02_BF1337"/>
+                <PHOTOCELL Key="UPD01_BF1338"/>
+                <PHOTOCELL Key="UPD01_BF1339"/>
+                <PHOTOCELL Key="UPD01_BF1340"/>
+                <PHOTOCELL Key="UPD01_BF1341"/>
+            </MAPPING>
+            <MAPPING Value="004">
+                <PHOTOCELL Key="UPD01_SR2133"/>
+                <PHOTOCELL Key="UPD01_BF2134"/>
+                <PHOTOCELL Key="UPD01_BF2135"/>
+                <PHOTOCELL Key="UPD01_BF2136"/>
+                <PHOTOCELL Key="UPD01_BF2137"/>
+                <PHOTOCELL Key="UPD02_BF2137"/>
+                <PHOTOCELL Key="UPD01_BF2138"/>
+                <PHOTOCELL Key="UPD01_BF2139"/>
+                <PHOTOCELL Key="UPD01_BF2140"/>
+                <PHOTOCELL Key="UPD01_BF2141"/>
+            </MAPPING>
+            <MAPPING Value="005">
+                <PHOTOCELL Key="UPD01_SR2233"/>
+                <PHOTOCELL Key="UPD01_BF2234"/>
+                <PHOTOCELL Key="UPD01_BF2235"/>
+                <PHOTOCELL Key="UPD01_BF2236"/>
+                <PHOTOCELL Key="UPD01_BF2237"/>
+                <PHOTOCELL Key="UPD02_BF2237"/>
+                <PHOTOCELL Key="UPD01_BF2238"/>
+                <PHOTOCELL Key="UPD01_BF2239"/>
+                <PHOTOCELL Key="UPD01_BF2240"/>
+                <PHOTOCELL Key="UPD01_BF2241"/>
+            </MAPPING>
+            <MAPPING Value="006">
+                <PHOTOCELL Key="UPD01_SR2333"/>
+                <PHOTOCELL Key="UPD01_BF2334"/>
+                <PHOTOCELL Key="UPD01_BF2335"/>
+                <PHOTOCELL Key="UPD01_BF2336"/>
+                <PHOTOCELL Key="UPD01_BF2337"/>
+                <PHOTOCELL Key="UPD02_BF2337"/>
+                <PHOTOCELL Key="UPD01_BF2338"/>
+                <PHOTOCELL Key="UPD01_BF2339"/>
+                <PHOTOCELL Key="UPD01_BF2340"/>
+                <PHOTOCELL Key="UPD01_BF2341"/>
+            </MAPPING>
+            <MAPPING Value="101">
+                <PHOTOCELL Key="UPD01_SR2433"/>
+                <PHOTOCELL Key="UPD01_BF2434"/>
+                <PHOTOCELL Key="UPD01_BF2435"/>
+                <PHOTOCELL Key="UPD01_BF2436"/>
+                <PHOTOCELL Key="UPD01_BF2437"/>
+                <PHOTOCELL Key="UPD02_BF2437"/>
+                <PHOTOCELL Key="UPD01_BF2438"/>
+                <PHOTOCELL Key="UPD01_BF2439"/>
+                <PHOTOCELL Key="UPD01_BF2440"/>
+                <PHOTOCELL Key="UPD01_BF2441"/>
+            </MAPPING>
+            <MAPPING Value="102">
+                <PHOTOCELL Key="UPD01_SR2533"/>
+                <PHOTOCELL Key="UPD01_BF2534"/>
+                <PHOTOCELL Key="UPD01_BF2535"/>
+                <PHOTOCELL Key="UPD01_BF2536"/>
+                <PHOTOCELL Key="UPD01_BF2537"/>
+                <PHOTOCELL Key="UPD02_BF2537"/>
+                <PHOTOCELL Key="UPD01_BF2538"/>
+                <PHOTOCELL Key="UPD01_BF2539"/>
+                <PHOTOCELL Key="UPD01_BF2540"/>
+                <PHOTOCELL Key="UPD01_BF2541"/>
+            </MAPPING>
+            <MAPPING Value="103">
+                <PHOTOCELL Key="UPD01_SR2633"/>
+                <PHOTOCELL Key="UPD01_BF2634"/>
+                <PHOTOCELL Key="UPD01_BF2635"/>
+                <PHOTOCELL Key="UPD01_BF2636"/>
+                <PHOTOCELL Key="UPD01_BF2637"/>
+                <PHOTOCELL Key="UPD02_BF2637"/>
+                <PHOTOCELL Key="UPD01_BF2638"/>
+                <PHOTOCELL Key="UPD01_BF2639"/>
+                <PHOTOCELL Key="UPD01_BF2640"/>
+                <PHOTOCELL Key="UPD01_BF2641"/>
+            </MAPPING>
+            <MAPPING Value="104">
+                <PHOTOCELL Key="UPD01_SR1433"/>
+                <PHOTOCELL Key="UPD01_BF1434"/>
+                <PHOTOCELL Key="UPD01_BF1435"/>
+                <PHOTOCELL Key="UPD01_BF1436"/>
+                <PHOTOCELL Key="UPD01_BF1437"/>
+                <PHOTOCELL Key="UPD02_BF1437"/>
+                <PHOTOCELL Key="UPD01_BF1438"/>
+                <PHOTOCELL Key="UPD01_BF1439"/>
+                <PHOTOCELL Key="UPD01_BF1440"/>
+                <PHOTOCELL Key="UPD01_BF1441"/>
+            </MAPPING>
+            <MAPPING Value="105">
+                <PHOTOCELL Key="UPD01_SR1533"/>
+                <PHOTOCELL Key="UPD01_BF1534"/>
+                <PHOTOCELL Key="UPD01_BF1535"/>
+                <PHOTOCELL Key="UPD01_BF1536"/>
+                <PHOTOCELL Key="UPD01_BF1537"/>
+                <PHOTOCELL Key="UPD02_BF1537"/>
+                <PHOTOCELL Key="UPD01_BF1538"/>
+                <PHOTOCELL Key="UPD01_BF1539"/>
+                <PHOTOCELL Key="UPD01_BF1540"/>
+                <PHOTOCELL Key="UPD01_BF1541"/>
+            </MAPPING>
+            <MAPPING Value="106">
+                <PHOTOCELL Key="UPD01_SR1633"/>
+                <PHOTOCELL Key="UPD01_BF1634"/>
+                <PHOTOCELL Key="UPD01_BF1635"/>
+                <PHOTOCELL Key="UPD01_BF1636"/>
+                <PHOTOCELL Key="UPD01_BF1637"/>
+                <PHOTOCELL Key="UPD02_BF1637"/>
+                <PHOTOCELL Key="UPD01_BF1638"/>
+                <PHOTOCELL Key="UPD01_BF1639"/>
+                <PHOTOCELL Key="UPD01_BF1640"/>
+                <PHOTOCELL Key="UPD01_BF1641"/>
+            </MAPPING>
+        </PHOTOCELLMAPPING>
+
+        <!-- Module, supporting a round robin distribution throughout the system -->
+        <ROUNDROBIN Type="VI.MFC.Components.RoundRobinBase" Enabled="false" Id="RoundRobinAid"></ROUNDROBIN>
+
+        <!-- Module used for an easy and comfortable chute configuration -->
+        <LOCATIONCONVERSION Type="VI.MFC.Components.LocationInformation" Enabled="false" Id="LocationMap">
+            <LOCATIONS>
+                <LOCATIONINFO Name="6442000000" Id="PLC_01" Enabled="true"  Orientation="R" UserDefined="CHK" EquipmentLocationName="031101" Order="1" Type="CHUTE" />
+                <LOCATIONINFO Name="6441000000" Id="PLC_01" Enabled="true"  Orientation="R" EquipmentLocationName="031201" Order="2" Type="CHUTE" />
+                <LOCATIONINFO Name="6440000000" Id="PLC_01" Enabled="true"  Orientation="R" EquipmentLocationName="031301" Order="3" Type="CHUTE" />
+                <LOCATIONINFO Name="6439000000" Id="PLC_01" Enabled="true"  Orientation="R" EquipmentLocationName="031401" Order="4" Type="CHUTE" />
+                <LOCATIONINFO Name="6438000000" Id="PLC_01" Enabled="true"  Orientation="L" EquipmentLocationName="031501" Order="5" Type="CHUTE" />
+                <LOCATIONINFO Name="6437000000" Id="PLC_01" Enabled="false" Orientation="R" EquipmentLocationName="031601" Order="6" Type="CHUTE" />
+                <LOCATIONINFO Name="6436000000" Id="PLC_01" Enabled="false" Orientation="R" EquipmentLocationName="031701" Order="7" Type="CHUTE" />
+                <LOCATIONINFO Name="6435000000" Id="PLC_01" Enabled="false" Orientation="R" EquipmentLocationName="031801" Order="8" Type="CHUTE" />
+                <LOCATIONINFO Name="6434000000" Id="PLC_01" Enabled="false" Orientation="R" EquipmentLocationName="031901" Order="9" Type="CHUTE" />
+                <LOCATIONINFO Name="6433000000" Id="PLC_01" Enabled="false" Orientation="R" EquipmentLocationName="032001" Order="10" Type="CHUTE" />
+                <LOCATIONINFO Name="6432000000" Id="PLC_01" Enabled="true"  Orientation="R" EquipmentLocationName="032101" Order="11" Type="CHUTE" />
+                <LOCATIONINFO Name="6228000000" Id="PLC_01" Enabled="true"  Orientation="R" EquipmentLocationName="021101" Order="12" Type="CHUTE" />
+                <LOCATIONINFO Name="6227000000" Id="PLC_01" Enabled="true"  Orientation="R" EquipmentLocationName="021201" Order="13" Type="CHUTE" />
+                <LOCATIONINFO Name="6226000000" Id="PLC_01" Enabled="false" Orientation="R" EquipmentLocationName="021301" Order="14" Type="CHUTE" />
+                <LOCATIONINFO Name="6225000000" Id="PLC_01" Enabled="false" Orientation="L" EquipmentLocationName="021401" Order="15" Type="CHUTE" />
+                <LOCATIONINFO Name="6224000000" Id="PLC_01" Enabled="false" Orientation="L" EquipmentLocationName="021501" Order="16" Type="CHUTE" />
+                <LOCATIONINFO Name="6223000000" Id="PLC_01" Enabled="false" Orientation="L" EquipmentLocationName="021601" Order="17" Type="CHUTE" />
+                <LOCATIONINFO Name="6222000000" Id="PLC_01" Enabled="true"  Orientation="L" EquipmentLocationName="021701" Order="18" Type="CHUTE" />
+                <LOCATIONINFO Name="6221000000" Id="PLC_01" Enabled="true"  Orientation="L" EquipmentLocationName="021801" Order="19" Type="CHUTE" />
+                <LOCATIONINFO Name="6220000000" Id="PLC_01" Enabled="true"  Orientation="L" EquipmentLocationName="021901" Order="20" Type="CHUTE" />
+                <LOCATIONINFO Name="6219000000" Id="PLC_01" Enabled="true"  Orientation="L" EquipmentLocationName="022001" Order="21" Type="CHUTE" />
+                <LOCATIONINFO Name="6218000000" Id="PLC_01" Enabled="true"  Orientation="L" EquipmentLocationName="022101" Order="22" Type="CHUTE" />
+                <LOCATIONINFO Name="6199999999" Id="PLC_01" Enabled="true"  Orientation="L" EquipmentLocationName="022201" Order="23" Type="CHUTE" />
+                <LOCATIONINFO Name="6101000000" Id="PLC_01" Enabled="true" EquipmentLocationName="039901" Order="24" Type="SORTLOCATION" />
+                <LOCATIONINFO Name="6102000000" Id="PLC_01" Enabled="true" EquipmentLocationName="029901" Order="25" Type="SORTLOCATION" />
+            </LOCATIONS>
+        </LOCATIONCONVERSION>
+
+        <!-- Simple routing information as required by VISION.MFC sortation systems for asking
+             questions like 'can this location be reached by this scanner?'.
+
+             Sequencer- Please specify a sequencer to be used for automatic unique location id numbering
+             SCANNER - specifies scanner(s) to be used.
+             LOCATION- specifies the locations which can be reached by the given scanner. The 'id' of the
+             scanner will automatically be taken over.
+        -->
+        <SIMPLEROUTING Type="VI.MFC.Components.SimpleRoutingBase" Enabled="false" Id="Routing" Sequencer="LocationIdSequencer">
+            <SCANNER Name="030303" Id="PLC_01">
+                <LOCATION Name="031101" Type="Chute"></LOCATION>
+                <LOCATION Name="031201" Type="Chute"></LOCATION>
+                <LOCATION Name="031301" Type="Chute"></LOCATION>
+                <LOCATION Name="031401" Type="Chute"></LOCATION>
+                <LOCATION Name="031501" Type="Chute"></LOCATION>
+                <LOCATION Name="031601" Type="Chute"></LOCATION>
+                <LOCATION Name="031701" Type="Chute"></LOCATION>
+                <LOCATION Name="031801" Type="Chute"></LOCATION>
+                <LOCATION Name="031901" Type="Chute"></LOCATION>
+                <LOCATION Name="032001" Type="Chute"></LOCATION>
+                <LOCATION Name="032101" Type="Chute"></LOCATION>
+                <LOCATION Name="039901" Type="Default"></LOCATION>
+                <LOCATION Name="039901" Type="Clearing"></LOCATION>
+            </SCANNER>
+            <SCANNER Name="020303" Id="PLC_01">
+                <LOCATION Name="021101" Type="Chute"></LOCATION>
+                <LOCATION Name="021201" Type="Chute"></LOCATION>
+                <LOCATION Name="021301" Type="Chute"></LOCATION>
+                <LOCATION Name="021401" Type="Chute"></LOCATION>
+                <LOCATION Name="021501" Type="Chute"></LOCATION>
+                <LOCATION Name="021601" Type="Chute"></LOCATION>
+                <LOCATION Name="021701" Type="Chute"></LOCATION>
+                <LOCATION Name="021801" Type="Chute"></LOCATION>
+                <LOCATION Name="021901" Type="Chute"></LOCATION>
+                <LOCATION Name="022001" Type="Chute"></LOCATION>
+                <LOCATION Name="022101" Type="Chute"></LOCATION>
+                <LOCATION Name="029901" Type="Default"></LOCATION>
+                <LOCATION Name="022201" Type="Clearing"></LOCATION>
+            </SCANNER>
+        </SIMPLEROUTING>
+
+        <!--
+            Reader and writer for many kinds of line based data files.
+            Can be configured to read CSV files in different formats.
+            Can even be configured to read multi record files.
+            It is recommended to define one CsvHandler per filetype.
+        -->
+        <CSVHANDLER Type="VI.MFC.Components.CsvHandler.CsvHandler" Enabled="false" Id="Prozessdaten">
+            <!-- CONFIG evaluates these attributes: Encoding: Give a number for a specific ANSI codepage (e.g. "1252") or give a name defined in .NET (e.g. "UTF-8") Default is ASCII. HasHeader: "true" or "false". If the CSV file contains a header line a special treatment is required for that. The headers are expected to contain only the field name and a separator. Fields without separator are not possible with headers. The field names should not be formatted (e.g. trailing spaces) Default is false. CheckHeader: If a header line is present it can be checked that the field names in the header are the same as defined in this configuration. Default is false. IgnoreEmpty: The CSV may contain lines that only consist of the line start delimiter and the line end delimiter. Default is false. UseFinalDelimiter: When writing a file, the last line is ended with the end delimiter or not. Default is false. -->
+            <CONFIG Encoding="UTF-8" HasHeader="false" CheckHeader="false" IgnoreEmpty="true" StopOnError="false" UseFinalDelimiter="true"
+                    LocalizationId="$VISION.MFC_LOCALIZATION" Parser="CSVStringParser"/>
+            <!-- Marks which line delimiter should be used.-->
+            <LINEDELIMITER>0D0A</LINEDELIMITER>
+            <!-- If this character is set, then the source file may contain lines that begin with this character. Such lines are considered as comment and are skipped. Typical value is the hash # or no comment symbol at all Can be defined as a character in quotation marks or as a hex value. -->
+            <COMMENT>"#"</COMMENT>
+            <!-- If this character is defined the field content can be quoted. The parts between the first opening quote symbol and the last closing quote symbol will not be reformatted (i.e. no trimming of leading or trailing filler characters. Typical value is the quotation mark " Can be defined as a character in quotation marks or as a hex value. -->
+            <QUOTE>"""</QUOTE>
+            <!-- The combination of the escape character and the following character will be used to represent some special characters: escape + r = carriage return escape + n = line feed escape + t = tabulator escape + quote = the quote symbol (without quoting function) escape + escape = the escape symbol all others = same as the second character alone -> the escape symbol is ignored. If no escape character is set, the parser will not look for any escape sequences. Typical value is the backslash \ Can be defined as a character in quotation marks or as a hex value. -->
+            <ESCAPE>"\"</ESCAPE>
+        </CSVHANDLER>
+
+        <FILECOPY Assembly="..\..\..\SupportingComponents\FileCopy\bin\Debug\FileCopy.dll"
+                   Type="VI.MFC.Components.FileCopy.SFTP.FileCopySFTP"
+                   Id="ProcessDataFileCopy"
+                   Load=""
+                   Enabled="false">
+            <CONFIG PollingTimeInSecs="3600"
+                    LocalizationId="$VISION.MFC_LOCALIZATION"
+                    Server="servername"
+                    Fingerprint="35:ca:b7:54:45:9c:a2:2f:99:a3:dd:d4:88:40:ad:af"
+                    Username="username"
+                    Password="password"
+                    InfoMessageProviderId="StdInfoMessage"
+                    PrivateKeyFile=""
+                    Port="-1"
+                    ExclusiveLockFilename=".localLock"
+                    WaitForFilesToBecomeAvailableTimeoutInMS="60"
+                    WaitForFilesToBecomeAvailableCounter="20"
+                    TestMode="0"
+                    ErrorMessageDurationInMin="20">
+                <DOWNLOAD SourceDirectory="/directory"
+                          FileMask="."
+                          DestinationDirectory="D:\"
+                          Action="None"/>
+            </CONFIG>
+        </FILECOPY>
+
+        <SEQUENCEHANDLER Type ="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="B02G03SequencerInbound" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <SEQUENCEHANDLER Type ="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="B02G03SequencerOutbound" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <SEQUENCEHANDLER Type ="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="B02G03SequencerInbound" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <SEQUENCEHANDLER Type ="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="B02G03SequencerOutbound" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+
+        <PACKETIZER Type="VI.MFC.Components.Packetizer.SEPacketizer" Id="BeewenPacketizer" Enabled="true">
+            <STARTDELIMITER>02</STARTDELIMITER>
+            <ENDDELIMITER>03</ENDDELIMITER>
+            <MAXPACKETLENGTH>146</MAXPACKETLENGTH>
+            <MINIMALANALYSISLENGTH>24</MINIMALANALYSISLENGTH>
+        </PACKETIZER>
+
+        <BEEWENFIELDVALUES Type="VI.MFC.Components.BeewenFieldValues.BeewenFieldValueBase" Id="BeewenFieldValues" Enabled="true"/>
+        <BEEWENFIELDVALUES Type="VI.MFC.Components.BeewenFieldValues.BeewenMicroShuttleFieldValues" Id="BeewenMicroShuttleFieldValues" Enabled="true"/>
+
+        <PARSER Type="VI.MFC.Components.Parser.Beewen.BeewenParser" Id="B02G03Parser" Enabled="false">
+            <CONFIG CommModule="B02G03" TelegramDescriptions="BeewenTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+
+        <PARSER Type="VI.MFC.Components.Parser.Beewen.BeewenParser" Id="B01G01SequencerParser" Enabled="false">
+            <CONFIG CommModule="B01G01Sequencer" TelegramDescriptions="BeewenTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+
+        <PARSER Type="VI.MFC.Components.Parser.Beewen.BeewenParser" Id="B01G04Parser" Enabled="true">
+            <CONFIG CommModule="B01G04" TelegramDescriptions="BeewenTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+
+        <PARSER Type="VI.MFC.Components.CsvHandler.StringParser" Id="CSVStringParser" Enabled="true">
+            <CONFIG TelegramDescriptions="CSVTelegramDescriptions"/>
+        </PARSER>
+
+        <CONTROL Type="VI.MFC.Crane.Control.MShMissionControl" Enabled="false" Id="B01G04MissionControl">
+            <CONFIG Broker="B01G04CraneOrderBroker"
+                    LocationManager="LocationManager"
+                    TsuManager="TsuManager"
+                    RetrievalBroker="RetrievalBroker"
+                    StorageBroker="StorageBroker"
+                    WebserviceClients="WebserviceClients"
+                    ConfigurationManager="ConfigurationManager">
+            </CONFIG>
+        </CONTROL>
+
+        <PROCESSOR Type="VI.MFC.Crane.Beewen.MShProcessor" Enabled="false" Id="B01G04Processor">
+            <CONFIG Broker="B01G04CraneOrderBroker"
+                    Control="B01G04MissionControl"
+                    LocationManager="LocationManager"
+                    UnknownTsuSequencer="UnknownTsuSequencer"
+                    InboundSequencer="InboundSequencer"
+                    OutboundSequencer="OutboundSequencer"
+                    TsuManager="TsuManager"
+                    RetrievalBroker="RetrievalBroker"
+                    ConfigurationManager="ConfigurationManager">
+            </CONFIG>
+        </PROCESSOR>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B02G03L01Logic" Enabled="false">
+            <CONFIG CommModule="B02G03" Parser="B02G03Parser" DatabaseLayer="B02G03L01Database" ResourceKey="B02G03L01"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="10001"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER
+                  SearchOrderTimeoutInSecs="5"
+                  TravelOrderWhileIdle="false"
+                  TravelOrderDestination="EP030101"
+                  TriggerOrderSearchForConnectedDevices="true"
+                  TriggerOrderSearchDevices="B02G03R01,B02G03R02,B02G03R03,B02G03R04,B02G03R05"/>
+        </BEEWENLOGIC>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B02G03R01Logic" Enabled="false">
+            <CONFIG CommModule="B02G03" Parser="B02G03Parser" DatabaseLayer="B02G03R01Database" ResourceKey="B02G03R01"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="10002"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER
+                  SearchOrderTimeoutInSecs="5"
+                  TravelOrderWhileIdle="false"
+                  TravelOrderDestination="EP030101"
+                  TriggerOrderSearchForConnectedDevices="true"
+                  TriggerOrderSearchDevices="B02G03R01,B02G03L01"/>
+        </BEEWENLOGIC>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B02G03R02Logic" Enabled="false">
+            <CONFIG CommModule="B02G03" Parser="B02G03Parser" DatabaseLayer="B02G03R02Database" ResourceKey="B02G03R02"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="10003"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER
+                  SearchOrderTimeoutInSecs="5"
+                  TravelOrderWhileIdle="false"
+                  TravelOrderDestination="EP030201"
+                  TriggerOrderSearchForConnectedDevices="true"
+                  TriggerOrderSearchDevices="B02G03R02,B02G03L01"/>
+        </BEEWENLOGIC>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B02G03R03Logic" Enabled="false">
+            <CONFIG CommModule="B02G03" Parser="B02G03Parser" DatabaseLayer="B02G03R03Database" ResourceKey="B02G03R03"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="10004"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER
+                  SearchOrderTimeoutInSecs="5"
+                  TravelOrderWhileIdle="false"
+                  TravelOrderDestination="EP030301"
+                  TriggerOrderSearchForConnectedDevices="true"
+                  TriggerOrderSearchDevices="B02G03R03,B02G03L01"/>
+        </BEEWENLOGIC>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B02G03R04Logic" Enabled="false">
+            <CONFIG CommModule="B02G03" Parser="B02G03Parser" DatabaseLayer="B02G03R04Database" ResourceKey="B02G03R04"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="10005"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER
+                  SearchOrderTimeoutInSecs="5"
+                  TravelOrderWhileIdle="false"
+                  TravelOrderDestination="EP030401"
+                  TriggerOrderSearchForConnectedDevices="true"
+                  TriggerOrderSearchDevices="B02G03R04,B02G03L01"/>
+        </BEEWENLOGIC>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B02G03R05Logic" Enabled="false">
+            <CONFIG CommModule="B02G03" Parser="B02G03Parser" DatabaseLayer="B02G03R05Database" ResourceKey="B02G03R05"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="10006"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER
+                  SearchOrderTimeoutInSecs="5"
+                  TravelOrderWhileIdle="false"
+                  TravelOrderDestination="EP030501"
+                  TriggerOrderSearchForConnectedDevices="true"
+                  TriggerOrderSearchDevices="B02G03R05,B02G03L01"/>
+        </BEEWENLOGIC>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B01G01R01SequencerLogic" Enabled="false">
+            <CONFIG CommModule="B01G01Sequencer" Parser="B01G01Parser" DatabaseLayer="B01G01R01Database" ResourceKey="B01G01R01"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="10071"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER SearchOrderTimeoutInSecs="5"></SEARCHORDER>
+        </BEEWENLOGIC>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B01G01R02SequencerLogic" Enabled="false">
+            <CONFIG CommModule="B01G01Sequencer" Parser="B01G01Parser" DatabaseLayer="B01G01R02Database" ResourceKey="B01G01R02"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="10072"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER SearchOrderTimeoutInSecs="5"></SEARCHORDER>
+        </BEEWENLOGIC>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B01G01R03SequencerLogic" Enabled="false">
+            <CONFIG CommModule="B01G01Sequencer" Parser="B01G01Parser" DatabaseLayer="B01G01R03Database" ResourceKey="B01G01R03"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="10073"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER SearchOrderTimeoutInSecs="5"></SEARCHORDER>
+        </BEEWENLOGIC>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B01G01R04SequencerLogic" Enabled="false">
+            <CONFIG CommModule="B01G01Sequencer" Parser="B01G01Parser" DatabaseLayer="B01G01R04Database" ResourceKey="B01G01R04"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="10074"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER SearchOrderTimeoutInSecs="5"></SEARCHORDER>
+        </BEEWENLOGIC>
+
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogic" Id="B01G04Logic" Enabled="false">
+            <CONFIG CommModule="B01G04"
+                    Parser="B01G04Parser"
+                    BeewenProcessor="B01G04Processor"
+                    LocationManager="LocationManager"
+                    OccupyAllApsAfterRetrieval="false"></CONFIG>
+            <RESOURCEKEYS>
+                <KEY>B01G04C01</KEY>
+                <KEY>B01G04S01</KEY>
+                <KEY>B01G04S02</KEY>
+                <KEY>B01G04S03</KEY>
+                <KEY>B01G04S04</KEY>
+                <KEY>B01G04S05</KEY>
+            </RESOURCEKEYS>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3"></WATCHDOG>
+            <SEARCHORDER
+                  SearchOrderTimeoutInSecs="5"/>
+        </BEEWENLOGIC>
+
+        <BROKER Type="VI.MFC.Broker.Beewen.Crane.CraneOrderBroker" Enabled="false" Id="B01G04CraneOrderBroker">
+            <CONFIG HibernateSessionPoolToUse="OracleDatabase" TransitionConfig=".\MFC\Logic\Beewen\MicroShuttle\Beewen_msh.xml"/>
+        </BROKER>
+
+        <MANAGER Type="VI.MFC.Manager.TsuManager" Enabled="false" Id="TsuManager">
+            <CONFIG WebserviceClients="WebserviceClients" LocationManager="LocationManager"
+                    HibernateSessionPoolToUse="OracleDatabase" CraneType="MSH"></CONFIG>
+        </MANAGER>
+
+        <MANAGER Type="VI.MFC.Manager.ConfigurationManager" Enabled="false" Id="ConfigurationManager">
+            <CONFIG WebserviceClients="WebserviceClients" CraneType="MSH"></CONFIG>
+        </MANAGER>
+
+        <BROKER Type="VI.MFC.Broker.Beewen.Storage.StorageBroker" Enabled="false" Id="StorageBroker">
+            <CONFIG HibernateSessionPoolToUse="OracleDatabase" />
+        </BROKER>
+
+        <BROKER Type="VI.MFC.Broker.Beewen.Storage.StorageReportBroker" Enabled="false" Id="StorageReportBroker">
+            <CONFIG HibernateSessionPoolToUse="OracleDatabase" />
+        </BROKER>
+
+        <BROKER Type="VI.MFC.Broker.Beewen.Retrieval.RetrievalBroker" Enabled="false" Id="RetrievalBroker">
+            <CONFIG HibernateSessionPoolToUse="OracleDatabase" TsuManager="TsuManager" LocationManager="LocationManager"/>
+        </BROKER>
+
+        <BROKER Type="VI.MFC.Broker.Beewen.Retrieval.RetrievalReportBroker" Enabled="false" Id="RetrievalReportBroker">
+            <CONFIG HibernateSessionPoolToUse="OracleDatabase" />
+        </BROKER>
+
+        <MANAGER Type="VI.MFC.Manager.EventManager" Enabled="false" Id="EventManager">
+        </MANAGER>
+
+        <!-- Cubi Scan Component Example -->
+
+        <PARSER Type="VI.MFC.Components.Parser.VIParser" Id="CubiScanParser" Enabled="false">
+            <!-- Possible values are currently:
+                     VI.MFC.COM.VIParser       - Use the standard VI telegram parser (max. 1024 bytes per field)
+                     VI.MFC.COM.VIScriptParser - Use a script for VI parsing, please specify script filename below -->
+
+            <!-- CheckMaxProcessingTime, if set to 1 will log all telegrams taking more than the specified maxProcessingTimeInMs.
+                     LogAllProcessingTimes, if set to 1 will always log the processing times for each telegram. -->
+            <CONFIG CommModule="CUBISCAN_01" TelegramDescriptions="CubiScanTD"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+    </SUPPORTING_COMPONENTS>
+
+    <WORKING_COMPONENTS>
+
+        <!-- Demo for using a HDS -->
+        <BEEWENCRANE Type="VI.MFC.COM.Beewen.BeewenTCPClient" Enabled="false" Id="B02G03" Name="HDS module 3" ResourceType="HDS">
+            <!-- Type of the resource, used eg. to sort by functionality using the status webappender -->
+            <CONFIG SequencerInbound="B02G03SequencerInbound" SequencerOutbound="B02G03SequencerOutbound" Packetizer="BeewenPacketizer" Parser="B02G03Parser"></CONFIG>
+
+            <LOGIC Id="B02G03L01Logic"></LOGIC>
+            <LOGIC Id="B02G03R01Logic"></LOGIC>
+            <LOGIC Id="B02G03R02Logic"></LOGIC>
+            <LOGIC Id="B02G03R03Logic"></LOGIC>
+            <LOGIC Id="B02G03R04Logic"></LOGIC>
+            <LOGIC Id="B02G03R05Logic"></LOGIC>
+
+            <CONNECTION>
+                <TCPIP>
+                    <!-- Host (network interface) to connect to. Can be name or IP-Address -->
+                    <HOST>localhost</HOST>
+                    <!-- Defines which network card should be used for the local endpoint
+                         in eg. a cluster environment -->
+                    <LOCALENDPOINT></LOCALENDPOINT>
+                    <!-- V4- use IPV4
+                         V6- use IPV6 -->
+                    <IPVERSION>V6</IPVERSION>
+                    <OPTIONS RepeatTimeoutInMs="500" RepeatCount="3"></OPTIONS>
+                    <CLIENT>
+                        <!-- Port to use on remote computer <HOST> to connect to. -->
+                        <PORT>7003</PORT>
+                        <!-- Different socket options. See socket api for reference. Change only in case you
+                             have a good reason to do so. -->
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <!-- Size in bytes of the receive buffer. 16384 should be ok. -->
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <!-- Size in bytes of the sending buffer. 16384 should be ok. -->
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <!-- YES - close object once disconnected (rarely used)
+                             NO - do not close object once disconnected (standard) -->
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <!-- Time to wait ins ms between connection attempts -->
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <!-- Can be set to None, Normal (ASCII dump), UTF8, HexOnly or Mixed (binary values replaced by [0xXX] characters).
+                             Incoming data will be logged starting with '>'.
+                             Outgoing data will be logged starting with '<'.
+                             Trash bytes (non packet data) will be logged starting with '#>'
+                             Packetized data (one interpreted data packet) will be logged starting with 'P>'
+
+                             'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                             Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                             support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                             ethernet frame). -->
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+                    </CLIENT>
+                </TCPIP>
+            </CONNECTION>
+        </BEEWENCRANE>
+
+        <!-- Demo for using a sequencer beewen crane type -->
+        <BEEWENCRANE Type="VI.MFC.COM.Beewen.BeewenTCPClient" Enabled="false" Id="B01G01Sequencer" Name="Sequencer" ResourceType="SEQUENCER">
+
+            <CONFIG SequencerInbound="B01G01SequencerInbound" SequencerOutbound="B01G01SequencerOutbound" Packetizer="BeewenPacketizer" Parser="B01G01SequencerParser"></CONFIG>
+            <LOGIC Id="B01G01R01SequencerLogic"></LOGIC>
+            <LOGIC Id="B01G01R02SequencerLogic"></LOGIC>
+            <LOGIC Id="B01G01R03SequencerLogic"></LOGIC>
+            <LOGIC Id="B01G01R04SequencerLogic"></LOGIC>
+
+            <CONNECTION>
+                <TCPIP>
+                    <!-- Host (network interface) to connect to. Can be name or IP-Address -->
+                    <HOST>localhost</HOST>
+                    <!-- Defines which network card should be used for the local endpoint
+                         in eg. a cluster environment -->
+                    <LOCALENDPOINT></LOCALENDPOINT>
+                    <!-- V4- use IPV4
+                         V6- use IPV6 -->
+                    <IPVERSION>V6</IPVERSION>
+                    <OPTIONS RepeatTimeoutInMs="500" RepeatCount="3"></OPTIONS>
+                    <CLIENT>
+                        <!-- Port to use on remote computer <HOST> to connect to. -->
+                        <PORT>7007</PORT>
+                        <!-- Different socket options. See socket api for reference. Change only in case you
+                             have a good reason to do so. -->
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <!-- Size in bytes of the receive buffer. 16384 should be ok. -->
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <!-- Size in bytes of the sending buffer. 16384 should be ok. -->
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <!-- YES- close object once disconnected (rarely used)
+                             NO- do not close object once disconnected (standard) -->
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <!-- Time to wait ins ms between connection attempts -->
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <!-- Can be set to None, Normal (ASCII dump), UTF8, HexOnly or Mixed (binary values replaced by [0xXX] characters).
+                             Incoming data will be logged starting with '>'.
+                             Outgoing data will be logged starting with '<'.
+                             Trash bytes (non packet data) will be logged starting with '#>'
+                             Packetized data (one interpreted data packet) will be logged starting with 'P>'
+
+                             'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                             Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                             support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                             ethernet frame). -->
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+                    </CLIENT>
+                </TCPIP>
+            </CONNECTION>
+
+        </BEEWENCRANE>
+
+        <!-- Demo for using a micro shuttle -->
+        <BEEWENCRANE Type="VI.MFC.COM.Beewen.BeewenTCPClient" Enabled="false" Id="B01G04" Name="Micro shuttle" ResourceType="MSH">
+            <!-- Type of the resource, used eg. to sort by functionality using the status webappender -->
+            <CONFIG SequencerInbound="B01G04SequencerInbound" SequencerOutbound="B01G04SequencerOutbound" Packetizer="BeewenPacketizer" Parser="B01G04Parser"></CONFIG>
+
+            <LOGIC Id="B01G04Logic"></LOGIC>
+
+            <CONNECTION>
+                <TCPIP>
+                    <!-- Host (network interface) to connect to. Can be name or IP-Address -->
+                    <HOST>localhost</HOST>
+                    <!-- Defines which network card should be used for the local endpoint
+                                                 in eg. a cluster environment -->
+                    <LOCALENDPOINT></LOCALENDPOINT>
+                    <!-- V4- use IPV4
+                                                 V6- use IPV6 -->
+                    <IPVERSION>V4</IPVERSION>
+                    <OPTIONS RepeatTimeoutInMs="500" RepeatCount="3"></OPTIONS>
+                    <CLIENT>
+                        <!-- Port to use on remote computer <HOST> to connect to. -->
+                        <PORT>5201</PORT>
+                        <!-- Different socket options. See socket api for reference. Change only in case you
+                                                         have a good reason to do so. -->
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <!-- Size in bytes of the receive buffer. 16384 should be ok. -->
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <!-- Size in bytes of the sending buffer. 16384 should be ok. -->
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <!-- YES - close object once disconnected (rarely used)
+                                                         NO - do not close object once disconnected (standard) -->
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <!-- Time to wait ins ms between connection attempts -->
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <!-- Can be set to None, Normal (ASCII dump), UTF8, HexOnly or Mixed (binary values replaced by [0xXX] characters).
+                                                         Incoming data will be logged starting with '>'.
+                                                         Outgoing data will be logged starting with '<'.
+                                                         Trash bytes (non packet data) will be logged starting with '#>'
+                                                         Packetized data (one interpreted data packet) will be logged starting with 'P>'
+
+                                                         'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                                                         Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                                                         support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                                                         ethernet frame). -->
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+                    </CLIENT>
+                </TCPIP>
+            </CONNECTION>
+        </BEEWENCRANE>
+    </WORKING_COMPONENTS>
+
+    <!-- Localization area. We can define aliases for each language we would like to use. In case we want to use eg. "en", 
+       we would at first look if we have a key defined for "en-GB" and take this. In case we cannot find this key,
+       we will look for "en-US" and so on. In case we cannot find anything, we will continue with "de-DE" and so on... 
+       Default Culture will here be "de-DE" (for eg. time and date formats and so on...) -->
+    <LOCALIZATION>
+        <GLOBAL DefaultCulture="de-DE"/>
+        <CULTURES>
+            <L01 Culture="de" File="LanguageGerman.XML" RootElement="/MFC.NET/LOCALIZATION">
+                <C01>de-DE</C01>
+            </L01>
+
+            <L02 Culture="en" File="LanguageEnglish.XML" RootElement="/MFC.NET/LOCALIZATION">
+                <C01>en-GB</C01>
+            </L02>
+
+            <L03 Culture="ru" File="LanguageRussian.XML" RootElement="/MFC.NET/LOCALIZATION">
+                <C01>ru-RU</C01>
+            </L03>
+
+        </CULTURES>
+    </LOCALIZATION>
+</MFC.NET>

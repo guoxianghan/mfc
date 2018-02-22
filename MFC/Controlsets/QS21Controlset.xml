@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+    <CONTROLSET>
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.BeewenDatabase" Id="B$AREA$G$AISLE$R$LIFT$Database" Enabled="true">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>B$AREA$G$AISLE$R$LIFT$ db thread</CLIENT_ID>
+            <PACKAGE Name="SvcMfcBeewen"></PACKAGE>
+        </DATABASE>
+
+        <PACKETIZER Type="VI.MFC.Components.Packetizer.SEPacketizer" Id="B$AREA$G$AISLE$BeewenPacketizer" Enabled="true">
+            <STARTDELIMITER>02</STARTDELIMITER>
+            <ENDDELIMITER>03</ENDDELIMITER>
+            <MAXPACKETLENGTH>$MAXTELLEN$</MAXPACKETLENGTH>
+            <MINIMALANALYSISLENGTH>24</MINIMALANALYSISLENGTH>
+        </PACKETIZER>
+        <SEQUENCEHANDLER Type ="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="B$AREA$G$AISLE$SequencerInbound" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <SEQUENCEHANDLER Type ="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="B$AREA$G$AISLE$SequencerOutbound" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <PARSER Type="VI.MFC.Components.Parser.Beewen.BeewenParser" Id="B$AREA$G$AISLE$Parser" Enabled="true">
+            <CONFIG CommModule="B$AREA$G$AISLE$" TelegramDescriptions="BeewenTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBase" Id="B01G02R01Logic" Enabled="true">
+            <CONFIG CommModule="B$AREA$G$AISLE$" Parser="B$AREA$G$AISLE$Parser" DatabaseLayer="B$AREA$G$AISLE$R$LIFT$Database" ResourceKey="B$AREA$G$AISLE$R$LIFT$"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3" AskStateAfterWatchdog="false"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="1" BeewenProssesAsyncConst="TRIGGER_ORDERSEARCH"></ASYNCHRON>
+            <UDPTHREAD UDPListen="true" UDPListenPort="11001"></UDPTHREAD>
+            <CALCORDERDESTINATIONS CalcOrderDestinationsTimeoutInSecs="10000"></CALCORDERDESTINATIONS>
+            <SEARCHORDER
+                  SearchOrderTimeoutInSecs="5"
+                  TravelOrderWhileIdle="false"
+                  TravelOrderDestination="EP$AREA$$AISLE$$LIFT$"
+                  TriggerOrderSearchForConnectedDevices="true"
+                  TriggerOrderSearchDevices="B$AREA$G$AISLE$R$LIFT$"/>
+        </BEEWENLOGIC>
+
+        <BEEWENCRANE Type="VI.MFC.COM.Beewen.BeewenTCPClient" Enabled="true" Id="B$AREA$G$AISLE$" Name="QS21 Module $EXT$" ResourceType="BEEWENQS21">
+            <CONFIG FieldValueConstants="BeewenFieldValues" SequencerInbound="B$AREA$G$AISLE$SequencerInbound" SequencerOutbound="B$AREA$G$AISLE$SequencerOutbound" Packetizer="B$AREA$G$AISLE$BeewenPacketizer" Parser="B$AREA$G$AISLE$Parser"></CONFIG>
+            <LOGIC Id="B$AREA$G$AISLE$R01Logic"></LOGIC>
+            <CONNECTION>
+                <TCPIP>
+                    <HOST>$HOST$</HOST>
+                    <LOCALENDPOINT>$LOCALENDPOINT$</LOCALENDPOINT>
+                    <IPVERSION>V6</IPVERSION>
+                    <OPTIONS RepeatTimeoutInMs="500" RepeatCount="3"></OPTIONS>
+                    <CLIENT>
+                        <PORT>$PORT$</PORT>
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+                    </CLIENT>
+                </TCPIP>
+            </CONNECTION>
+        </BEEWENCRANE>
+    </CONTROLSET>
+</MFC.NET>

@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+    <CONTROLSET>
+        <PACKETIZER Type="VI.MFC.Components.Packetizer.MultiDelimiterPacketizer" Id="FSC$EXT$StatPacketizer" Enabled="true">
+            <MINIMALANALYSISLENGTH>10</MINIMALANALYSISLENGTH>
+            <DELIMITER start ="&lt;?xml version" end ="&lt;/StatusReports&gt;,&lt;/StatisticalData&gt;"/>
+        </PACKETIZER>
+        <PARSER Type="VI.MFC.Components.Parser.VIParser" Id="FSC$EXT$StatParser" Enabled="true">
+            <CONFIG CommModule="FSCSTAT$EXT$" TelegramDescriptions="FSCStatTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+        <LOGIC Type="VI.MFC.Logic.FSCLogicEx" Id="FSC$EXT$StatLogic" Enabled="true">
+            <SORTATION_ENGINE Id="SortationEngineFSC$EXT$Stat"/>
+            <CONFIG CommModule="FSCSTAT$EXT$" Parser="FSC$EXT$StatParser"/>
+            <ASYNCHRON UsesAsynchronousMessages="0"></ASYNCHRON>
+        </LOGIC>
+        <SORTATIONENGINE Type="VI.MFC.Components.SortationEngines.FSC.BpiSortationEngine" Enabled="true" Id="SortationEngineFSC$EXT$Stat">
+            <CONFIG/>
+        </SORTATIONENGINE>
+        <PLC Type="VI.MFC.COM.TCPServer" Enabled="true" Id="FSCSTAT$EXT$" Name="Vanderlande FSC-$EXT$ Statistic" ResourceType="PLC">
+            <CONFIG Packetizer="FSC$EXT$StatPacketizer" Parser="FSC$EXT$StatParser"></CONFIG>
+            <LOGIC Id="FSC$EXT$StatLogic"></LOGIC>
+            <CONNECTION>
+                <TCPIP>
+                    <HOST>$HOST$</HOST>
+                    <LOCALENDPOINT>$LOCALENDPOINT$</LOCALENDPOINT>
+                    <IPVERSION>V4</IPVERSION>
+                    <SERVER>
+                        <PORT>$PORT$</PORT>
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <RECEIVEBUFFERSIZE>1638400</RECEIVEBUFFERSIZE>
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <LOGGINGOPTIONS Type="None" MaxNumberOfBytesToLog="1024"></LOGGINGOPTIONS>
+                    </SERVER>
+                </TCPIP>
+            </CONNECTION>
+        </PLC>
+    </CONTROLSET>
+</MFC.NET>

@@ -1,0 +1,891 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+
+    <!-- Localization area. We can define aliases for each language we would like to use. In case we want to use eg. "en", 
+       we would at first look if we have a key defined for "en-GB" and take this. In case we cannot find this key,
+       we will look for "en-US" and so on. In case we cannot find anything, we will continue with "de-DE" and so on... 
+       Default Culture will here be "de-DE" (for eg. time and date formats and so on...) -->
+    <LOCALIZATION>
+        <L01>
+            <!-- GERMAN LANGUAGE -->
+
+            <!-- Main page-->
+            <Key Id="Std.MainPage.Home" >
+                <C01 Value="Übersicht"/>
+            </Key>
+            <Key Id="Std.MainPage.Clearing" >
+                <C01 Value="Clearing"/>
+            </Key>
+            <Key Id="Std.MainPage.Messages" >
+                <C01 Value="Nachrichten"/>
+            </Key>
+            <Key Id="Std.MainPage.Reporting" >
+                <C01 Value="Statistik"/>
+            </Key>
+            <Key Id="Std.MainPage.Configuration" >
+                <C01 Value="Konfiguration"/>
+            </Key>
+            <Key Id="Std.MainPage.User" >
+                <C01 Value="User"/>
+            </Key>
+            <Key Id="Std.MainPage.FileInfo" >
+                <C01 Value="Datei Information"/>
+            </Key>
+            <Key Id="Std.MainPage.About" >
+                <C01 Value="About"/>
+            </Key>
+            <Key Id="Std.MainPage.UpdateAvaible" >
+                <C01 Value="Ein Update des Programms ist verfügbar. Bitte starten sie das MFC control Programm neu."/>
+            </Key>
+            <Key Id="Std.MainPage.PlattformNotSupported" >
+                <C01 Value="Ein Update des Programms ist verfügbar.Es benötigt eine neuere Version Silverlight. Um zu updaten, besuchen sie die MFC control Website."/>
+            </Key>
+
+            <!-- ABOUT -->
+            <Key Id="Std.About.ProductText">
+                <C01 Value="Produkt"/>
+            </Key>
+
+            <Key Id="Std.About.VersionText">
+                <C01 Value="Version"/>
+            </Key>
+
+            <Key Id="Std.About.OperatorIDText">
+                <C01 Value="Operator ID "/>
+            </Key>
+
+            <Key Id="Std.About.InstanceIDText">
+                <C01 Value="Instance ID "/>
+            </Key>
+
+            <Key Id="Std.About.ServiceText">
+                <C01 Value="PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION PRODUCT SERVICE TEXT FROM REMOTE LOCATION"/>
+            </Key>
+
+            <Key Id="Std.About.LicensedToText">
+                <C01 Value="Lizensiert für "/>
+            </Key>
+
+            <Key Id="Std.About.ContracedIDText">
+                <C01 Value="Contraced ID"/>
+            </Key>
+
+            <Key Id="Std.About.LicenseKeyText">
+                <C01 Value="Lizenseschlüssel"/>
+            </Key>
+
+            <Key Id="Std.About.SetLicenseButton">
+                <C01 Value="Setze Lizense"/>
+            </Key>
+
+            <Key Id="Std.About.clName">
+                <C01 Value="Name"/>
+            </Key>
+
+            <Key Id="Std.About.clType">
+                <C01 Value="Type"/>
+            </Key>
+
+            <Key Id="Std.About.clEnabled">
+                <C01 Value="Aktive"/>
+            </Key>
+            <Key Id="Std.About.clVersion">
+                <C01 Value="Version"/>
+            </Key>
+
+            <!-- Clearing form-->
+            <Key Id="Std.Clearing.ScanText" >
+                <C01 Value="Barcode Scan / Eingabe:"/>
+            </Key>
+            <Key Id="Std.Clearing.SearchButton" >
+                <C01 Value="Suchen"/>
+            </Key>
+            <Key Id="Std.Clearing.ActionText" >
+                <C01 Value="Clearing Anweisung:"/>
+            </Key>
+            <Key Id="Std.Clearing.DescText" >
+                <C01 Value="Beschreibung:"/>
+            </Key>
+            <Key Id="Std.Clearing.NoAccess" >
+                <C01 Value="Zugriff nicht  gewährt!"/>
+            </Key>
+            <Key Id="Std.Clearing.ActionError">
+                <C01 Value="Fehler beim Bearbeiten des Barcodes"/>
+            </Key>
+
+            <!-- Clearing Broker -->
+            <Key Id="Std.ClearingBroker.ActionProceed">
+                <C01 Value="PROCEED"/>
+            </Key>
+            <Key Id="Std.ClearingBroker.ActionStop">
+                <C01 Value="STOP"/>
+            </Key>
+            <Key Id="Std.ClearingBroker.ErrorDruingClearing">
+                <C01 Value="Fehler bei Clearing Aktivität: "/>
+            </Key>
+            <Key Id="Std.ClearingBroker.DescError">
+                <C01 Value="The parcel you just scanned caused an unexpected error. Please investigate the VISION.MFC logfile for further information."/>
+            </Key>
+            <Key Id="Std.ClearingBroker.Info">
+                <C01 Value="The carton '1298129812' entered the sorter on 01.02.2012 16:34:01. It should have been sorted out to chute 45 and ended up in chute 101. The FSC reported 'lane full' being the OriginalDestinationState and 'diverted' for the ExitState."/>
+            </Key>
+            <Key Id="Std.ClearingBroker.SpecialErrorcode">
+                <C01 Value="Additional information is available: '{0}'"/>
+            </Key>
+            <Key Id="Std.ClearingBroker.InfoMessage">
+                <C01 Value="Clearing 1.0. All your clearing cases are now in good hands..."/>
+            </Key>
+
+            <!-- Do not localize this key. -->
+            <Key Id="Std.TSUStart.WeighingScaleURI" >
+                <C01 Value="http://localhost/weight?scale=1"/>
+            </Key>
+
+            <!-- Message Types -->
+            <Key Id="MESSAGE_TYPE_CONFIRMATION" >
+                <C01 Value="Confirmation"/>
+            </Key>
+
+            <Key Id="MESSAGE_TYPE_INFO" >
+                <C01 Value="Info"/>
+            </Key>
+
+            <Key Id="MESSAGE_TYPE_WARNING" >
+                <C01 Value="Warning"/>
+            </Key>
+
+            <Key Id="MESSAGE_TYPE_ERROR" >
+                <C01 Value="Error"/>
+            </Key>
+
+
+            <!-- Configuration Broker-->
+            <Key Id="Std.ConfigBroker.Exception">
+                <C01 Value="Please specify or configure a valid IConfigParam Provider within the CONFIG node."/>
+            </Key>
+            <Key Id="Std.ConfigBroker.Message">
+                <C01 Value="Incoming GetConfigValue request from '{0}', querying parameter {1}."/>
+            </Key>
+            <Key Id="Std.ConfigBroker.Message2">
+                <C01 Value="Incoming SetConfigValue request from '{0}', setting parameter {1} to value {2}."/>
+            </Key>
+            <Key Id="Std.ConfigBroker.Message3">
+                <C01 Value="Incoming RefreshConfigValues request from '{0}'"/>
+            </Key>
+
+            <!-- Change Login Password Screen-->
+            <Key Id="Std.ChangeLoginPasswordScreen.CancelButton" >
+                <C01 Value="Abbruch"/>
+            </Key>
+            <Key Id="Std.ChangeLoginPasswordScreen.OKButton" >
+                <C01 Value="Ok"/>
+            </Key>
+            <Key Id="Std.ChangeLoginPasswordScreen.newPassword" >
+                <C01 Value="neues Passwort:"/>
+            </Key>
+            <Key Id="Std.ChangeLoginPasswordScreen.validatePassword" >
+                <C01 Value="bestätige Passwort:"/>
+            </Key>
+            <Key Id="Std.ChangeLoginPasswordScreen.tbHead" >
+                <C01 Value="Gib neues Passwort ein:"/>
+            </Key>
+            <Key Id="Std.ChangeLoginPasswordScreen.noMatch" >
+                <C01 Value="!! Passwörter stimmen nicht überein !!"/>
+            </Key>
+            <Key Id="Std.ChangeLoginPasswordScreen.ErrorDialogCaption">
+                <C01 Value= "Passwort Fehler"/>
+            </Key>
+            <Key Id="Std.ChangeLoginPasswordScreen.PasswordToShort">
+                <C01 Value= "Passwort zu kurz. Mindestens 6 Zeichen."/>
+            </Key>
+            <Key Id="Std.ChangeLoginPasswordScreen.IncorrectKeyText">
+                <C01 Value=" Passwort bestätigen:"/>
+            </Key>
+
+            <!-- Login Page -->
+            <Key Id="Std.Login.OldPasswordError.Caption" >
+                <C01 Value="Passwort Fehler"/>
+            </Key>
+            <Key Id="Std.Login.OldPasswordError.Text" >
+                <C01 Value="Es ist nicht erlaubt das Passwort auf den alten Wert zu ändern."/>
+            </Key>
+
+
+            <!-- text localization-->
+            <Key Id="MFC_WEB_SERVICE_ERROR_TEXTLOCALIZATION_GETLOCALIZATION" >
+                <C01 Value="Service Aufruf fehlgeschlagen."/>
+            </Key>
+
+
+
+            <!-- Bfw User Management-->
+            <Key Id="MFC_BFWUSERMANAGEMENT_LOGINFAILED" >
+                <C01 Value="Sie konnten nicht am System angemeldet werden."/>
+            </Key>
+
+            <Key Id="MFC_BFWUSERMANAGEMENT_WRONGUSERNAMEORPW" >
+                <C01 Value="Bitte kontrollieren Sie den Benutzernamen und/oder das Kennwort. Haben Sie evtl. die Feststelltaste gedrückt?"/>
+            </Key>
+
+            <Key Id="MFC_BFWUSERMANAGEMENT_ERRORTITLE">
+                <C01 Value="Login fehlgeschlagen."/>
+            </Key>
+
+            <Key Id="MFC_BFWUSERMANAGEMENT_GETUSERACCOUNTFAILED">
+                <C01 Value="Es konnten keine Benutzerdaten eingelesen werden."/>
+            </Key>
+
+            <Key Id="MFC_BFWUSERMANAGEMENT_GUERRORTITLE">
+                <C01 Value="Fehler im Benutzermanagement."/>
+            </Key>
+
+            <Key Id="MFC_BFWUSERMANAGEMENT_ACCESSRIGHTSERR">
+                <C01 Value="Es ist ein Fehler beim Zugriff auf die Benutzerrechte aufgetreten."/>
+            </Key>
+
+            <Key Id="MFC_BFWUSERMANAGEMENT_ACCESSRIGHTSTITLE">
+                <C01 Value="Fehler beim Zugriff auf die Benutzerrechte."/>
+            </Key>
+
+            <Key Id="MFC_BFWUSERMANAGEMENT_SETUSERACCOUNT_TITLE">
+                <C01 Value="Benutzerdaten wurde nicht geändert."/>
+            </Key>
+
+            <Key Id="MFC_BFWUSERMANAGEMENT_SETUSERACCOUNT">
+                <C01 Value="Es ist ein Fehler beim Ändern von Benutzerdaten aufgetreten. Ihre Änderungen wurden nicht übernommen."/>
+            </Key>
+
+            <Key Id="MFC_BFWUSERMANAGEMENT_DELETEU_TITLE">
+                <C01 Value="Fehler beim Löschen eines Benutzers."/>
+            </Key>
+
+            <Key Id="MFC_BFWUSERMANAGEMENT_DELETEU">
+                <C01 Value="Beim Löschen eines Benutzers ist ein Fehler aufgetreten. Der Benutzer wurde nicht gelöscht."/>
+            </Key>
+
+            <!-- SessionTimeout -->
+            <Key Id="MFC_BACKEND_ERROR">
+                <C01 Value="The Vision.MFC konnte den letzten Befehl nicht ausführen."/>
+            </Key>
+            <Key Id="MFC_NO_SESSION">
+                <C01 Value="Die Session ist abgelaufen.  Bitte neu anmelden und noch einmal versuchen."/>
+            </Key>
+            <Key Id="MFC_UNKNOWN_ERROR">
+                <C01 Value="Eine unvorhersehbare Situation ist aufgetreten welche dazu führte, dass der VISION.MFC die letzte Aktion zurück gerollt hat. Bitte noch einmal versuchen."/>
+            </Key>
+
+
+            <!-- Night Job Scheduler -->
+            <Key Id="MFC_NJS_JOBHASPROBLEM">
+                <C01 Value="Job '{0}' lieferte einen Rückgabewert von '{1}' um ein Problem anzuzeigen. "/>
+            </Key>
+
+            <Key Id="MFC_NJS_JOBTHREWEXECPTION">
+                <C01 Value="Job '{0}' löste eine Ausnahmebehandlung aus, welche ein Problem anzeigt."/>
+            </Key>
+
+            <Key Id="MFC_NJS_STOPONERROR">
+                <C01 Value="Der NightJobScheduler ist so konfiguriert, dass er im Falle eines Fehlers innerhalb einer
+Aufgabe sofort stoppt. Die verbleibenenden Jobs werden daher nicht mehr ausgeführt. Bitte
+prüfen Sie das ErrorLog und beheben Sie die Fehlerursache. Evtl. müssen Sie den VISION.MFC danach
+Neustarten."/>
+            </Key>
+
+            <Key Id="MFC_NJS_CONTONERROR">
+                <C01 Value="Der NightJobScheduler is so konfiguriert, dass er im Falle eines Fehlers nicht stoppt, sondern
+mit evtl. noch vebleibenden Jobs weitermacht. Evtl. sollten Sie den VISION.MFC einmal nach Schichtende neu starten."/>;
+            </Key>
+
+            <Key Id="MFC_NJS_TITLE">
+                <C01 Value="NightJobScheduler"/>
+            </Key>
+
+            <Key Id="MFC_NJS_NJREPERROR">
+                <C01 Value="Ein Nightjob meldete einen Fehler."/>
+            </Key>
+
+            <Key Id="MFC_NJS_NONJATALL">
+                <C01 Value="Der NightJobScheduler wurde erfolgreich beendet. Ausführungszeit lag innerhalb von {0} ms. 
+             Es wurden bisher noch keine NightJobs angelegt."/>
+            </Key>
+
+            <Key Id="MFC_NJS_LONELYNJ">
+                <C01 Value="Der einzige existierende NightJob '{0}' wurde erfolreich innerhalb von {1} ms ausgeführt."/>
+            </Key>
+
+            <Key Id="MFC_NJS_MANY">
+                <C01 Value="Die Gesamtzahl von {0} NightJobs wurden erfolgreich innerhalb von {1}  ms."/>
+            </Key>
+
+            <Key Id="MFC_NJS_ALLOK">
+                <C01 Value="Alle NightJobs wurden erfolgreich ausgeführt."/>
+            </Key>
+
+            <Key Id="MFC_NJS_ERRORSCHECKLOG">
+                <C01 Value="Während der Abarbeitung traten Fehler auf. Bitte prüfen Sie das Logfile und beheben Sie den oder die Fehler."/>
+            </Key>
+
+            <Key Id="MFC_NJS_FINISHED">
+                <C01 Value="NightJobManager wurde beendet."/>
+            </Key>
+
+            <!-- Service Provider -->
+
+            <Key Id="MFC_WEB_SERVICE_REQUEST_TASK_TIMEOUT">
+                <C01 Value="Die Abarbeitung einer Anfrage dauerte zu lange. Sie wurde deshalb beendet."/>
+            </Key>
+
+            <!-- Configuration Dialog  -->
+            <Key Id="MFC_CFGDLG_MAX_RECIRC_VALUE">
+                <C01 Value="Maximale Anzahl an Rezirkulationen"/>
+            </Key>
+
+            <Key Id="MFC_CFGDLG_MAX_RECIRC_VALUE_INFO">
+                <C01 Value="Maximale Anzahl an Rezirkulationen, bis das Fördergut auf die Reject-Rutsche ausgeschleust wird. Dieser Wert
+darf im Bereich zwischen 0 (unbegrenzte Anzahl an Rezirkulationen) und 9999 liegen."/>
+            </Key>
+
+            <Key Id="MFC_CFGDLG_WEIGHING_SCALE">
+                <C01 Value="Waage W1 (Abteilung C, '03.03.03') und W2 (Abteilung B, '02.03.03'):"/>
+            </Key>
+
+            <Key Id="MFC_CFGDLG_WEIGHING_SCALE_INFO">
+                <C01 Value="Bitte geben Sie an, ob die Waagen W1 (Abteilung C, '03.03.03') und W2 (Abteilung B, '02.03.03')
+ein- oder ausgeschaltet sein sollen. Das Ausschalten von Waagen resultiert darin, dass
+der MFC eventuelle Fehlgewichte und Wiegefehler einfach ignoriert. Dies kann bei defekten Waagen sinnvoll sein,
+da hierdurch ein Notbetrieb ermöglicht wird." />
+            </Key>
+
+            <Key Id="MFC_CFGDLG_WEIGHING_SCALE_OFF">
+                <C01 Value="Waagen sind AUS"/>
+            </Key>
+
+            <Key Id="MFC_CFGDLG_WEIGHING_SCALE_ON">
+                <C01 Value="Waagen sind EIN"/>
+            </Key>
+
+            <!-- Dashboard Report -->
+            <Key Id="MFC_DASHBRD_SORTREASON">
+                <C01 Value="Sortierergebnis"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_TOTAL">
+                <C01 Value="Gesamt"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_SORTEDCORRECTLY">
+                <C01 Value="Korrekt sortiert"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_DESTTOOLATE">
+                <C01 Value="Ziel verspätet"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_CHUTEFULL">
+                <C01 Value="Rutsche voll"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_UNEXPECTED">
+                <C01 Value="Unerwarteter Fehler"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_FAILEDDIVERT">
+                <C01 Value="Wurde nicht ausgeschleust"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_GAPTOOSMALL">
+                <C01 Value="Ungünstige Bedingung (zu kleine Lücke)"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_NODEST">
+                <C01 Value="Kein Ziel erhalten"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_GREADS">
+                <C01 Value="GoodReads"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_NREADS">
+                <C01 Value="NoReads"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_DUPLICATE">
+                <C01 Value="Barcode-Informationen doppelt"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_CURDUPRATE">
+                <C01 Value="Anzahl doppelter Barcodes in %"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_CURDUPLABELRATE">
+                <C01 Value="Rate doppelte Barcodes"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_PERFECT_0">
+                <C01 Value="Perfekt (0%)"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_CURREADRATE">
+                <C01 Value="Aktuelle Leserate in %"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_CHKSCANNER">
+                <C01 Value="Bitte sofort den Scanner überprüfen (0%)"/>
+            </Key>
+
+            <Key Id="MFC_DASHBRD_PERFECT_100">
+                <C01 Value="Perfekt (100%)"/>
+            </Key>
+
+            <Key Id="Std.DashboardReport.RefreshButton">
+                <C01 Value="Aktualisieren"/>
+            </Key>
+
+            <Key Id="Std.DashboardReport.ResetButton">
+                <C01 Value="Zurücksetzen"/>
+            </Key>
+
+            <Key Id="Std.DashboardReport.ExportButton">
+                <C01 Value="Exportieren"/>
+            </Key>
+
+            <Key Id="Std.DashboardReport.refreshCheckBox">
+                <C01 Value="Auto Aktualisieren"/>
+            </Key>
+            <Key Id="Std.DashboardReport.NoAccess">
+                <C01 Value="Zugriff nicht gewährt"/>
+            </Key>
+
+            <!-- FILE INFORMATION -->
+            <Key Id="MFC_FILEINFO_ERROR_TITLE">
+                <C01 Value="Dateiinfos nicht einlesbar"/>
+            </Key>
+
+            <Key Id="MFC_FILEINFO_ERROR">
+                <C01 Value="Dateiinfos konnten nicht eingelesen werden."/>
+            </Key>
+            <Key Id="Std.FileInfo.lblProzessData">
+                <C01 Value="Aktive Daten"/>
+            </Key>
+
+            <Key Id="Std.FileInfo.CopyButton">
+                <C01 Value="Kopieren"/>
+            </Key>
+
+            <Key Id="Std.FileInfo.MultiText">
+                <C01 Value="Multi select"/>
+            </Key>
+            <Key Id="Std.FileInfo.Name">
+                <C01 Value="Name"/>
+            </Key>
+            <Key Id="Std.FileInfo.Date">
+                <C01 Value="Datum"/>
+            </Key>
+            <Key Id="Std.FileInfo.Activated">
+                <C01 Value="Wird aktiviert um"/>
+            </Key>
+            <Key Id="Std.FileInfo.GetErrorMessage">
+                <C01 Value="Fehler beim Abrufen der Reportdaten."/>
+            </Key>
+            <Key Id="Std.FileInfo.ResetErrorMessage">
+                <C01 Value="Fehler beim Ersetzen der Reportdaten"/>
+            </Key>
+
+            <!-- INFO MESSAGE -->
+            <Key Id="MFC_INFOMESSAGE_CREATEFAILED_TITLE">
+                <C01 Value="Nachricht nicht erstellt."/>
+            </Key>
+
+            <Key Id="MFC_INFOMESSAGE_CREATEFAILED">
+                <C01 Value="Eine Nachricht konnte nicht erstellt werden."/>
+            </Key>
+
+            <Key Id="MFC_INFOMESSAGE_UPDATEFAILED_TITLE">
+                <C01 Value="Nachricht nicht geändert."/>
+            </Key>
+
+            <Key Id="MFC_INFOMESSAGE_UPDATEFAILED">
+                <C01 Value="Eine Nachricht konnte nicht geändert werden."/>
+            </Key>
+
+            <Key Id="MFC_INFOMESSAGE_DELETEFAILED_TITLE">
+                <C01 Value="Nachricht nicht gelöscht."/>
+            </Key>
+
+            <Key Id="MFC_INFOMESSAGE_DELETEFAILED">
+                <C01 Value="Eine Nachricht konnte nicht gelöscht werden."/>
+            </Key>
+
+            <Key Id="MFC_INFOMESSAGE_QUERYFAILED_TITLE">
+                <C01 Value="Nachrichten nicht abrufbar."/>
+            </Key>
+
+            <Key Id="MFC_INFOMESSAGE_QUERYFAILED">
+                <C01 Value="Die Nachrichten konnten nicht abgerufen werden."/>
+            </Key>
+
+            <!--Config -->
+            <Key Id="Std.Config.SaveButton" >
+                <C01 Value="Speichern"/>
+            </Key>
+            <Key Id="MFC_CONFIG_SETCONFIGFAILED_TITLE">
+                <C01 Value="Veränderte Daten können nicht gespeichert werden"/>
+            </Key>
+
+            <Key Id="MFC_CONFIG_SETCONFIGFAILED">
+                <C01 Value="Geänderte Einstellungen können nicht gespeichert werden"/>
+            </Key>
+            <Key Id="Std.Config.descprition">
+                <C01 Value="Beschreibung"/>
+            </Key>
+            <Key Id="Std.Config.Name">
+                <C01 Value="Name"/>
+            </Key>
+            <Key Id="Std.Config.UnsavedChanges">
+                <C01 Value="Änderungen sind nicht gespeichert. Wollen die jetzt speichern?"/>
+            </Key>
+            <Key Id="Std.Config.Warning">
+                <C01 Value="Warning"/>
+            </Key>
+            <Key Id="Std.Config.GetErrorMessage">
+                <C01 Value="Could not receive the configuration information."/>
+            </Key>
+            <Key Id="Std.Config.SetErrorMessage">
+                <C01 Value="Einstellungsänderungen können nicht gespeichert werden"/>
+            </Key>
+            <Key Id="Std.Config.GetErrorDetails">
+                <C01 Value="Evtl. ist die Sitzung abgelaufen oder VISION.MFC läuft nicht mehr. Bitte versuchen sie sich neu einzuloggen."/>
+            </Key>
+            <Key Id="Std.Config.SetErrorDetails">
+                <C01 Value="Bitte überprüfen sie die eingegeben Daten oder evtl. ist die Sitzung abgelaufen oder VISION.MFC läuft nicht mehr. Bitte versuchen sie sich neu einzuloggen."/>
+            </Key>
+            <Key Id="Std.Config.NoAccess">
+                <C01 Value="Zugriff nicht gewährt"/>
+            </Key>
+            <Key Id="Std.Config.clConfigPara">
+                <C01 Value="Konfigurationsparameter"/>
+            </Key>
+            <Key Id="Std.Config.clValue">
+                <C01 Value="Wert"/>
+            </Key>
+
+            <!--Enter License Screen-->
+            <Key Id="Std.EnterLicenseScreen.CancelButton">
+                <C01 Value="Abbruch"/>
+            </Key>
+            <Key Id="Std.EnterLicenseScreen.OkButton">
+                <C01 Value="Ok"/>
+            </Key>
+            <Key Id="Std.EnterLicenseScreen.lblName">
+                <C01 Value="Firmenname"/>
+            </Key>
+            <Key Id="Std.EnterLicenseScreen.lblKey">
+                <C01 Value="Firmenschlüssel"/>
+            </Key>
+            <Key Id="Std.EnterLicenseScreen.lblNumber">
+                <C01 Value="Contract number"/>
+            </Key>
+            <Key Id="Std.EnterLicenseScreen.lblKeyIncorrect">
+                <C01 Value="!! Lizensnummer ungültig !!"/>
+            </Key>
+            <Key Id="Std.EnterLicenseScreen.InputInvalid">
+                <C01 Value="Input invalid"/>
+            </Key>
+            <Key Id="Std.EnterLicenseScreen.CompanyNameError">
+                <C01 Value="Please enter the company name as provided."/>
+            </Key>
+            <Key Id="Std.EnterLicenseScreen.ContractNumberError">
+                <C01 Value="Please enter the contract number as provided."/>
+            </Key>
+            <Key Id="Std.EnterLicenseScreen.LicenseKeyError">
+                <C01 Value="Please enter the license key as provided."/>
+            </Key>
+
+            <!-- Generic message - nothing to translate -->
+            <Key Id="MFC_GEN_MSG">
+                <C01 Value="{0}" />
+            </Key>
+
+            <!-- FileCopyBase messages -->
+            <Key Id="MFC_FCB_SENDER">
+                <C01 Value="SFTP Module" />
+            </Key>
+
+            <Key Id="MFC_FCB_COMMERR_CAP">
+                <C01 Value="Kommunikationsfehler zum Paketzentrum aufgetreten." />
+            </Key>
+
+            <Key Id="MFC_FCB_CONN_CAP">
+                <C01 Value="Erinnerung: Eingriff dringend erforderlich." />
+            </Key>
+
+            <Key Id="MFC_FCB_CONN_MSG">
+                <C01 Value="Die Verbindung zum Paketzentrum ist seit Längerem gestört: {0}" />
+            </Key>
+
+            <Key Id="MFC_FCB_LOCK_CAP">
+                <C01 Value="Kann Zielverzeichnis nicht exclusiv sperren." />
+            </Key>
+
+            <Key Id="MFC_FCB_LOCK_MSG">
+                <C01 Value="Eines der SFTP Zielverzeichnisse konnte nicht für den konkurrierenden Zugriff gesperrt werden. Bitte kontrollieren Sie das SFTP Zielverzeichnis." />
+            </Key>
+
+
+            <!-- CsvFileGeneratorBroker  broker messages -->
+            <Key Id="MFC_CSV_SENDER">
+                <C01 Value="CsvFileGeneratorBroker" />
+            </Key>
+
+            <Key Id="MFC_CSV_NEWFILE_CAP">
+                <C01 Value="Unfinished file found at startup" />
+            </Key>
+
+            <Key Id="MFC_CSV_NEWFILE_MSG">
+                <C01 Value="Unfinished file '{0}' found at startup. Did CsvFileGeneratoBroker crash?" />
+            </Key>
+
+            <Key Id="MFC_CSV_MOVEERROR">
+                <C01 Value="Error moving file." />
+            </Key>
+
+
+            <!-- Error Screen -->
+            <Key Id="Std.ErrorScreen.OkButton">
+                <C01 Value="Ok"/>
+            </Key>
+            <Key Id="Std.ErrorScreen.IntroductoryText">
+                <C01 Value="Ein unbekannter Fehler ist aufgetreten. Bitte kontaktitieren sie den Administrator für mehr Informationen."/>
+            </Key>
+            <Key Id="Std.ErrorScreen.lblText">
+                <C01 Value="Error details"/>
+            </Key>
+
+            <!-- Messages -->
+            <Key Id="Std.Messages.clDate">
+                <C01 Value="Datum"/>
+            </Key>
+            <Key Id="Std.Messages.clFrom">
+                <C01 Value="Von"/>
+            </Key>
+            <Key Id="Std.Messages.clHeader">
+                <C01 Value="Betreff"/>
+            </Key>
+            <Key Id="Std.Messages.MessageType">
+                <C01 Value="Nachrichten Typ"/>
+            </Key>
+            <Key Id="Std.Messages.clMessages">
+                <C01 Value="Nachrichten"/>
+            </Key>
+            <Key Id="Std.Messages.RefreshButton">
+                <C01 Value="Aktualisieren"/>
+            </Key>
+            <Key Id="Std.Messages.DeleteButton">
+                <C01 Value="Löschen"/>
+            </Key>
+            <Key Id="Std.Messages.ExportButton">
+                <C01 Value="Export"/>
+            </Key>
+            <Key Id="Std.Messages.markAsReadButton">
+                <C01 Value="Als gelesen makieren"/>
+            </Key>
+            <Key Id="Std.Messages.AllButton">
+                <C01 Value="Alle"/>
+            </Key>
+            <Key Id="Std.Messages.UnreadButton">
+                <C01 Value="Ungelesen"/>
+            </Key>
+            <Key Id="Std.Messages.NoAccess">
+                <C01 Value="Zugriff nicht gewährt"/>
+            </Key>
+
+            <!-- Messages Window -->
+            <Key Id="Std.MessageWindow.CancelButton">
+                <C01 Value="Abbruch"/>
+            </Key>
+            <Key Id="Std.MessageWindow.OkButton">
+                <C01 Value="OK"/>
+            </Key>
+            <Key Id="Std.MessageWindow.HeadText">
+                <C01 Value="Überschrift"/>
+            </Key>
+
+            <!-- User Administration -->
+
+            <Key Id="Std.UserAdministration.NameText">
+                <C01 Value="Name: "/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.SurnameText">
+                <C01 Value="Surname: "/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.LoginText">
+                <C01 Value="Login: "/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.LastLoginText">
+                <C01 Value="Letzter Login: "/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.LockedText">
+                <C01 Value="Gesperrt: "/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.DeletedText">
+                <C01 Value="Gelöscht: "/>
+            </Key>
+            <Key Id="Std.UserAdministration.clName">
+                <C01 Value="Name"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.clSurname">
+                <C01 Value="Surname"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.clLogin">
+                <C01 Value="Login"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.clLastLogin">
+                <C01 Value="Letzter Login"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.clLocked">
+                <C01 Value="Gesperrt"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.clDeleted">
+                <C01 Value="Gelöscht"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.clRights">
+                <C01 Value="Rechte"/>
+            </Key>
+            <Key Id="Std.UserAdministration.RefreshButton">
+                <C01 Value="Erneuern"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.DeleteButton">
+                <C01 Value="Löschen"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.NewButton">
+                <C01 Value="Neu"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.SetPasswordButton">
+                <C01 Value="Setze Passwort"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.SaveButton">
+                <C01 Value="Speichern"/>
+            </Key>
+            <Key Id="Std.UserAdministration.DetailsButton">
+                <C01 Value="Details"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.AlreadyloggedInError">
+                <C01 Value="Der aktuell eingeloggte Benutzer kann nicht gelöscht werden"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.UnsavedChanges">
+                <C01 Value="Änderungen sind nicht gespeichert. Wollen sie jetzt speichern?"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.NoAccess">
+                <C01 Value="Zugriff nicht gewährt!"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.InsufficientAccesRights">
+                <C01 Value="Unzureichende Zugriffsrechte!"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.AccessRightsRevoked">
+                <C01 Value="Zugangsrechte wiederrufen!"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.AccessAlreadyExists">
+                <C01 Value="Der Benutzername existiert bereits"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.UnsavedChanges2">
+                <C01 Value="Änderungen nicht gespeichert. Wollen sie speichern?\nDrücken sie OK zum Speichern,\nCancel um diese zu verwerfen und zu aktualisieren"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.NoUserSelected">
+                <C01 Value="Kein Benutzer ausgewählt"/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.NoUserSelected2">
+                <C01 Value="Es ist kein Benutzer ausgewählt, bitte wählen sie einen Benutzer und wiederholen sie den Vorgang."/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.PasswordToShort">
+                <C01 Value="Passwort wurde nicht geändert. Das eingegebene Passwort ist zu kurz(mindestens 6 Buchstaben). Setzen sie das Passwort erneut."/>
+            </Key>
+
+            <Key Id="Std.UserAdministration.PasswordContainsLogin">
+                <C01 Value="Das Passwort enthält den Benutzernamen. Geben sie eine Passwort ein das den Benutzernamen nicht enthält.Setzen sie das Passwort erneut."/>
+            </Key>
+            <Key Id="Std.UserAdministration.PasswordContainsName">
+                <C01 Value="Das Passwort enthält den Benutzernamen. Geben sie eine Passwort ein das den Benutzernamen nicht enthält.Setzen sie das Passwort erneut."/>
+
+            </Key>
+            <Key Id="Std.UserAdministration.PasswordContainsSurname">
+                <C01 Value="Das Passwort enthält den Nachnamen. Geben sie eine Passwort ein das den Nachnamen nicht enthält.Setzen sie das Passwort erneut."/>
+
+            </Key>
+            <Key Id="Std.UserAdministration.GetErrorMessage">
+                <C01 Value="Fehler beim Abrufen der Benutzerdaten."/>
+            </Key>
+            <Key Id="Std.UserAdministration.Warning">
+                <C01 Value="Warnung"/>
+            </Key>
+            <Key Id="Std.UserAdministration.NoPasswordError">
+                <C01 Value="There is an operator without a password! Please set a password before saving!\nOperator: "/>
+            </Key>
+            <Key Id="Std.UserAdministration.ChangesWereNotSaved.Text" >
+                <C01 Value="Aufgrund eines Fehlers konnten Ihre Änderungen nicht gespeichert werden."/>
+            </Key>
+            <Key Id="Std.UserAdministration.ChangesWereNotSaved.Caption" >
+                <C01 Value="Fehler"/>
+            </Key>
+            <Key Id="Std.UserAdministration.LoginAlreadyExists">
+                <C01 Value="Der Login Name wird bereits verwendet."/>
+            </Key>
+
+
+            <!-- YesNoCancelScreen -->
+            <Key Id="Std.YesNoCancelScreen.CancelButton">
+                <C01 Value="Abbruch"/>
+            </Key>
+
+            <Key Id="Std.YesNoCancelScreen.YesButton">
+                <C01 Value="Ja"/>
+            </Key>
+
+            <Key Id="Std.YesNoCancelScreen.NoButton">
+                <C01 Value="Nein"/>
+            </Key>
+
+            <Key Id="Std.YesNoCancelScreen.MessageText">
+                <C01 Value="Nachricht"/>
+            </Key>
+
+            <!-- Home Screen -->
+            <Key Id="Std.HomeScreen.clResource">
+                <C01 Value="Resource"/>
+            </Key>
+            <Key Id="Std.HomeScreen.clName">
+                <C01 Value="Name"/>
+            </Key>
+            <Key Id="Std.HomeScreen.clHost">
+                <C01 Value="Host"/>
+            </Key>
+            <Key Id="Std.HomeScreen.clState">
+                <C01 Value="Status"/>
+            </Key>
+        </L01>
+    </LOCALIZATION>
+</MFC.NET>

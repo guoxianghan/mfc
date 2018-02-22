@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping  xmlns="urn:nhibernate-mapping-2.2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.SystemParameters.SystemParametersConfigurationEntity" schema="SNTON" table="SNTON.SystemParametersConfiguration" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="Id">
+      <column name="ID" not-null="true" />
+      <generator class="identity" />
+    </id>
+    <property name="SysParamId" column="SysParamId" />
+    <property name="Value" column="Value" />
+    <property name="DisplayValue" column="DisplayValue" />
+    <property name="Created" column="Created" />
+    <property name="Updated" column="Updated" />
+    <property name="Deleted" column="Deleted" />
+    <property name="IsDeleted" column="IsDeleted" />
+  </class>
+</hibernate-mapping>

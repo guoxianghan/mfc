@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping  xmlns="urn:nhibernate-mapping-2.2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.Equipments.EquipControllerConfigEntity" schema="SNTON" table="SNTON.EquipControllerConfig" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="Id">
+      <column name="ID" not-null="true" />
+      <generator class="identity" />
+    </id>
+    <property name="PlantNo" column="PlantNo" />
+    <property name="EquipControllerName" column="EquipControllerName" />
+    <property name="AGVRoute" column="AGVRoute" />
+    <property name="StorageArea" column="StorageArea" />
+    <property name="Description" column="Description" />
+    <property name="Created" column="Created" />
+    <property name="Updated" column="Updated" />
+    <property name="Deleted" column="Deleted" />
+    <property name="IsDeleted" column="IsDeleted" />
+  </class>
+</hibernate-mapping>

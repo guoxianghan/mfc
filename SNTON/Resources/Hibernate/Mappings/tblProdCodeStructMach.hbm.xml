@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" schema="DBO" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.MES.tblProdCodeStructMachEntity" schema="DBO" table="DBO.tblProdCodeStructMach" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="MachCode">
+      <column name="MachCode" not-null="true" />
+      <generator class="identity" />
+    </id>
+    <property name="StructBarCode" column="StructBarCode" />
+    <property name="GroupId" column="GroupId" />
+    <property name="FactoryId" column="FactoryId" /> 
+    <property name="StartDate" column="StartDate" />
+    <property name="StartUser" column="StartUser" />
+    <property name="StartShift" column="StartShift" />
+    <property name="StartShiftPart" column="StartShiftPart" />
+    <property name="InsertUser" column="InsertUser" />
+    <property name="InsertDate" column="InsertDate" /> 
+  </class>
+</hibernate-mapping>

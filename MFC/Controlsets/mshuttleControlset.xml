@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+    <CONTROLSET>
+        <SEQUENCEHANDLER Type ="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="MS$EXT$SequencerInbound" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <SEQUENCEHANDLER Type ="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="MS$EXT$SequencerOutbound" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <PACKETIZER Type="VI.MFC.Components.Packetizer.SEPacketizer" Id="MS$EXT$Packetizer" Enabled="true">
+            <STARTDELIMITER>02</STARTDELIMITER>
+            <ENDDELIMITER>03</ENDDELIMITER>
+            <MAXPACKETLENGTH>200</MAXPACKETLENGTH>
+            <MINIMALANALYSISLENGTH>24</MINIMALANALYSISLENGTH>
+        </PACKETIZER>
+        <LOCATIONTRANSLATE Type="VI.MFC.Components.Asrs.LocationTranslate.DummyTranslate" Id="MSTranslate$EXT$" Enabled="true"/>
+        <PARSER Type="VI.MFC.Components.Parser.Beewen.BeewenParser" Id="MS$EXT$Parser" Enabled="true">
+            <CONFIG CommModule="MS$EXT$" TelegramDescriptions="BeewenMicroShuttleTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+        <BEEWENLOGIC Type="VI.MFC.Logic.Beewen.BeewenLogicBaseEx" Id="MS$EXT$Logic" Enabled="true">
+            <CONFIG LocationTranslate="MSTranslate$EXT$" CommModule="MS$EXT$" Parser="MS$EXT$Parser" ResourceKey="D$AREA$A$AISLE$C$CONTROLLER$"></CONFIG>
+            <WATCHDOG TimeoutInSecs="20" RetriesBeforeDisconnection="3"/>
+            <ASYNCHRON UsesAsynchronousMessages="0"/>
+        </BEEWENLOGIC>
+        <BEEWENCRANE Type="VI.MFC.COM.Beewen.BeewenTCPClient" Enabled="true" Id="MS$EXT$" Name="Micro shuttle" ResourceType="MSH">
+            <CONFIG FieldValueConstants="BeewenMicroShuttleFieldValues" SequencerInbound="MS$EXTSequencerInbound" 
+                    SequencerOutbound="MS$EXT$SequencerOutbound" Packetizer="MS$EXT$Packetizer" Parser="MS$EXT$Parser"></CONFIG>
+            <LOGIC Id="MS$EXT$Logic"></LOGIC>
+
+            <CONNECTION>
+                <TCPIP>
+                    <HOST>$HOST$</HOST>
+                    <LOCALENDPOINT>$LOCALENDPOINT$</LOCALENDPOINT>
+                    <IPVERSION>V4</IPVERSION>
+                    <OPTIONS RepeatTimeoutInMs="500" RepeatCount="3"></OPTIONS>
+                    <CLIENT>
+                        <PORT>$PORT$</PORT>
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="512"></LOGGINGOPTIONS>
+                    </CLIENT>
+                </TCPIP>
+            </CONNECTION>
+        </BEEWENCRANE>
+    </CONTROLSET>
+</MFC.NET>

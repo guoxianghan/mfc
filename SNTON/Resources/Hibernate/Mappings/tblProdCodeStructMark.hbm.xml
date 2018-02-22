@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" schema="DBO" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.MES.tblProdCodeStructMarkEntity" schema="DBO" table="DBO.tblProdCodeStructMark" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="StructBarCode">
+      <column name="StructBarCode" not-null="true" />
+      <generator class="identity" />
+    </id>
+    <property name="ProdCode" column="ProdCode" />
+    <property name="Const" column="Const" />
+    <property name="ProdLength" column="ProdLength" />
+    <property name="SpoolType" column="SpoolType" />
+    <property name="CName" column="CName" />
+    <property name="Supply1" column="Supply1" />
+    <property name="SupplyQty1" column="SupplyQty1" />
+    <property name="Supply2" column="Supply2" />
+    <property name="SupplyQty2" column="SupplyQty2" />
+  </class>
+</hibernate-mapping>

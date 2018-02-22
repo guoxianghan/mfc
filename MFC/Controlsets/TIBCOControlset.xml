@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+    <CONTROLSET>
+        <XMLFACTORY Type="VI.MFC.Components.Xml.XmlMessageFactory" Enabled="true" Id="MQ_INXml">
+            <XMLMESSAGE Assembly="FedEx.DLL" MessageName="SCSM" UniqueMessageId="&lt;scsm " XmlSchema=".\Components\Gateway\XSD\SCSM.xsd"
+                        ClassName="FedEx.Components.Gateway.MQ.scsm" ValidateMessage="1" TimeoutInMS="80">
+            </XMLMESSAGE>
+            <XMLMESSAGE Assembly="FedEx.DLL" MessageName="Routing" UniqueMessageId="&lt;routing" XmlSchema=".\Components\Gateway\XSD\routing-data.xsd"
+                        ClassName="FedEx.Components.Gateway.MQ.routing" ValidateMessage="1" TimeoutInMS="80">
+            </XMLMESSAGE>
+            <XMLMESSAGE Assembly="FedEx.DLL" MessageName="Master" UniqueMessageId="&lt;awblist" XmlSchema=".\Components\Gateway\XSD\master-mps.xsd"
+                        ClassName="FedEx.Components.Gateway.MQ.awblist" ValidateMessage="1" TimeoutInMS="80">
+            </XMLMESSAGE>
+        </XMLFACTORY>
+
+        <LOGIC Assembly="FedEx.DLL" Type ="FedEx.Components.Gateway.MQ.MqInboundLogic" Id="MQInboundLogic" Enabled="true">
+            <CONFIG InboundXml="MQ_INXml" Broker="GtwBroker" ValidateXml="1" CommModule="MQ_IN" Type="File"></CONFIG>
+        </LOGIC>
+        
+        <MQIN Assembly="FedEx.DLL" Type="FedEx.Components.Gateway.MQ.TibcoInboundChannel" Enabled="true" Id="MQ_IN" Name="Tibco MQ" ResourceType="MQHost">
+            <CONFIG ConnectionUrl="localhost:7222" UserName="" Password="" Logic ="MQInboundLogic" Queue = "test"></CONFIG>
+        </MQIN>
+    </CONTROLSET>
+</MFC.NET>

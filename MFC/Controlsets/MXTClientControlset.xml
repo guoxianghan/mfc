@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+  <CONTROLSET>
+    <PARSER Type="SNTON.Components.Parser.MXParser" Id="PLC$EXT$Parser" Enabled="true" Assembly=".\SNTON.DLL" >
+      <CONFIG CommModule="PLC_$EXT$" TelegramDescriptions="PLCTelegramDescriptions"></CONFIG>
+      <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+    </PARSER>
+    <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="PLC$EXT$SequencerInbound" Enabled="true">
+      <CONFIG Length="10" Padding="1" PaddingChar="0" MinSequence="1" MaxSequence="9999999999" StartSequence="1"></CONFIG>
+    </SEQUENCEHANDLER>
+    <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="PLC$EXT$SequencerOutbound" Enabled="true">
+      <CONFIG Length="10" Padding="1" PaddingChar="0" MinSequence="1" MaxSequence="9999999999" StartSequence="1"></CONFIG>
+    </SEQUENCEHANDLER>
+    
+    <LOGIC Assembly=".\SNTON.DLL" Type="$LOGIC$" Id="PLC$EXT$Logic" Enabled="true">
+      <CONFIG CommModule="PLC_$EXT$" 
+              Parser="PLC$EXT$Parser"
+              DatabaseLayer="PLC$EXT$Database"
+              HibernateSessionPoolToUse="SQLServerDatabase"
+              BusinessLogicId="BusinessLogic"
+              PlantNo="$EXT$" 
+              TaskNoSequencerId="TaskNoSequencer">
+      </CONFIG>
+      <WATCHDOG Enabled="false" TimeoutInSecs="60" TelegramId="AliveReq"  RetriesBeforeDisconnection="3" ReplyTelegramId="AliveAck"></WATCHDOG>
+    </LOGIC>
+    <PLC Type="SNTON.Com.MXTPLCClient" Enabled="true" Id="PLC_$EXT$" Name="NiTech PLC-$EXT$" Assembly=".\SNTON.DLL" ResourceType="PLC">
+      <CONFIG Parser="PLC$EXT$Parser"></CONFIG>
+      <LOGIC Id="PLC$EXT$Logic"></LOGIC>
+      <CONNECTION>
+        <TCPIP> 
+          <!--ActHostAddress 连接站侧模块的主机名或 IP 地址-->
+          <HOST>$HOST$</HOST> 
+          <CLIENT>
+            <PORT>$PORT$</PORT>
+            <!--对应于对象站的 CPU 类型-->
+            <CpuType>CpuType</CpuType>
+            <!--PROTOCOL_TCPIP-->
+            <ProtocolType>ProtocolType</ProtocolType>
+            <!--以 ms 为单位由用户任意设置-->
+            <TimeOut>1000</TimeOut>
+            <!--UNIT_FXETHER-->
+            <UnitType>UnitType</UnitType>
+          </CLIENT>
+        </TCPIP>
+      </CONNECTION>
+    </PLC>
+  </CONTROLSET>
+</MFC.NET>

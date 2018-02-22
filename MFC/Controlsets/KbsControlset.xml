@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+  <CONTROLSET>
+    <TelegramDescriptionHandler Type="VI.MFC.Components.TelegramDescriptionHandler.TelegramDescriptions" Id="Kbs$EXT$TelegramDescriptions" Enabled="true">
+      <FIELDDEFINITION>
+        <FIELD Name="Sender"            Type="Numeric"      Pos="3"      Length="3"></FIELD>
+        <FIELD Name="Receiver"          Type="Numeric"      Pos="6"      Length="3"></FIELD>
+        <FIELD Name="Address"           Type="Custom"       Pos="11"     Length="16" TrailChar=" " Custom="^[\p{P}\d\s\w]*$"></FIELD>
+        <FIELD Name="Key"               Type="Alphanumeric" Pos="27"     Length="1"></FIELD>
+        <FIELD Name="Duration"          Type="Numeric"      Pos="28"     Length="5"></FIELD>
+        <FIELD Name="CommissionNumber"  Type="Numeric"      Pos="27"     Length="4" LeadChar="0"></FIELD>
+        <FIELD Name="DataDI"            Type="Custom"       Pos="31"     Length="*" Custom="^[\p{P}\d\s\w]*$"></FIELD>
+        <FIELD Name="DataBC"            Type="Custom"       Pos="27"     Length="*" Custom="^[\p{P}\d\s\w]*$"></FIELD>
+        <FIELD Name="DataST"            Type="Custom"       Pos="13"     length="*" Custom="^[\p{P}\d\s\w]*$"></FIELD>
+        <FIELD Name="Code"              Type="Numeric"      Pos="11"     Length="4"></FIELD>
+        <FIELD Name="Message"           Type="Custom"       Pos="15"     Length="*" Custom=".+" TrailChar=" "></FIELD>
+        <FIELD Name="Type"              Type="Numeric"      Pos="11"     Length="1"></FIELD>
+        <FIELD Name="Type2"             Type="Custom"       Pos="11"     length="2" Custom="^[\p{P}\d\s\w]*$"></FIELD>
+      </FIELDDEFINITION>
+
+      <TELEGRAMS>
+        <TELEGRAMID Name="TELEGRAMID" Type="Alphanumeric" Pos="9" Length="2"></TELEGRAMID>
+        <SEQUENCE Name="SEQUENCE" Type="Numeric" Pos="1" Length="2"></SEQUENCE>
+
+        <TELEGRAM TelegramID="KY" Length="34" Name="Asynchronous key stroke on display" MaxProcessingTimeInMs="100" FillCharacter="_">
+          <FIELDS>
+            <FIELD Name="Sender"></FIELD>
+            <FIELD Name="Receiver"></FIELD>
+            <FIELD Name="Address"></FIELD>
+            <FIELD Name="Key"></FIELD>
+            <FIELD Name="Duration"></FIELD>
+          </FIELDS>
+        </TELEGRAM>
+
+        <TELEGRAM TelegramID="DI" length="50" Name="Display command at display" MaxProcessingTimeInMs="100" FillCharacter="_">
+          <FIELDS>
+            <FIELD Name="Sender"></FIELD>
+            <FIELD Name="Receiver"></FIELD>
+
+            <FIELD Name="Address"></FIELD>
+            <FIELD Name="CommissionNumber"></FIELD>
+            <FIELD Name="DataDI" alias="Data"></FIELD>
+          </FIELDS>
+        </TELEGRAM>
+
+        <TELEGRAM TelegramID="BC" length="38" Name="Message from serial interface" MaxProcessingTimeInMs="100" FillCharacter="_">
+          <FIELDS>
+            <FIELD Name="Sender"></FIELD>
+            <FIELD Name="Receiver"></FIELD>
+
+            <FIELD Name="Address"></FIELD>
+            <FIELD Name="DataBC" alias="Data"></FIELD>
+          </FIELDS>
+        </TELEGRAM>
+
+        <TELEGRAM TelegramID="ME" length="166" Name="Error message" MaxProcessingTimeInMs="100" FillCharacter="_">
+          <FIELDS>
+            <FIELD Name="Sender"></FIELD>
+            <FIELD Name="Receiver"></FIELD>
+
+            <FIELD Name="Code"></FIELD>
+            <FIELD Name="Message"></FIELD>
+          </FIELDS>
+        </TELEGRAM>
+
+        <TELEGRAM TelegramID="LV" length="12" Name="Live message (watchdog)" MaxProcessingTimeInMs="100" FillCharacter="_">
+          <FIELDS>
+            <FIELD Name="Sender"></FIELD>
+            <FIELD Name="Receiver"></FIELD>
+          </FIELDS>
+        </TELEGRAM>
+
+        <TELEGRAM TelegramID="RS" length="13" Name="Reset from Winkomm Basis" MaxProcessingTimeInMs="100" FillCharacter="_">
+          <FIELDS>
+            <FIELD Name="Sender"></FIELD>
+            <FIELD Name="Receiver"></FIELD>
+            <FIELD Name="Type"></FIELD>
+          </FIELDS>
+        </TELEGRAM>
+
+        <TELEGRAM TelegramID="ST" length="37" Name="Status from Winkomm Basis" MaxProcessingTimeInMs="100" FillCharacter="_">
+          <FIELDS>
+            <FIELD Name="Sender"></FIELD>
+            <FIELD Name="Receiver"></FIELD>
+            <FIELD Name="Type2"></FIELD>
+            <FIELD Name="DataST" alias="Data"></FIELD>
+          </FIELDS>
+        </TELEGRAM>
+      </TELEGRAMS>
+    </TelegramDescriptionHandler>
+
+    <DATABASE Type="VI.MFC.Components.Database.Ptl.PtlDatabaseLayer" Id="PtlDataBase$EXT$" Enabled="true">
+      <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+      <CLIENT_ID>MFC KBS Ptl thread</CLIENT_ID>
+      <PACKAGE Name="SvcPtl"></PACKAGE>
+    </DATABASE>
+
+    <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="Kbs$EXT$SequencerInbound" Enabled="true">
+      <CONFIG Length="2" Padding="left" PaddingChar="0" MinSequence="1" MaxSequence="99" StartSequence="0"></CONFIG>
+    </SEQUENCEHANDLER>
+
+    <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="Kbs$EXT$SequencerOutbound" Enabled="true">
+      <CONFIG Length="2" Padding="left" PaddingChar="0" MinSequence="1" MaxSequence="99" StartSequence="0"></CONFIG>
+    </SEQUENCEHANDLER>
+
+    <PACKETIZER Type="VI.MFC.Components.Packetizer.SEPacketizer" Id="Kbs$EXT$Packetizer" Enabled="true">
+      <!-- Can be specified as text using "" or 2 character hexadecimal bytes (eg. 02FF1003AA)-->
+      <STARTDELIMITER>02</STARTDELIMITER>
+      <!-- Can be specified as text using "" or hexadecimal, comma seperated bytes-->
+      <ENDDELIMITER>03</ENDDELIMITER>
+      <!-- Defines the maximum length of a data packet-->
+      <MAXPACKETLENGTH>4000</MAXPACKETLENGTH>
+      <!-- Defines the minimal required receive buffer size before any anlysis will take place-->
+      <MINIMALANALYSISLENGTH>12</MINIMALANALYSISLENGTH>
+      <!-- Consider headerbytes when counting the packet length (IncludeHeader or ExcludeHeader) -->
+    </PACKETIZER>
+
+    <PARSER Type="VI.MFC.Components.Parser.KBS.KbsParser" Id="Kbs$EXT$Parser" Enabled="true">
+      <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+      <PACKING Enabled="$PACKINGENABLED$" MaxTelegramLength="1000" TelegramDelimiter="17" ContentPos="9">
+        <FIXEDFIELDS>
+          <FIELD>Sender</FIELD>
+          <FIELD>Receiver</FIELD>
+        </FIXEDFIELDS>
+      </PACKING>
+
+      <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+      <CONFIG TelegramDescriptions="Kbs$EXT$TelegramDescriptions" CommModule="KBS_$EXT$"/>
+    </PARSER>
+
+    <LOGIC Type="VI.MFC.Logic.Ptl.KbsPtlLogic" Id="Kbs$EXT$Logic" Enabled="true">
+      <ASYNCHRON UsesAsynchronousMessages="1"></ASYNCHRON>
+      <CONFIG PresentationModeFile="./MFC/Logic/Ptl/PtlPresentations.xml" PtlUpdateTimeoutInMs="10000" UdpPort="7001" PtlProcessor="DbPtlProcessor$EXT$" Parser="Kbs$EXT$Parser" />
+    </LOGIC>
+
+    <PROCESSOR Type="VI.MFC.Components.Database.Ptl.DbPtlProcessor" Id="DbPtlProcessor$EXT$" Enabled="true">
+      <CONFIG DatabaseLayer="PtlDataBase$EXT$"/>
+    </PROCESSOR>
+    
+    <KBS Type="VI.MFC.COM.KBS.TcpKbsCommunication" Enabled="true" ID="KBS_$EXT$" Name="KBS_$EXT$" ResourceType="KBS" >
+      <CONNECTION>
+
+        <TCPIP>
+          <!-- Host (network interface) to connect to. Can be name or IP-Address 10.147.136.161 -->
+          <HOST>$HOST$</HOST>
+          <!-- Defines which network card to be used for the local endpoint in eg. a cluster environment -->
+          <LOCALENDPOINT>$LOCALENDPOINT$</LOCALENDPOINT>
+          <!-- V4- use IPV4
+                                                  V6- use IPV6 -->
+          <IPVERSION>V4</IPVERSION>
+
+          <WINKOMMBASISID>$WINKOMMBASISID$</WINKOMMBASISID>
+          <MFCID>$MFCID$</MFCID>
+
+          <RECEIVER Type="VI.MFC.COM.KBS.TcpKbsClient">
+            <!-- Port to use on remote computer <HOST> to connect to. -->
+            <PORT>$CLIENTPORT$</PORT>
+            <!-- Different socket options. See socket api for reference. Change only in case you
+                                                          have a good reason to do so. -->
+            <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+            <!-- Size in bytes of the receive buffer. 16384 should be ok. -->
+            <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+            <!-- Size in bytes of the sending buffer. 16384 should be ok. -->
+            <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+            <!-- YES- close object once disconnected (rarely used)
+                                                          NO- do not close object once disconnected (standard) -->
+            <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+            <!-- Time to wait ins ms between connection attempts -->
+            <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+            <!-- Can be set to None, Normal (ASCII dump), UTF8, HexOnly or Mixed (binary values replaced by [0xXX] characters).
+                                                          Incoming data will be logged starting with '>'.
+                                                          Outgoing data will be logged starting with '<'.
+                                                          Trash bytes (non packet data) will be logged starting with '#>'
+                                                          Packetized data (one interpreted data packet) will be logged starting with 'P>'
+ 
+                                                          'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                                                          Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                                                          support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                                                          ethernet frame). -->
+
+            <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="3000"></LOGGINGOPTIONS>
+          </RECEIVER>
+
+          <SENDER Type="VI.MFC.COM.KBS.TcpKbsClient">
+            <!-- Port to use on remote computer <HOST> to connect to. -->
+            <PORT>$SERVERPORT$</PORT>
+            <!-- Different socket options. See socket api for reference. Change only in case you
+                                                          have a good reason to do so. -->
+            <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+            <!-- Size in bytes of the receive buffer. 16384 should be ok. -->
+            <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+            <!-- Size in bytes of the sending buffer. 16384 should be ok. -->
+            <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+            <!-- YES- close object once disconnected (rarely used)
+                                                          NO- do not close object once disconnected (standard) -->
+            <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+            <!-- Time to wait ins ms between connection attempts -->
+            <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+            <!-- Maximum time in ms that the client waits for a keep alive message from the server.
+                                                                     Typically set to 3 times the interval of the keep alive messages.
+                                                                     Remove this parameter or set to 0 for no traffic check -->
+            <TRAFFICTIMEOUTINMS>30000</TRAFFICTIMEOUTINMS>
+
+            <!-- FSC 7 Watchdog support. For whatever reason Veghel changed the watchdog for the FSC 7.
+                                                          The client is now responsible for sending a watchdog ("W2") telegram after 15 secs.
+                                                          The FSC replies with a watchdog reply ("W1") telegram.
+ 
+                                                          Set WATCHDOGTIMEOUTINMS to "0" to disable the watchdog support on the client channel. -->
+
+            <WATCHDOGTIMEOUTINMS>10000</WATCHDOGTIMEOUTINMS>
+
+            <!-- Can be set to None, Normal (ASCII dump), UTF8, HexOnly or Mixed (binary values replaced by [0xXX] characters).
+                                                          Incoming data will be logged starting with '>'.
+                                                          Outgoing data will be logged starting with '<'.
+                                                          Trash bytes (non packet data) will be logged starting with '#>'
+                                                          Packetized data (one interpreted data packet) will be logged starting with 'P>'
+ 
+                                                          'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                                                          Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                                                          support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                                                          ethernet frame). -->
+
+            <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="3000"></LOGGINGOPTIONS>
+          </SENDER>
+
+        </TCPIP>
+
+      </CONNECTION>
+
+      <CONFIG Packetizer="Kbs$EXT$Packetizer" SequencerInbound="Kbs$EXT$SequencerInbound" SequencerOutbound="Kbs$EXT$SequencerOutbound" Parser="Kbs$EXT$Parser"></CONFIG>
+      <LOGIC Id="Kbs$EXT$Logic"></LOGIC>
+    </KBS>
+  </CONTROLSET>
+</MFC.NET>

@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+    <CONTROLSET>
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.PLCDatabaseLayer" Id="PLC$EXT$Database" Enabled="false">
+            <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>MFC PLC Thread</CLIENT_ID>
+        </DATABASE>
+        <PARSER Type="VI.MFC.Components.Parser.VIParser" Id="PLC$EXT$Parser" Enabled="true">
+            <CONFIG CommModule="PLC_$EXT$" TelegramDescriptions="AGVTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+        <PACKETIZER Type="VI.MFC.Components.Packetizer.SEPacketizer" Id="PLC$EXT$Packetizer" Enabled="true">
+            <USE_GLOBAL_DEFINITION>standard packetizer</USE_GLOBAL_DEFINITION>
+        </PACKETIZER>
+        <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="PLC$EXT$SequencerInbound" Enabled="true">
+            <CONFIG Length="10" Padding="1" PaddingChar="0" MinSequence="1" MaxSequence="9999999999" StartSequence="1"></CONFIG>
+        </SEQUENCEHANDLER>
+        <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="PLC$EXT$SequencerOutbound" Enabled="true">
+            <CONFIG Length="10" Padding="1" PaddingChar="0" MinSequence="1" MaxSequence="9999999999" StartSequence="1"></CONFIG>
+        </SEQUENCEHANDLER>
+      
+       <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="AGV$EXT$" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+
+      <SEQUENCER Type="VI.MFC.Components.Sequencer.PersistentSequencer.FileBasedSequencer" Enabled="true" Id="TaskNoSequencer">
+        <CONFIG InitialSequenceNo="100000000000000000"
+                StartSequenceNo="100000000000000000"
+                EndSequenceNo="922337203685477506"
+                SequencerFileName=".\agvtaskno.seq"></CONFIG>
+      </SEQUENCER>
+        <LOGIC Assembly=".\SNTON.DLL" Type="$LOGIC$" Id="PLC$EXT$Logic" Enabled="true">
+            <CONFIG 
+              CommModule="PLC_$EXT$"
+              Parser="PLC$EXT$Parser" 
+              DatabaseLayer="PLC$EXT$Database" 
+              HibernateSessionPoolToUse="SQLServerDatabase"
+              BusinessLogicId="BusinessLogic" 
+              PlantNo="$PlantNo$"
+              Sequencer="TaskNoSequencer">
+            </CONFIG>
+            <WATCHDOG Enabled="false" TimeoutInSecs="60" TelegramId="AliveReq"  RetriesBeforeDisconnection="3" ReplyTelegramId="AliveAck"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="0"></ASYNCHRON>
+        </LOGIC>
+        <PLC Type="VI.MFC.COM.TCPClient" Enabled="true" Id="PLC_$EXT$" Name="NiTech PLC-$EXT$" ResourceType="PLC">
+            <CONFIG 
+              SequencerInbound="PLC$EXT$SequencerInbound" 
+              SequencerOutbound="PLC$EXT$SequencerOutbound"  
+              Packetizer="PLC$EXT$Packetizer" 
+              Parser="PLC$EXT$Parser"></CONFIG>
+            <LOGIC Id="PLC$EXT$Logic"></LOGIC>
+            <CONNECTION>
+                <TCPIP>
+                    <HOST>$HOST$</HOST>
+                    <LOCALENDPOINT>$LOCALENDPOINT$</LOCALENDPOINT>
+                    <IPVERSION>V4</IPVERSION>
+                    <CLIENT>
+                        <PORT>$PORT$</PORT>
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+                    </CLIENT>
+                </TCPIP>
+            </CONNECTION>
+        </PLC>
+      
+    </CONTROLSET>
+</MFC.NET>

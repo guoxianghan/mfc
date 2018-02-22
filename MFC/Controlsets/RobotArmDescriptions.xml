@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<MFC.NET>
+  <CONTROLSET>
+    <TelegramDescriptionHandler Type="SNTON.Components.FieldsDescription.MXFieldsDescription" Id="RobotArmDescriptions" Assembly="SNTON.DLL" Enabled="true">
+      <FIELDDEFINITION>
+        <!--下发指令开始-->
+        <!--标志位：D800可读可写。PLC给D800写1，表示允许上位机向指令区写指令。上位机给D800写2，表示允许PLC读取指令区指令。-->
+        <FIELD Name="req_FLAGBIT" Type="Int"  Length="1"  Value="D800" SPLIT="" ></FIELD>
+        <!--指令码：1入库，2出库，3异常口处理，4异常口出库-->
+        <FIELD Name="req_COMMAND" Type="Int"  Length="1"  Value="D701" SPLIT="" ></FIELD>
+        <!--库位号-->
+        <FIELD Name="req_STORE_NO" Type="Int"  Length="1"  Value="D702" SPLIT="" ></FIELD>
+        <!--出库位置号-->
+        <FIELD Name="req_OUT_STORE_LOCATION" Type="Int"  Length="4"  Value="D703" SPLIT="" ></FIELD>
+        <!--工字轮直径;单位:0.1mm-->
+        <FIELD Name="req_WHEEL_L" Type="Int"  Length="4"  Value="D704" SPLIT="" ></FIELD>
+        <!--所取工字轮高度;单位:0.1mm-->
+        <FIELD Name="req_WHEEL_GET_HIGH" Type="Int"  Length="4"  Value="D705" SPLIT="" ></FIELD>
+        <!--所放工字轮高度;单位:0.1mm-->
+        <FIELD Name="req_WHEEL_SET_HIGH" Type="Int"  Length="4"  Value="D706" SPLIT="" ></FIELD>
+        <!--物料种类-->
+        <FIELD Name="req_MaterialType" Type="Int"  Length="4"  Value="D707" SPLIT="" ></FIELD>
+        <!--备用-->
+        <FIELD Name="req_BACKUP1" Type="String"  Length="4"  Value="D708" SPLIT="" ></FIELD>
+        <!--备用-->
+        <FIELD Name="req_BACKUP2" Type="String"  Length="4"  Value="D709" SPLIT="" ></FIELD>
+        <!--下发指令结束-->
+
+        <!--自动响应结果开始-->
+        <!---->
+        <FIELD Name="res_COMMAND_AUTO" Type="Int"  Length="1"  Value="D801" SPLIT="" ></FIELD>
+        <!--库位号-->
+        <FIELD Name="res_STORE_NO_AUTO" Type="Int"  Length="4"  Value="D802" SPLIT="" ></FIELD>
+        <!--出库位置号-->
+        <FIELD Name="res_OUT_STORE_LOCATION_AUTO" Type="Int"  Length="4"  Value="D803" SPLIT="" ></FIELD>
+        <!--工字轮直径;单位:0.1mm-->
+        <FIELD Name="res_WHEEL_L_AUTO" Type="Int"  Length="4"  Value="D804" SPLIT="" ></FIELD>
+        <!--所取工字轮高度;单位:0.1mm-->
+        <FIELD Name="res_WHEEL_GET_HIGH_AUTO" Type="Int"  Length="4"  Value="D805" SPLIT="" ></FIELD>
+        <!--所放工字轮高度;单位:0.1mm-->
+        <FIELD Name="res_WHEEL_SET_HIGH_AUTO" Type="Int"  Length="4"  Value="D806" SPLIT="" ></FIELD>
+        <!--物料种类-->
+        <FIELD Name="res_MaterialType_AUTO" Type="Int"  Length="1"  Value="D807" SPLIT="" ></FIELD>
+        <!---->
+        <FIELD Name="res_BACKUP1_AUTO" Type="String"  Length="4"  Value="D808" SPLIT="" ></FIELD>
+        <!---->
+        <FIELD Name="res_BACKUP2_AUTO" Type="String"  Length="4"  Value="D809" SPLIT="" ></FIELD>
+        <!---->
+        <FIELD Name="res_BACKUP3_AUTO" Type="String"  Length="4"  Value="D810" SPLIT="" ></FIELD>
+        <!--自动响应结果结束-->
+
+        <!--手动反馈响应开始-->
+        <!---->
+        <FIELD Name="res_COMMAND_UNAUTO" Type="Int"  Length="1"  Value="D821" SPLIT="" ></FIELD>
+        <!--库位号-->
+        <FIELD Name="res_STORE_NO_UNAUTO" Type="Int"  Length="4"  Value="D822" SPLIT="" ></FIELD>
+        <!--出库位置号-->
+        <FIELD Name="res_OUT_STORE_LOCATION_UNAUTO" Type="Int"  Length="4"  Value="D823" SPLIT="" ></FIELD>
+        <!--工字轮直径;单位:0.1mm-->
+        <FIELD Name="res_WHEEL_L_UNAUTO" Type="Int"  Length="4"  Value="D824" SPLIT="" ></FIELD>
+        <!--所取工字轮高度;单位:0.1mm-->
+        <FIELD Name="res_WHEEL_GET_HIGH_UNAUTO" Type="Int"  Length="4"  Value="D825" SPLIT="" ></FIELD>
+        <!--所放工字轮高度;单位:0.1mm-->
+        <FIELD Name="res_WHEEL_SET_HIGH_UNAUTO" Type="Int"  Length="4"  Value="D826" SPLIT="" ></FIELD>
+        <!--物料种类-->
+        <FIELD Name="res_MaterialType_UNAUTO" Type="Int"  Length="4"  Value="D827" SPLIT="" ></FIELD>
+        <!---->
+        <FIELD Name="res_BACKUP1_UNAUTO" Type="String"  Length="4"  Value="D828" SPLIT="" ></FIELD>
+        <!---->
+        <FIELD Name="res_BACKUP2_UNAUTO" Type="String"  Length="4"  Value="D829" SPLIT="" ></FIELD>
+        <!--龙门状态，0自动无故障，1退出自动无故障，2故障-->
+        <FIELD Name="res_LONGMEN_STATE" Type="Int"  Length="2"  Value="D830" SPLIT="" ></FIELD>
+
+
+        <!--报警信息(根据二期现场实际情况，报警信息会相应增减、改动)-->
+        <FIELD Name="res_Warning0" Type="String"  Length="16"  Value="D650" SPLIT="" ></FIELD>
+        <!---->
+        <FIELD Name="res_Warning1" Type="String"  Length="16"  Value="D651" SPLIT="" ></FIELD>
+        <!---->
+        <FIELD Name="res_Warning2" Type="String"  Length="16"  Value="D652" SPLIT="" ></FIELD>
+        <!--手动反馈响应结束-->
+      </FIELDDEFINITION>
+      <TELEGRAMS>
+        <!-- Format specification is almost identical to field specification. Please see below.
+                         Sequence-   Where can the telegram sequence be found within the packet (0-based offset)?
+                         TelegramID- Where can the telegram ID be found within the packet (0-based offset)? -->
+        <TELEGRAMID Name="TELEGRAMID" Type="Custom" Pos="1" Length="20" Custom="^\s+[a-zA-Z0-9]*" Leadchar=" "></TELEGRAMID>
+        <SEQUENCE Name="SEQUENCE" Type="Alphanumeric" Pos="21" Length="10"></SEQUENCE>
+
+
+        <!--入库-->
+        <TELEGRAM TelegramId="PLCCommand" Length="0" Name="PLCCommand" MaxProcessingTimeInMs="120" FillCharacter="_">
+          <FIELDS>
+            <FIELD Name="req_FLAGBIT"></FIELD>
+            <FIELD Name="req_COMMAND"></FIELD>
+            <FIELD Name="req_STORE_NO"></FIELD>
+            <FIELD Name="req_OUT_STORE_LOCATION"></FIELD>
+            <FIELD Name="req_WHEEL_L"></FIELD>
+            <FIELD Name="req_WHEEL_GET_HIGH"></FIELD>
+            <FIELD Name="req_WHEEL_SET_HIGH"></FIELD>
+            <FIELD Name="req_MaterialType"></FIELD>
+            <FIELD Name="req_BACKUP1"></FIELD>
+            <FIELD Name="req_BACKUP2"></FIELD>
+            <FIELD Name="res_COMMAND_AUTO"></FIELD>
+            <FIELD Name="res_STORE_NO_AUTO"></FIELD>
+            <FIELD Name="res_OUT_STORE_LOCATION_AUTO"></FIELD>
+            <FIELD Name="res_WHEEL_L_AUTO"></FIELD>
+            <FIELD Name="res_WHEEL_GET_HIGH_AUTO"></FIELD>
+            <FIELD Name="res_WHEEL_SET_HIGH_AUTO"></FIELD>
+            <FIELD Name="res_MaterialType_AUTO"></FIELD>
+            <FIELD Name="res_BACKUP1_AUTO"></FIELD>
+            <FIELD Name="res_BACKUP2_AUTO"></FIELD>
+            <FIELD Name="res_BACKUP3_AUTO"></FIELD>
+            <FIELD Name="res_COMMAND_UNAUTO"></FIELD>
+            <FIELD Name="res_STORE_NO_UNAUTO"></FIELD>
+            <FIELD Name="res_OUT_STORE_LOCATION_UNAUTO"></FIELD>
+            <FIELD Name="res_WHEEL_L_UNAUTO"></FIELD>
+            <FIELD Name="res_WHEEL_GET_HIGH_UNAUTO"></FIELD>
+            <FIELD Name="res_WHEEL_SET_HIGH_UNAUTO"></FIELD>
+            <FIELD Name="res_MaterialType_UNAUTO"></FIELD>
+            <FIELD Name="res_BACKUP1_UNAUTO"></FIELD>
+            <FIELD Name="res_BACKUP2_UNAUTO"></FIELD>
+            <FIELD Name="res_LONGMEN_STATE"></FIELD>
+            <FIELD Name="res_Warning0"></FIELD>
+            <FIELD Name="res_Warning1"></FIELD>
+            <FIELD Name="res_Warning2"></FIELD>
+
+
+          </FIELDS>
+        </TELEGRAM>
+
+
+      </TELEGRAMS>
+    </TelegramDescriptionHandler>
+  </CONTROLSET>
+</MFC.NET>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping  xmlns="urn:nhibernate-mapping-2.2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.Equipments.EquipTaskViewEntity" schema="dbo" table="dbo.EquipTaskView" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="Id">
+      <column name="ID" not-null="true" />
+      <generator class="identity" />
+    </id>
+    <property name="EquipContollerId" column="EquipContollerId" />
+    <property name="ProductType" column="ProductType" /> 
+    <property name="TaskType" column="TaskType" />
+    <property name="Status" column="Status" />
+    <property name="Created" column="Created" />
+    <property name="Updated" column="Updated" />
+    <property name="Deleted" column="Deleted" />
+    <property name="IsDeleted" column="IsDeleted" />
+    <property name="PlantNo" column="PlantNo" />
+    <property name="Length" column="Length" />
+    <property name="Supply1" column="Supply1" />
+    <property name="StorageArea" column="StorageArea" />
+    <property name="AGVId" column="AGVId" />
+    <property name="AGVStatus" column="AGVStatus" />
+    <property name="AGVRoute" column="AGVRoute" />
+    <property name="EquipFlag" column="EquipFlag"/>
+    <property name="PLCNo" column="PLCNo"/>
+    <property name="TaskGuid" column="TaskGuid"/>
+    <property name="BStation" column="BStation" />
+    <property name="AStation" column="AStation" />
+  </class>
+</hibernate-mapping>

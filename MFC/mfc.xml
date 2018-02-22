@@ -1,0 +1,770 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MFC.NET>
+  <APPLICATION>
+    <VERSION>Version 7.1</VERSION>
+    <NAME>Backup MFC</NAME>
+    <TRAY>1</TRAY>
+    <OPERATORID>2001</OPERATORID>
+    <INSTANCEID>130011251</INSTANCEID>
+  </APPLICATION>
+
+  <GLOBAL_DEFINITIONS>
+    <DATABASE Name ="standard database">
+      <!-- Defines to use the given section name from the GLOBAL_DEFINITION section.-->
+      <!-- User: MFC51, Password: MFC51 
+      
+         NDS-NMFC-DEV =
+           (DESCRIPTION =
+              (ADDRESS_LIST =
+                (ADDRESS = (PROTOCOL = TCP)(HOST = NDS-NMFC)(PORT = 1521))
+              )
+              (CONNECT_DATA =
+                (SERVICE_NAME = ora112db)
+                (SERVER = DEDICATED)
+              )
+            )
+
+      -->
+      <CONNECTION Username="FEDSHIHT" Password="AirWayBill88"  Database="Vilsg-FEDSH-WMS2IHT" Pooling="0" TimeoutInSecs="3"></CONNECTION>
+      <!--  
+      <CONNECTION Username="FEDSHDEV" Password="V2FQWlyV2F5QmlsbDg4=" EncryptionProvider="VI.MFC.Encryption.VIOraclePassword" Database="Vilsg-FEDSH-WmsDev" Pooling="0" TimeoutInSecs="3"></CONNECTION>-->
+      <!--CONNECTION Username="MFC51" Password="NTETUZDNTE=" EncryptionProvider="VI.MFC.Encryption.VIOraclePassword" Database="NDS-NMFC-DEV" Pooling="0" TimeoutInSecs="3"></CONNECTION-->
+      <!-- ClientId helps the database administrator to filter/monitor performance or errors by application
+                 Should always be overloaded by a connection specific description. -->
+      <CLIENT_ID>FedEx Shanghai MFC</CLIENT_ID>
+      <!-- The database layer will always try to repeat the current transaction (telegram) for 'MaxTransactionRetries' times
+                 before up to 'MaxReconnectAttempts' will be made. After this, the next transaction (telegram) will be
+                 processed discarding the current one. -->
+      <ERRORHANDLING
+          MaxRetries="1"
+          MaxReconnectAttempts="1"
+          ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700"></ERRORHANDLING>
+      <!-- MaxHashtableEntries- how many Key/Value Pairs may we return from the database for a neutrino (max)?-->
+      <!-- MaxReturnBufferSize- how large may one value of a key/value pair become (in byte, max)?-->
+      <CONFIG MaxHashtableEntries="64" MaxReturnBufferSize="512"></CONFIG>
+      <!-- PACKAGE defines the Oracle(R) package in which the MFC's PL/SQL Execute(...) function resides. -->
+      <PACKAGE Name="SVCMFCPLC_STUB"></PACKAGE>
+    </DATABASE>
+
+    <PACKETIZER Name="standard packetizer">
+      <!-- Length in bytes of the data package -->
+      <LENGTH>180</LENGTH>
+      <!-- Can be specified as text using "" or 2 character hexadecimal bytes (eg. 02FF1003AA)-->
+      <STARTDELIMITER>02</STARTDELIMITER>
+      <!-- Can be specified as text using "" or hexadecimal, comma seperated bytes-->
+      <ENDDELIMITER>03</ENDDELIMITER>
+      <!-- Defines the maximum length of a data packet-->
+      <MAXPACKETLENGTH>1180</MAXPACKETLENGTH>
+      <!-- Defines the minimal required receive buffer size before any anlysis will take place-->
+      <MINIMALANALYSISLENGTH>1</MINIMALANALYSISLENGTH>
+      <!-- Consider headerbytes when counting the packet length (IncludeHeader or ExcludeHeader) -->
+    </PACKETIZER>
+  </GLOBAL_DEFINITIONS>
+
+  <!-- Parameters configuring the Logistix Kernel -->
+  <KERNEL>
+    <!-- Fully featured Sessionhandling functionality.
+
+             Defines the parameters for the kernel session handling.
+             DefaultLeaseTimeInSecs- Timespan in seconds when a session will expire in any case.
+                                     0 means that sessions will never expire by default.
+             DefaultSessionTimeoutInSecs- Default timespan in seconds when a session will expire
+                                          in case it has not been used during this time.
+
+             SessionTimeoutThreadCyleInSecs- Timespan in seconds when a thread will remove expired sessions.
+             PersistencyProvider- If specified, the sessions will survive a restart of the MFC. So the users
+                                  will not have to login again after a system restart.
+                                  The Provider itself defines how the sessions will be stored (not at all, in NVRAM,
+                                  in an Oracle or SQLite database or wherever...)
+        -->
+
+    <SESSIONHANDLING
+        DefaultLeaseTimeInSecs="86400"
+        DefaultSessionTimeoutInSecs="3600"
+        SessionTimeoutThreadCyleInSecs="320"
+        PersistencyProvider="VI.MFC.SessionHandling.NVRAMPersistency"></SESSIONHANDLING>
+
+    <!-- Kernel functionality to persist small chunks of data even between restarts of the MFC.
+             Please note that this should be used for convenience only, that is, do not use it
+             for critical data. The given persistence may be deleted on purpose anytime between
+             MFC restarts. It may be used, eg. for persisting active session data. If the file was deleted
+             between MFC restarts, the users would simply have to relogin. Hope you got the idea, what
+             this module may be used for...
+
+             FilenameToUse - Filename, where to store persistency data.
+        -->
+
+    <NVRAM
+        FilenameToUse=".\NVRAM.SAV">
+    </NVRAM>
+
+    <!-- Kernel module the VIParser classes may be using to store all successfully parsed neutrinos.
+             Any module can make use of this NeutrinoCollector by adding itself into the chain of subscribers
+             for Neutrino, and therefore, system analysis. Examples of these subscribers are for example
+             modules offering small dashboard up to closeby BPI functionalities.
+
+             UpdateTimeoutInMs  - Defines, how often subscribers will be informed about newly arrived neutrinos.
+                                  0= Subscribers will immediately be informed about arriving neutrinos.
+                                  >0- Minimum number of milliseconds to wait before the chain of subscribers will be given the
+                                  next list of new neutrinos. Default is 0 ms.
+
+             CollectRawNeutrinos - Defines if Neutrinos without having any field information but the raw data field
+                                   shall be handed over to the collector at all. For example, a TCP/IP stream containing
+                                   only .XML data in the "Neutrino.rawPacket" field with an empty "Neutrino.theHashtable"
+                                   will not be handed over in case this parameter is "false".
+
+                                   true (default)- Hand over even "rawPacket"-Neutrinos to the collector even when the
+                                   Neutrino's 'theHashtable' is empty. Note: This is time consuming when handling
+                                   pure .XML neutrinos only.
+
+
+             ProfileSubscribers -  Defines if we want to measure the time it takes to copy and hand over the list of
+                                   neutrinos to each subscriber. true = Profiling ein, false= profiling aus.
+                                   Default is "false".
+
+
+             MaxProcessingTimeInMs - This parameter is only used in case the parameter 'ProfileSubscribers' is true.
+                                     Defines the maximum time in milliseconds it may take for a subscriber to handle the
+                                     list of given neutrinos. Default is 50ms.
+
+                                   In case it takes longer than the specified amount of time, the profiling logfile output
+                                   will print out an Warning message instead of an information message. So it will attract the
+                                   viewer of the logfile more because the message may be written in, eg. yellow.
+        -->
+
+    <NeutrinoCollector
+        UpdateTimeoutInMs="7000"
+        CollectRawNeutrinos="false"
+        ProfileSubscribers="true"
+        MaxProcessingTimeInMs="50">
+    </NeutrinoCollector>
+
+  </KERNEL>
+
+  <!-- Controlsets are defined for various equipment (PLC, SITPLC, FSC, etc.)
+         They are like templates that you can use for one instance of the corresponding
+         equipment (i.e. one PLC)
+         If you have several instances of one type (i.e. PLC1-3) you will have make one
+         config entry per instance and define the instance specific parameters (like port, IP, etc).
+    -->
+  <CONTROLSETS>
+    <CONTROLSET Name ="TelegramDescriptions" Enabled ="true" path =".\Controlsets\TelDescControlset.xml"/>
+    <!--AGV Configuration-->
+    <CONTROLSET Name ="PLC_AGV" Enabled ="false" path =".\Controlsets\AGVControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="AGV"/>
+        <VARIABLE Name="$HOST$" Value="192.168.1.251"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value="9000"/>
+        <VARIABLE Name="$PlantNo$" Value="003"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.AGVLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+
+    <CONTROLSET Name ="PLC_RobotArm1" Enabled ="false" path =".\Controlsets\MidStoreRobotArmControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="RobotArm1"/>
+        <VARIABLE Name="$HOST$" Value="192.168.120.81"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value=""/>
+        <VARIABLE Name="$RobotArmID$" Value="1"/>
+        <VARIABLE Name="$PlantNo$" Value="3"/>
+        <VARIABLE Name="$StorageArea$" Value="1"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreRobotArmLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+
+
+    <CONTROLSET Name ="PLC_MidStoreLine1" Enabled ="false" path =".\Controlsets\MidStoreLineControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="MidStoreLine1"/>
+        <VARIABLE Name="$HOST$" Value="192.168.120.69"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value="4021"/>
+        <VARIABLE Name="$PlantNo$" Value="3"/>
+        <VARIABLE Name="$RobotArmID$" Value="1"/>
+        <VARIABLE Name="$StorageArea$" Value="1"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreLineLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+    <CONTROLSET Name ="PLC_RobotArm2" Enabled ="false" path =".\Controlsets\MidStoreRobotArmControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="RobotArm2"/>
+        <VARIABLE Name="$HOST$" Value="192.168.120.83"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value=""/>
+        <VARIABLE Name="$RobotArmID$" Value="2"/>
+        <VARIABLE Name="$PlantNo$" Value="3"/>
+        <VARIABLE Name="$StorageArea$" Value="2"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreRobotArmLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+
+
+    <CONTROLSET Name ="PLC_MidStoreLine2" Enabled ="false" path =".\Controlsets\MidStoreLineControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="MidStoreLine2"/>
+        <VARIABLE Name="$HOST$" Value="192.168.120.72"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value="4021"/>
+        <VARIABLE Name="$PlantNo$" Value="3"/>
+        <VARIABLE Name="$RobotArmID$" Value="2"/>
+        <VARIABLE Name="$StorageArea$" Value="2"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreLineLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+    <CONTROLSET Name ="PLC_RobotArm3" Enabled ="false" path =".\Controlsets\MidStoreRobotArmControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="RobotArm3"/>
+        <VARIABLE Name="$HOST$" Value="192.168.120.85"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value=""/>
+        <VARIABLE Name="$RobotArmID$" Value="3"/>
+        <VARIABLE Name="$PlantNo$" Value="3"/>
+        <VARIABLE Name="$StorageArea$" Value="3"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreRobotArmLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+
+    <CONTROLSET Name ="PLC_MidStoreLine3" Enabled ="false" path =".\Controlsets\MidStoreLineControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="MidStoreLine3"/>
+        <VARIABLE Name="$HOST$" Value="192.168.120.75"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value="4021"/>
+        <VARIABLE Name="$PlantNo$" Value="3"/>
+        <VARIABLE Name="$RobotArmID$" Value="3"/>
+        <VARIABLE Name="$StorageArea$" Value="3"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreLineLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+<!--A 区-->
+    <CONTROLSET Name ="PLC_EquipLine1" Enabled ="false" path =".\Controlsets\EquipLineControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="EquipLine1"/>
+        <VARIABLE Name="$TelegramDescriptionsId$" Value="EquipLine1Descriptions"/>
+        <VARIABLE Name="$PlantNo$" Value="3"/>
+        <VARIABLE Name="$PLCNo$" Value="1"/>
+        <VARIABLE Name="$HOST$" Value="192.168.120.90"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value="4021"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+    <!--B 区-->
+    <CONTROLSET Name ="PLC_EquipLine2" Enabled ="false" path =".\Controlsets\EquipLineControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="EquipLine2"/>
+        <VARIABLE Name="$TelegramDescriptionsId$" Value="EquipLine2Descriptions"/>
+        <VARIABLE Name="$PlantNo$" Value="3"/>
+        <VARIABLE Name="$PLCNo$" Value="2"/>
+        <VARIABLE Name="$HOST$" Value="192.168.120.91"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value="6000"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+    <CONTROLSET Name ="EquipTaskLogic" Enabled ="false" path =".\Controlsets\EquipTaskControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="EquipTask"/>
+        <VARIABLE Name="$PlantNo$" Value="3"/>
+        <VARIABLE Name="$HOST$" Value="127.0.0.1"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value="6000"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipTaskLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+
+
+
+
+  </CONTROLSETS>
+
+  <LOADABLE_KERNEL_MODULES>
+
+    <!-- The hibernate components supports a common, fast and easy handling of errors which may require reconnects
+             and it supports a real session pool. This is needed by eg. high speed WebServices where we will not
+             wait for single request being served one after the other but in parallel.
+             There may be multiple <HIBERNATE> nodes witin this section in case more than one database (eg. Oracle and SQLITE)
+             or multiple schemata of the same database are to be used.
+
+             "Enabled", "Id"       -    see standard VIRuntime component handling rule information.
+             "Configuration"       -    Hibernate configuration filename of the resource file residing within the
+                                        "VI.MFC.Resources.Hibernate" tree of the project. For an introduction to
+                                        hibernate configuration files, please see the nhibernate documentation
+                                        for reference. The correct path for an eg. "Hibernate.cfg.xml" would therefore
+                                        be "VI.MFC.Resources.Hibernate.Hibernate.cfg.xml".
+                                        Important: Please make sure to mark the file(s) being an "Embedded Resource" within the
+                                        file property dialog in VS2010 and up.
+             "InitialNumberOfSessions"    -  Initial number of database sessions to create.
+             "MaxNumberOfSessions"        -  Maximum number of sessions. In case more sessions are needed, threads
+                                             requesting a session will have to wait for sessions to become available
+                                             again.
+
+             "MaxBusyTimeoutInMs"  -   Timeout in milliseconds, after which a warning message will be logged in case a session is
+                                       busy/held for longer than the specified time. Useful for eg. detecting slow and
+                                       badly performing queries.
+
+             "DeadSessionDetectionTimeoutInSecs" - Timeout in seconds after which a session will be declared "frozen" and a new
+                                                  session be recreated. Frozen sessions will never be reused.
+                                                "0" means that the DeadSessionDetection will be switched off.
+             "RenewSessionTimeoutInSecs"  -      Timeout in seconds after which a session will be closed and reopened when
+                                                it is currently not in use. This is to help a database free resources which
+                                                which may have been associated with this session. Use "0" in order to disable
+                                                session renewing.
+             "SessionTimeoutThreadCyleInSecs" - Defines how often the sentry (control-) thread runs and checks for the given
+                                                session timeouts.
+             "MaxRetries"                     - Defines how often a database transaction should be repeated before the
+                                                programmer is informed about the maximum number of retries being reached.
+             "MaxReconnectAttempts              - Defines how often the database pool should try to reconnect to the database
+                                                before reporting an error back to the programmer. In this case the returned
+                                                Session Object will be NULL in a call to "HandleError(...)".
+             "RetryErrorCodes"                - Errors which may be handled by simply retrying the same transaction again.
+                                                In this case the session pool will not renew the session but the session will
+                                                be untouched.
+             "MaxNumberOfSessionsToDropPerCycle"  -  Number of sessions to "renew" per cycle.
+
+             "StatisticsThreadCycleInSecs"    - Defines interval in number of seconds when an update of the statistics data
+                                                will be recalculated. "0" means no calculation will ever be done.
+
+         -->
+
+    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="true" Id="SQLServerDatabase" ResourceType="DB">
+      <CONFIG Configuration="SNTON.Resources.Hibernate.MSSQL.cfg.xml"
+              ConfigAssembly="SNTON.dll"
+              EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
+              DeadSessionDetectionTimeoutInSecs="3600"
+              RenewSessionTimeoutInSecs="3600" MaxNumberOfSessionsToDropPerCycle="1"
+              SessionTimeoutThreadCycleInSecs="999" MaxRetries="1" MaxReconnectAttempts="1" MaxNumberOfSessions="100"
+              StatisticsThreadCycleInSecs="999999"
+              ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700">
+        <!--
+      <CONFIG Configuration="FedEx.Resources.Hibernate.OracleMBeck.cfg.xml" ConfigAssembly="FedEx.dll" EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
+              DeadSessionDetectionTimeoutInSecs="3600"  RenewSessionTimeoutInSecs="3600" MaxNumberOfSessionsToDropPerCycle="1"
+              SessionTimeoutThreadCycleInSecs="999" MaxRetries="1" MaxReconnectAttempts="1" MaxNumberOfSessions="100"
+              StatisticsThreadCycleInSecs="999999"
+              ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700">
+       -->
+
+        <!-- Optional SESSION_PROFILING. Will use special MaxBusyTimeoutInMs instead of the globally defined one above.
+                     "TaskDescription" - The task description specified when getting the session object.
+                     "MaxBusyTimeoutInMs" - Timeout in milliseconds, after which a warning message will be logged in case a session is
+                                           busy/held for longer than the specified time. Useful for eg. detecting slow and
+                                           badly performing queries.
+                -->
+        <SESSION_PROFILING>
+        </SESSION_PROFILING>
+      </CONFIG>
+
+
+    </HIBERNATE>
+    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="false" Id="MESSQLServerDatabase" ResourceType="DB">
+      <CONFIG Configuration="SNTON.Resources.Hibernate.MESSQL.cfg.xml"
+              ConfigAssembly="SNTON.dll"
+              EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
+              DeadSessionDetectionTimeoutInSecs="3600"
+              RenewSessionTimeoutInSecs="3600" MaxNumberOfSessionsToDropPerCycle="1"
+              SessionTimeoutThreadCycleInSecs="999" MaxRetries="1" MaxReconnectAttempts="1" MaxNumberOfSessions="100"
+              StatisticsThreadCycleInSecs="999999"
+              ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700">
+        <!--
+      <CONFIG Configuration="FedEx.Resources.Hibernate.OracleMBeck.cfg.xml" ConfigAssembly="FedEx.dll" EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
+              DeadSessionDetectionTimeoutInSecs="3600"  RenewSessionTimeoutInSecs="3600" MaxNumberOfSessionsToDropPerCycle="1"
+              SessionTimeoutThreadCycleInSecs="999" MaxRetries="1" MaxReconnectAttempts="1" MaxNumberOfSessions="100"
+              StatisticsThreadCycleInSecs="999999"
+              ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700">
+       -->
+
+        <!-- Optional SESSION_PROFILING. Will use special MaxBusyTimeoutInMs instead of the globally defined one above.
+                     "TaskDescription" - The task description specified when getting the session object.
+                     "MaxBusyTimeoutInMs" - Timeout in milliseconds, after which a warning message will be logged in case a session is
+                                           busy/held for longer than the specified time. Useful for eg. detecting slow and
+                                           badly performing queries.
+                -->
+        <SESSION_PROFILING>
+        </SESSION_PROFILING>
+      </CONFIG>
+
+
+    </HIBERNATE>
+
+    <!--
+          Localization functionality. We can query one or more strings in a specific language by a key. 
+    -->
+    <LOCALIZATION Type="VI.MFC.Components.Localization.TextProvider" Enabled="true" Id="$VISION.MFC_LOCALIZATION">
+      <CONFIG File="MFC.XML" RootElement="/MFC.NET/LOCALIZATION"/>
+    </LOCALIZATION>
+  </LOADABLE_KERNEL_MODULES>
+
+  <SERVICEHOSTER_COMPONENTS>
+    <!-- Servicehoster is not used in this project. -->
+    <DISCOVERYPROXY Type="VI.MFC.ServiceHoster.DiscoveryService.VIDiscoveryComponent" Enabled="false" Id="Proxy_01">
+      <CONFIG TcpDiscoveryPort="8001" TcpAnnouncementPort="9021" HttpMonitoringPort="8002" SilverlightPolicyId="PolicyProxy_01"
+              NumberOfThreads="10" ThreadTimeoutInMs="0" TestMode="0"></CONFIG>
+      <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.DashboardReport.DashboardReportWebSvc" Enabled="true" Id="DashboardReport">
+        <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+      </WEBSERVICEHOSTER>
+      <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.TextLocalization.TextLocalizationWebSvc" Enabled="true" Id="TextLocalization">
+        <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+      </WEBSERVICEHOSTER>
+      <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.Clearing.ClearingWebSvc" Enabled="true" Id="Clearing">
+        <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION" ClearingProviderId="ClearingProvider"/>
+      </WEBSERVICEHOSTER>
+      <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.Messages.InfoMessagesWebSvc" Enabled="true" Id="InfoMessages">
+        <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION" InfoMessageProvider="StdInfoMessage"/>
+      </WEBSERVICEHOSTER>
+      <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.Logging.LoggingWebSvc" Enabled="true" Id="ServerSideLogging">
+        <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+      </WEBSERVICEHOSTER>
+      <!--NEW LOGIN FedEx special -->
+      <WEBSERVICEHOSTER Assembly="FedEx.DLL" Type="FedEx.Components.LoginWebSvc.LoginWebSvc" Enabled="false" Id="Login">
+        <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION" OperationsLogId="OperationsLog" />
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.OracleTransactionDB">
+          <USE_GLOBAL_DEFINITION>DATABASE</USE_GLOBAL_DEFINITION>
+          <CLIENT_ID>UserManagement</CLIENT_ID>
+          <PACKAGE Name="MFC_BfwUserManagement"></PACKAGE>
+        </DATABASE>
+      </WEBSERVICEHOSTER>
+      <!--OLD LOGIN from MFC -->
+      <!--
+      <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.Login.LoginWebSvc" Enabled="true" Id="Login">
+          <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+          <DATABASE Type="VI.MFC.Components.Database.Oracle.OracleTransactionDB">
+            <USE_GLOBAL_DEFINITION>DATABASE</USE_GLOBAL_DEFINITION>
+            <CLIENT_ID>UserManagement</CLIENT_ID>
+            <PACKAGE Name="MFC_BfwUserManagement"></PACKAGE>
+          </DATABASE>
+      </WEBSERVICEHOSTER>
+      -->
+      <WEBSERVICEHOSTER Type="VI.MFC.ServiceHoster.WebService.ServiceImplementation.UserManagement.UserManagementWebSvc" Enabled="false" Id="UserManagement">
+        <CONFIG LocalizationId="$VISION.MFC_LOCALIZATION"/>
+        <DATABASE Type="VI.MFC.Components.Database.Oracle.OracleTransactionDB">
+          <USE_GLOBAL_DEFINITION>DATABASE</USE_GLOBAL_DEFINITION>
+          <CLIENT_ID>UserManagement</CLIENT_ID>
+          <PACKAGE Name="MFC_BfwUserManagement"></PACKAGE>
+        </DATABASE>
+      </WEBSERVICEHOSTER>
+    </DISCOVERYPROXY>
+  </SERVICEHOSTER_COMPONENTS>
+
+  <SUPPORTING_COMPONENTS>
+
+    <!-- Define all your supporting components here. You can specify a different ->Assembly in case the ->Type you
+         would like to be instantiated is hosted in a different file, eg. in a different .DLL.
+         
+         You can also enable/disable the instantiation of each supporting component by setting the ->Enabled 
+         attribute to "false".
+         
+         The ->Id defines the name of the supporting component which will be used in queries to the GLUE MFC Kernel component
+         which will return the instance of the specified component on return.
+         
+         You can also have the bootstrap loader instantiate the specified ->Type more than once: Just add the attribute
+         ->Instances and decribe how many instances should be created. If you defined a placeholder "%d" in the ->Id, this
+         will automatically be replaced by the instance number (1,2,3...), eg. "Sortation%dEngine" will become "Sortation1Engine".
+         If you specified to instantiate more than once instance but did not use the placeholder, "_%d" will be appended
+         to the ->Id automatically. Example: "SortationEngine" would become "SortationEngine_1", "SortationEngine_2", ...
+         
+         Use the <CONFIG> tag afterwards for your individual, module specific configuration. 
+         Feel free to add references to other Ids of supporting components within your configuration parameters 
+         which your component may want make use of (eg. file importer, LocalizationId="$VISION.MFC_LOCALIZATION" etc).
+     
+     -->
+    <VISU Type="VI.MFC.Monitoring.VIVisualization" Enabled="true" Id="WebVisu" />
+
+    <HTTPSERVER Type="VI.MFC.Components.HttpServer.HttpServer" Enabled="false" Id="Vision.MFC">
+      <CONFIG Port="80" AllowFileSystemAccess="false" FileSystemRoot="D:\Projects\VISION.MFC\MFC\Resources\Webpages\"
+              Referrer="localhost" IPVersion="4" ReceiveTimeoutInMs="3000" ResourceRoot="VI.Resources.Webpages."
+              InfoMessageProvider="StdInfoMessage" VisuId="WebVisu"></CONFIG>
+    </HTTPSERVER>
+
+    <WEBSERVICEHOSTER Type="VI.MFC.Monitoring.MFCMonitoringWebService" Enabled="false" Id="MFCMonitoringService">
+      <CONFIG WebServiceAddress="http://localhost:4713/MFCMonitoringWebService" LocalizationId="$VISION.MFC_LOCALIZATION"/>
+    </WEBSERVICEHOSTER>
+
+
+
+    <!-- Webservice needed for Silverlight cross-domain access.-->
+    <SILVERLIGHTPOLICYPROVIDER Type="VI.MFC.ServiceHoster.PolicyProvider.SilverlightPolicyProvider" Enabled="false" Id="PolicyProxy_01">
+      <CONFIG HostName="127.0.0.1" Port="4712" />
+      <ALLOW-FROM><![CDATA[<domain uri="*"/>]]></ALLOW-FROM>
+      <GRANT-TO><![CDATA[<resource path="/" include-subpaths="true"/>]]></GRANT-TO>
+      <GRANT-TO><![CDATA[<socket-resource port="4502-4534" protocol="tcp" />]]></GRANT-TO>
+    </SILVERLIGHTPOLICYPROVIDER>
+
+    <WEBSERVICEHOSTER Type="VI.MFC.Web.Service.PolicyProvider.SilverlightPolicyProvider" Enabled="false" Id="PolicyProvider">
+      <CONFIG WebServiceAddress="http://localhost:4713" LocalizationId="$VISION.MFC_LOCALIZATION"/>
+      <ALLOW-FROM><![CDATA[<domain uri="*"/>]]></ALLOW-FROM>
+      <GRANT-TO><![CDATA[<resource path="/" include-subpaths="true"/>]]></GRANT-TO>
+      <GRANT-TO><![CDATA[<socket-resource port="4502-4534" protocol="tcp" />]]></GRANT-TO>
+    </WEBSERVICEHOSTER>
+
+
+    <WEBSERVICEHOSTER Type="SNTON.WebServices.UserInterfaceBackend.UserInterfaceBackend" Assembly="SNTON.dll" Id="UserInterfaceBackend" Enabled="true">
+      <CONFIG WebServiceAddress="http://localhost:7070/SNTON" LocalizationId="$VISION.MFC_LOCALIZATION" WebServiceType="REST" BusinessLogicId="BusinessLogic"/>
+    </WEBSERVICEHOSTER>
+    <!--
+    <TextKeysReadIn Assembly="FedEx.DLL" Type="FedEx.Components.Textkeys.TextKeysReadIn" Id="TextKeysReadIn" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="OracleDatabase",
+       TextkeyPathZH="..\\..\\..\\..\\resources\\texts\\zh\\" />
+    </TextKeysReadIn>
+    -->
+    <NUMERICSEQUENCER Type="VI.MFC.Components.Sequencer.PersistentSequencer.FileBasedSequencer" Enabled="true" Id="TaskNoSequencer">
+      <CONFIG InitialSequenceNo="1" StartSequenceNo="1" EndSequenceNo="9999999999999999" SEQUENCERFILENAME=".\TaskNo.seq" LocalizationId="$VISION.MFC_LOCALIZATION"></CONFIG>
+    </NUMERICSEQUENCER>
+
+
+
+    <AGVConfigProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVConfig" Id="AGVConfigProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </AGVConfigProvider>
+
+    <AGVMagMarkerMapConfigProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVMagMarkerMapConfig" Id="AGVMagMarkerMapConfigProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </AGVMagMarkerMapConfigProvider>
+
+    <AGVRouteProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVRoute" Id="AGVRouteProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </AGVRouteProvider>
+
+    <AGVRouteArchiveProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVRouteArchive" Id="AGVRouteArchiveProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </AGVRouteArchiveProvider>
+
+    <AGVStatusProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVStatus" Id="AGVStatusProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </AGVStatusProvider>
+
+    <AGVTasksProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVTasks" Id="AGVTasksProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </AGVTasksProvider>
+
+    <EquipConfigProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipConfig" Id="EquipConfigProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipConfigProvider>
+
+    <EquipControllerConfigProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipControllerConfig" Id="EquipControllerConfigProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipControllerConfigProvider>
+    <EquipTaskPruductProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipTaskPruduct" Id="EquipTaskPruductProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipTaskPruductProvider>
+
+    <EquipProductionProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipProduction" Id="EquipProductionProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipProductionProvider>
+
+    <EquipStatusProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipStatus" Id="EquipStatusProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipStatusProvider>
+
+    <EquipTaskProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipTask" Id="EquipTaskProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="" HousekeepingCleanupAfterMins="60"  HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipTaskProvider>
+
+    <MessageProvider Assembly="SNTON.DLL" Type="SNTON.Components.MessageInfo.MessageInfo" Id="MessageProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </MessageProvider>
+
+    <MidStorageProvider Assembly="SNTON.DLL" Type="SNTON.Components.MidStorage.MidStorage" Id="MidStorageProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </MidStorageProvider>
+
+    <MidStorageSpoolsProvider Assembly="SNTON.DLL" Type="SNTON.Components.MidStorage.MidStorageSpools" Id="MidStorageSpoolsProviderId" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </MidStorageSpoolsProvider>
+    <SpoolsProvider Assembly="SNTON.DLL" Type="SNTON.Components.Spools.Spools" Id="SpoolsProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </SpoolsProvider>
+
+    <SystemParametersProvider Assembly="SNTON.DLL" Type="SNTON.Components.SystemParameters.SystemParameters" Id="SystemParametersProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </SystemParametersProvider>
+
+    <SystemParametersConfigurationProvider Assembly="SNTON.DLL" Type="SNTON.Components.SystemParameters.SystemParametersConfiguration" Id="SystemParametersConfigurationProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </SystemParametersConfigurationProvider>
+
+    <ButtonLocationConfigProvider Assembly="SNTON.DLL" Type="SNTON.Components.Config.ButtonLocationConfig" Id="ButtonLocationConfigProvider" Enabled="false">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </ButtonLocationConfigProvider>
+
+    <EquipCommandProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipCommand" Id="EquipCommandProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipCommandProvider>
+
+    <EquipConfigerProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipConfiger" Id="EquipConfigerProviderid" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipConfigerProvider>
+
+    <EquipConfiger2Provider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipConfiger2" Id="EquipConfiger2ProviderId" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipConfiger2Provider>
+
+
+    <MESSystemProvider Assembly="SNTON.DLL" Type="SNTON.Components.MES.MESSystemSpools" Id="MESSystemProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="MESSQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </MESSystemProvider>
+
+    <RobotArmTaskProvider Assembly="SNTON.DLL" Type="SNTON.Components.RobotArm.RobotArmTask" Id="RobotArmTaskProviderid" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </RobotArmTaskProvider>
+    <SQLCommandProvider Assembly="SNTON.DLL" Type="SNTON.Components.SQLCommand.SQLCommandBroker" Id="SQLCommandProviderid" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </SQLCommandProvider>
+    <EquipTaskViewProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipTaskView" Id="EquipTaskViewProviderid" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipTaskViewProvider>
+
+    <tblProdCodeStructMachProvider Assembly="SNTON.DLL" Type="SNTON.Components.MES.tblProdCodeStructMach" Id="tblProdCodeStructMachProviderId" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="MESSQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </tblProdCodeStructMachProvider>
+
+    <tblProdCodeStructMarkProvider Assembly="SNTON.DLL" Type="SNTON.Components.MES.tblProdCodeStructMark" Id="tblProdCodeStructMarkProviderId" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="MESSQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </tblProdCodeStructMarkProvider>
+    <EquipTaskView2Provider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipTaskView2" Id="EquipTaskView2ProviderId" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipTaskView2Provider>
+
+    <RobotArmTaskSpoolProvider Assembly="SNTON.DLL" Type="SNTON.Components.RobotArm.RobotArmTaskSpool" Id="RobotArmTaskSpoolProviderId" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </RobotArmTaskSpoolProvider>
+
+    <!--Business Logic Component Configuration Options:-->
+    <BusinessLogic Assembly="SNTON.DLL" Type="SNTON.BusinessLogic.BusinessLogic" Id="BusinessLogic" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+AGVConfigProviderId="AGVConfigProvider"
+AGVMagMarkerMapConfigProviderId="AGVMagMarkerMapConfigProvider"
+AGVRouteProviderId="AGVRouteProvider"
+AGVRouteArchiveProviderId="AGVRouteArchiveProvider"
+AGVStatusProviderId="AGVStatusProvider"
+AGVTasksProviderId="AGVTasksProvider"
+EquipConfigProviderId="EquipConfigProvider"
+EquipControllerConfigProviderId="EquipControllerConfigProvider"
+EquipProductionProviderId="EquipProductionProvider"
+EquipStatusProviderId="EquipStatusProvider"
+EquipTaskProviderId="EquipTaskProvider"
+MessageProviderId="MessageProvider"
+MidStorageProviderId="MidStorageProvider"
+SpoolsProviderId="SpoolsProvider"
+SystemParametersProviderId="SystemParametersProvider"
+SystemParametersConfigurationProviderId="SystemParametersConfigurationProvider"
+              ButtonLocationConfigProviderId="ButtonLocationConfigProvider"
+              EquipTaskproductProviderid="EquipTaskPruductProvider"
+              EquipCommandProviderId="EquipCommandProvider"
+              MESSystemProviderId="MESSystemProvider"
+              RobotArmTaskProviderid="RobotArmTaskProviderid"
+              tblProdCodeStructMachProviderId="tblProdCodeStructMachProviderId"
+              tblProdCodeStructMarkProviderId="tblProdCodeStructMarkProviderId"
+              MidStoreLineLogicId1="PLCMidStoreLine1Logic"
+              MidStoreLineLogicId2="PLCMidStoreLine2Logic"
+              MidStoreLineLogicId3="PLCMidStoreLine3Logic"
+              EquipTaskViewProviderid="EquipTaskViewProviderid"
+              EquipConfigerProviderid="EquipConfigerProviderid"
+              EquipTaskLogicProviderid="EquipTaskLogic"
+              MidStorageSpoolsProviderId="MidStorageSpoolsProviderId"
+              EquipTaskView2ProviderId="EquipTaskView2ProviderId"
+              RobotArmTaskSpoolProviderId="RobotArmTaskSpoolProviderId"
+              EquipConfiger2ProviderId="EquipConfiger2ProviderId"
+              SQLCommandProviderid="SQLCommandProviderid"
+       />
+    </BusinessLogic>
+
+
+
+
+
+
+
+
+
+
+  
+</SUPPORTING_COMPONENTS>
+
+  <WORKING_COMPONENTS>
+    <!-- Please add your necessary working components here, see mfc_examples.xml for sample configuration
+           Note: there are already a lot of Controlsets defined in the product which may just be used/adapted instead
+           of copy pasting everything from the mfc_examples.xml
+      -->
+
+
+  </WORKING_COMPONENTS>
+
+
+  <!-- Localization area. We can define aliases for each language we would like to use. In case we want to use eg. "en", 
+       we would at first look if we have a key defined for "en-GB" and take this. In case we cannot find this key,
+       we will look for "en-US" and so on. In case we cannot find anything, we will continue with "de-DE" and so on... 
+       Default Culture will here be "de-DE" (for eg. time and date formats and so on...) -->
+  <LOCALIZATION>
+    <GLOBAL DefaultCulture="en-GB"/>
+    <CULTURES>
+      <L01 Culture="en" File="LanguageEnglish.XML" RootElement="/MFC.NET/LOCALIZATION">
+        <C01>en-GB</C01>
+      </L01>
+      <L02 Culture="cn" File="LanguageChinese.XML" RootElement="/MFC.NET/LOCALIZATION">
+        <C01>cn-ZH</C01>
+      </L02>
+    </CULTURES>
+  </LOCALIZATION>
+</MFC.NET>

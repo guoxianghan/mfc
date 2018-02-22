@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping  xmlns="urn:nhibernate-mapping-2.2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.MidStorage.MidStorageSpoolsCountEntity" schema="SNTON" table="SNTON.MidStorageSpoolsCount" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="StructBarCode">
+      <column name="StructBarCode" not-null="true" />
+      <generator class="identity" />
+    </id>
+    <property name="StorageArea" column="StorageArea" />
+    <property name="Length" column="Length" />
+    <property name="CName" column="CName" />
+    <property name="BobbinNo" column="BobbinNo" />
+    <property name="Count" column="COUNT" />
+    <property name="Const" column="Const" />
+ 
+  </class>
+</hibernate-mapping>

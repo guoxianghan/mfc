@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+    <CONTROLSET>
+        <PACKETIZER Type="VI.MFC.Components.Packetizer.SEPacketizer" Id="FSC$EXT$Packetizer" Enabled="true">
+            <!-- We can use a whole bunch of types here. Please see 'PacketAnalysingRule' in
+                     class PacketDescription for detail:
+                     VI.MFC.COM.SEPacketizer,       // STARTDELIMITER,ENDDELIMITER,MAXPACKETLENGTH,MINIMALANALYSISLENGTH
+                     VI.MFC.COM.FSC7BBPacketizer,   // MAXPACKETLENGTH,MINIMALANALYSISLENGTH (FSC-7 BB-Protocol)
+                     VI.MFC.COM.SLEPacketizer,      // STARTDELIMITER,ENDDELIMITER,MAXPACKETLENGTH,MINIMALANALYSISLENGTH,LENGTH
+                     VI.MFC.COM.VIPacketizer,       // STARTDELIMITER,ENDDELIMITER,MAXPACKETLENGTH,MINIMALANALYSISLENGTH,[LENGTH by IParser]
+                     VI.MFC.COM.ScriptPacketizer,   // STARTDELIMITER,ENDDELIMITER,MAXPACKETLENGTH,MINIMALANALYSISLENGTH,LENGTH,SCRIPTNAME
+                     VI.MFC.COM.VLPacketizer        // STARTDELIMITER,ENDDELIMITER,MAXPACKETLENGTH,MINIMALANALYSISLENGTH,STARTPOSLENGTHINFO,
+                                                    // LENGTHLENGTHINFO,LENGTHCALCRULE,LENGTHENCODING -->
+
+            <!-- Can be specified as text using "" or 2 character hexadecimal bytes (eg. 02FF1003AA)-->
+            <STARTDELIMITER>02</STARTDELIMITER>
+            <!-- Can be specified as text using "" or hexadecimal, comma seperated bytes-->
+            <ENDDELIMITER>030D</ENDDELIMITER>
+            <!-- Defines the maximum length of a data packet-->
+            <MAXPACKETLENGTH>11000</MAXPACKETLENGTH>
+            <!-- Defines the minimal required receive buffer size before any anlysis will take place-->
+            <MINIMALANALYSISLENGTH>10</MINIMALANALYSISLENGTH>
+            <!-- Consider headerbytes when counting the packet length (IncludeHeader or ExcludeHeader) -->
+        </PACKETIZER>
+
+        <PARSER Type="VI.MFC.Components.Parser.FSC.FSCParser" Id="FSC$EXT$Parser" Enabled="true">
+            <CONFIG CommModule="FSC_$EXT$" TelegramDescriptions="FSCTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+
+        <LOGIC Type="VI.MFC.Logic.FSCLogic" Id="FSC$EXT$Logic" Enabled="true">
+            <CONFIG CommModule="FSC_$EXT$" Parser="FSC$EXT$Parser" DatabaseLayer="FSC$EXT$Database"></CONFIG>
+            <ASYNCHRON UsesAsynchronousMessages="1"></ASYNCHRON>
+        </LOGIC>
+        
+        <FSC Type="VI.MFC.COM.FSC.FSCTCPCommunication" Enabled="true" Id="FSC_$EXT$" Name="FSC_$EXT$" ResourceType="XSORTER">
+            <!-- What type of communication do we have here?
+                 VI.MFC.COM.TCPClient = VI standard protocol, MFC is client and PLC is server
+                 VI.MFC.COM.TCPServer = VI standard protocol, MFC is server and PLC is client
+                 VI.MFC.COM.TCPAckCommunication = Acknowledge protocol, 2 way connection.
+                 VI.MFC.COM.FSCTCPCommunication = 2 way connection without acknowledegment. -->
+            <CONFIG Packetizer="FSC$EXT$Packetizer" Parser="FSC$EXT$Parser"></CONFIG>
+            <LOGIC Id="FSC$EXT$Logic"></LOGIC>
+            <CONNECTION>
+
+                <TCPIP>
+                    <!-- Host (network interface) to connect to. Can be name or IP-Address -->
+                    <HOST>$HOST$</HOST>
+                    <!-- Defines which network card to be used for the local endpoint in eg. a cluster environment -->
+                    <LOCALENDPOINT>$LOCALENDPOINT$</LOCALENDPOINT>
+                    <!-- V4- use IPV4
+                         V6- use IPV6 -->
+                    <IPVERSION>V6</IPVERSION>
+
+                    <SERVER Type="VI.MFC.COM.FSC.FSCTCPServer">
+                        <!-- Port to use on remote computer <HOST> to connect to. -->
+                        <PORT>$SERVERPORT$</PORT>
+                        <!-- Different socket options. See socket api for reference. Change only in case you
+                             have a good reason to do so. -->
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <!-- Size in bytes of the receive buffer. 16384 should be ok. -->
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <!-- Size in bytes of the sending buffer. 16384 should be ok. -->
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <!-- YES- close object once disconnected (rarely used)
+                             NO- do not close object once disconnected (standard) -->
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <!-- Time to wait ins ms between connection attempts -->
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+
+                        <!-- Can be set to None, Normal (ASCII dump), UTF8, HexOnly or Mixed (binary values replaced by [0xXX] characters).
+                             Incoming data will be logged starting with '>'.
+                             Outgoing data will be logged starting with '<'.
+                             Trash bytes (non packet data) will be logged starting with '#>'
+                             Packetized data (one interpreted data packet) will be logged starting with 'P>'
+
+                             'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                             Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                             support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                             ethernet frame). -->
+
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+
+                        <!-- Firewall and ff. entries are only used when the connection is of type
+                             VI.MFC.COM.TCPServer
+                             Entries can contain IPV4-IPV6 addresses as well as hostnames. -->
+                        <FIREWALL>
+                            <ALLOW>localhost</ALLOW>
+                            <ALLOW>vi002836.vi.corp</ALLOW>
+                        </FIREWALL>
+
+                        <!-- Use the binary FSC-7 telegram protocol STX/ETX BB (true) or not (false) -->
+                        <USEBBPROTOCOL>false</USEBBPROTOCOL>
+                    </SERVER>
+
+                    <CLIENT Type="VI.MFC.COM.FSC.FSCTCPClient">
+                        <!-- Port to use on remote computer <HOST> to connect to. -->
+                        <PORT>$CLIENTPORT$</PORT>
+                        <!-- Different socket options. See socket api for reference. Change only in case you
+                             have a good reason to do so. -->
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <!-- Size in bytes of the receive buffer. 16384 should be ok. -->
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <!-- Size in bytes of the sending buffer. 16384 should be ok. -->
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <!-- YES- close object once disconnected (rarely used)
+                             NO- do not close object once disconnected (standard) -->
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <!-- Time to wait ins ms between connection attempts -->
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+                        <!-- Maximum time in ms that the client waits for a keep alive message from the server.
+                                  Typically set to 3 times the interval of the keep alive messages.
+                                  Remove this parameter or set to 0 for no traffic check -->
+                        <TRAFFICTIMEOUTINMS>30000</TRAFFICTIMEOUTINMS>
+
+                        <!-- FSC 7 Watchdog support. For whatever reason Veghel changed the watchdog for the FSC 7.
+                             The client is now responsible for sending a watchdog ("W2") telegram after 15 secs.
+                             The FSC replies with a watchdog reply ("W1") telegram.
+
+                             Set WATCHDOGTIMEOUTINMS to "0" to disable the watchdog support on the client channel. -->
+
+                        <WATCHDOGTIMEOUTINMS>0</WATCHDOGTIMEOUTINMS>
+
+                        <!-- Can be set to None, Normal (ASCII dump), UTF8, HexOnly or Mixed (binary values replaced by [0xXX] characters).
+                             Incoming data will be logged starting with '>'.
+                             Outgoing data will be logged starting with '<'.
+                             Trash bytes (non packet data) will be logged starting with '#>'
+                             Packetized data (one interpreted data packet) will be logged starting with 'P>'
+
+                             'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                             Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                             support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                             ethernet frame). -->
+
+                    </CLIENT>
+
+                </TCPIP>
+            </CONNECTION>
+        </FSC>
+    </CONTROLSET>
+</MFC.NET>

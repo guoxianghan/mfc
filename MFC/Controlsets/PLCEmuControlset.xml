@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+    <CONTROLSET>
+        <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="PLC$EXT$SequencerInboundEmu" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="PLC$EXT$SequencerOutboundEmu" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <PACKETIZER Type="VI.MFC.Components.Packetizer.SLEPacketizer" Id="PLC$EXT$PacketizerEmu" Enabled="true">
+            <USE_GLOBAL_DEFINITION>standard packetizer</USE_GLOBAL_DEFINITION>
+        </PACKETIZER>
+        <PARSER Type="VI.MFC.Components.Parser.VIParser" Id="PLC$EXT$ParserEmu" Enabled="true">
+            <CONFIG CommModule="PLC_$EXT$Emu" TelegramDescriptions="PLCTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+        <LOGIC Type="VI.MFC.Emulation.Logic.EmuLogic" Id="PLC$EXT$LogicEmu" Enabled="true" Assembly="$EMUASS$">
+          <CONFIG CommModule="PLC_$EXT$Emu" Parser="PLC$EXT$ParserEmu" FscHostPicReply="51"></CONFIG>
+		    <WATCHDOG Enabled="true" TimeoutInSecs="20" TelegramId="98"  RetriesBeforeDisconnection="3"></WATCHDOG>
+            <ASYNCHRON UsesAsynchronousMessages="0"></ASYNCHRON>
+        </LOGIC>
+        <PLC Type="VI.MFC.COM.TCPServer" Enabled="true" Id="PLC_$EXT$Emu" Name="Vanderlande PLC-$EXT$ Emu" ResourceType="PLC">
+            <CONFIG SequencerInbound="PLC$EXT$SequencerInboundEmu" SequencerOutbound="PLC$EXT$SequencerOutboundEmu" Packetizer="PLC$EXT$PacketizerEmu" Parser="PLC$EXT$ParserEmu"></CONFIG>
+            <LOGIC Id="PLC$EXT$LogicEmu"></LOGIC>
+            <CONNECTION>
+                <TCPIP>
+                    <HOST>$HOST$</HOST>
+                    <LOCALENDPOINT>$LOCALENDPOINT$</LOCALENDPOINT>
+                    <IPVERSION>V4</IPVERSION>
+                    <SERVER>
+                        <PORT>$PORT$</PORT>
+                        <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+                        <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+                        <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+                        <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+                        <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+                        <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+                    </SERVER>
+                </TCPIP>
+            </CONNECTION>
+        </PLC>
+    </CONTROLSET>
+</MFC.NET>

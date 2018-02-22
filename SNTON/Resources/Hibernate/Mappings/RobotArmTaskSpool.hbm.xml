@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.RobotArmTask.RobotArmTaskSpoolEntity" schema="SNTON" table="RobotArmTaskSpool" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="Id">
+      <column name="ID" not-null="true" />
+      <generator class="identity" />
+    </id>
+    <property name="Created" column="Created" />
+    <property name="Updated" column="Updated" />
+    <property name="Deleted" column="Deleted" />
+    <property name="IsDeleted" column="IsDeleted" />
+    <property name="TaskType" column="TaskType" />
+    <property name="Completed" column="Completed" />
+    <property name="TaskStatus" column="TaskStatus" />
+    <property name="FromWhere" column="FromWhere" />
+    <property name="ToWhere" column="ToWhere" />
+    <property name="TaskLevel" column="TaskLevel" />
+    <property name="RobotArmID" column="RobotArmID" />
+    <property name="TaskGroupGUID" column="TaskGroupGUID" />
+    <property name="EquipControllerId" column="EquipControllerId" />
+    <property name="PlantNo" column="PlantNo" />
+    <property name="ProductType" column="ProductType" />
+    <property name="SeqNo" column="SeqNo" />
+    <property name="SpoolStatus" column="SpoolStatus" />
+    <property name="WhoolBarCode" column="WhoolBarCode" />
+    <property name="Length" column="Length" />
+    <property name="BobbinNo" column="BobbinNo" />
+    <property name="CName" column="CName" />
+    <property name="AGVSeqNo" column="AGVSeqNo" />
+    <property name="StorageArea" column="StorageArea" />
+    <property name="SpoolSeqNo" column="SpoolSeqNo" />
+  </class>
+</hibernate-mapping>

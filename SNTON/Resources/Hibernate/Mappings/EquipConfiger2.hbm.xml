@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.Equipments.EquipConfiger2Entity" schema="SNTON" table="dbo.EquipConfiger2" xmlns="urn:nhibernate-mapping-2.2">
+    
+    <id name="Id">
+      <column name="Id" not-null="true" />
+      <generator class="identity" />
+    </id> 
+    <property name="EquipControllerId" column="EquipControllerId" />
+    <property name="EquipName" column="EquipName" />
+    <property name="StorageArea" column="StorageArea" />
+    <property name="EquipFlag" column="EquipFlag" />
+    <property name="LWCS" column="LWCS" />
+    <property name="LineStatus" column="LineStatus" />
+    <property name="LStatus" column="LStatus" />
+    <property name="Equip1Status" column="Equip1Status" />
+    <property name="EStatus1" column="EStatus1" />
+    <property name="Equip2Status" column="Equip2Status" />
+    <property name="EStatus2" column="EStatus2" />
+    <property name="TaskFlagDispatch" column="TaskFlagDispatch" />
+    <property name="WAStatus" column="WAStatus" />
+    <property name="DispatchStatus" column="DispatchStatus" />
+    <property name="AGVDisStatus" column="AGVDisStatus" />
+    <property name="PLCNo" column="PLCNo" />
+    <property name="Updated" column="Updated" />
+    <property name="Deleted" column="Deleted" />
+    <property name="IsDeleted" column="IsDeleted" />
+    <property name="IsEnable" column="IsEnable" />
+    <property name="Location" column="Location" />
+    <property name="AGVRoute" column="AGVRoute" />
+    <property name="AStation" column="AStation" />
+    <property name="BStation" column="BStation" />
+    <property name="PlantNo" column="PlantNo" />
+    <property name="Created" column="Created" />
+    <property name="CommondID" column="CommondID" />
+    <property name="ControlID" column="ControlID" />
+    <property name="GroupID" column="GroupID" />
+  </class>
+</hibernate-mapping>

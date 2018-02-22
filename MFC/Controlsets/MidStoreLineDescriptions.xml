@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+  <CONTROLSET>
+
+
+    <TelegramDescriptionHandler Type="SNTON.Components.FieldsDescription.MXFieldsDescription" Id="MidStoreLineDescriptions" Assembly="SNTON.DLL" Enabled="true">
+      <FIELDDEFINITION>
+        <FIELD Name="SERVER_STATUS" Type="Int"  Length="1"  Value="D1000" SPLIT="" ></FIELD>
+        <!--1：自动 2.手动 3.故障-->
+        <FIELD Name="LINE_STATUS" Type="Int"  Length="1"  Value="D1001" SPLIT="" ></FIELD>
+        <FIELD Name="BACKUP0" Type="Int"  Length="1"  Value="D1002" SPLIT="" ></FIELD>
+        <FIELD Name="BACKUP1" Type="Int"  Length="1"  Value="D1003" SPLIT="" ></FIELD>
+        <FIELD Name="BACKUP2" Type="Int"  Length="1"  Value="D1004" SPLIT="" ></FIELD>
+        <FIELD Name="BACKUP3" Type="Int"  Length="1"  Value="D1005" SPLIT="" ></FIELD>
+        <FIELD Name="BACKUP4" Type="Int"  Length="1"  Value="D1006" SPLIT="" ></FIELD>
+        <FIELD Name="BACKUP5" Type="Int"  Length="1"  Value="D1007" SPLIT="" ></FIELD>
+        <FIELD Name="BACKUP6" Type="Int"  Length="1"  Value="D1008" SPLIT="" ></FIELD>
+        <FIELD Name="BACKUP7" Type="Int"  Length="1"  Value="D1009" SPLIT="" ></FIELD>
+        <!--直通口入库允许叫车 1.可以叫车  0.不允叫车			-->
+        <FIELD Name="ONLINE_INSTORE_CALLAGV" Type="Int"  Length="1"  Value="D1010" SPLIT="" ></FIELD>
+        <!--直通口入库卸车完成 1.完成  0.未完成			-->
+        <FIELD Name="ONLINE_INSTORE_UNLOAD" Type="Int"  Length="1"  Value="D1011" SPLIT="" ></FIELD>
+        <!--当前物料扫码失败 1.成功  2.失败			-->
+        <FIELD Name="ONLINE_SCANN_STATUS" Type="Int"  Length="1"  Value="D1012" SPLIT="" ></FIELD>
+        <FIELD Name="ONLINE_BARCODE" Type="Char"  Length="6"  Value="D1013" SPLIT="" ></FIELD>
+        <FIELD Name="ONLINE_BARCODE_SerialNumber" Type="Int"  Length="32"  Value="D1014" SPLIT="" ></FIELD>
+        <FIELD Name="ONLINE_INSTORE_SerialNumber" Type="Int"  Length="32"  Value="D1015" SPLIT="" ></FIELD>
+        <FIELD Name="ONLINE_INSTORE_ALLOW_GET" Type="Int"  Length="1"  Value="D1016" SPLIT="" ></FIELD>
+        <FIELD Name="ONLINE_OUTSTORE_ALLOW_SET" Type="Int"  Length="1"  Value="D1017" SPLIT="" ></FIELD>
+        <FIELD Name="ONLINE_OUTSTORE_CALLAGV" Type="Int"  Length="1"  Value="D1018" SPLIT="" ></FIELD>
+        <FIELD Name="ONLINE_OUTSTORE_UNLOAD" Type="Int"  Length="1"  Value="D1019" SPLIT="" ></FIELD>
+        
+        <!--单独出库口1.允许放  0.不允许放-->
+        <FIELD Name="OUTSTORE_ARM_SET" Type="Int"  Length="1"  Value="D1020" SPLIT="" ></FIELD>
+        <FIELD Name="OUTSTORE_CALLAGV" Type="Int"  Length="1"  Value="D1021" SPLIT="" ></FIELD>
+        <FIELD Name="OUTSTORE_LOAD" Type="Int"  Length="1"  Value="D1022" SPLIT="" ></FIELD>
+        <FIELD Name="OUTSTORE_BACK0" Type="Int"  Length="1"  Value="D1023" SPLIT="" ></FIELD>
+        <FIELD Name="OUTSTORE_BACK1" Type="Int"  Length="1"  Value="D1024" SPLIT="" ></FIELD>
+        <FIELD Name="OUTSTORE_BACK2" Type="Int"  Length="1"  Value="D1025" SPLIT="" ></FIELD>
+        <FIELD Name="OUTSTORE_BACK3" Type="Int"  Length="1"  Value="D1026" SPLIT="" ></FIELD>
+        <FIELD Name="OUTSTORE_BACK4" Type="Int"  Length="1"  Value="D1027" SPLIT="" ></FIELD>
+        <FIELD Name="OUTSTORE_BACK5" Type="Int"  Length="1"  Value="D1028" SPLIT="" ></FIELD>
+        <FIELD Name="OUTSTORE_BACK6" Type="Int"  Length="1"  Value="D1029" SPLIT="" ></FIELD>
+        <FIELD Name="ExLine_ARM_SET4" Type="Int"  Length="1"  Value="D1030" SPLIT="" ></FIELD>
+        <FIELD Name="ExLine_ISENOUGH" Type="Int"  Length="1"  Value="D1031" SPLIT="" ></FIELD>
+        <FIELD Name="ExLine_SCANN_ISENOUGH" Type="Int"  Length="1"  Value="D1032" SPLIT="" ></FIELD>
+        <FIELD Name="ExLine_BACK0" Type="Int"  Length="1"  Value="D1033" SPLIT="" ></FIELD>
+        <FIELD Name="ExLine_BACK1" Type="Int"  Length="1"  Value="D1034" SPLIT="" ></FIELD>
+        <FIELD Name="ExLine_BACK2" Type="Int"  Length="1"  Value="D1035" SPLIT="" ></FIELD> 
+
+      </FIELDDEFINITION>
+      <TELEGRAMS>
+        <TELEGRAMID Name="TELEGRAMID" Type="Custom" Pos="1" Length="20" Custom="^\s+[a-zA-Z0-9]*" Leadchar=" "></TELEGRAMID>
+        <SEQUENCE Name="SEQUENCE" Type="Alphanumeric" Pos="21" Length="10"></SEQUENCE>
+
+
+        <TELEGRAM TelegramId="PLCCommand" Length="0" Name="PLCCommand" MaxProcessingTimeInMs="120" FillCharacter="_">
+          <FIELDS>
+            <FIELD Name="SERVER_STATUS"></FIELD>
+            <!--1：自动 2.手动 3.故障-->
+            <FIELD Name="LINE_STATUS"></FIELD>
+            <FIELD Name="BACKUP0"></FIELD>
+            <FIELD Name="BACKUP1"></FIELD>
+            <FIELD Name="BACKUP2"></FIELD>
+            <FIELD Name="BACKUP3"></FIELD>
+            <FIELD Name="BACKUP4"></FIELD>
+            <FIELD Name="BACKUP5"></FIELD>
+            <FIELD Name="BACKUP6"></FIELD>
+            <FIELD Name="BACKUP7"></FIELD>
+            <!--直通口入库允许叫车 1.可以叫车  0.不允叫车			-->
+            <FIELD Name="ONLINE_INSTORE_CALLAGV"  ></FIELD>
+            <!--直通口入库卸车完成 1.完成  0.未完成			-->
+            <FIELD Name="ONLINE_INSTORE_UNLOAD"  ></FIELD>
+            <!--当前物料扫码失败 1.成功  2.失败			-->
+            <FIELD Name="ONLINE_SCANN_STATUS"  ></FIELD>
+            <FIELD Name="ONLINE_BARCODE"></FIELD>
+            <FIELD Name="ONLINE_BARCODE_SerialNumber"></FIELD>
+            <FIELD Name="ONLINE_INSTORE_SerialNumber"></FIELD>
+            <FIELD Name="ONLINE_INSTORE_ALLOW_GET"></FIELD>
+            <FIELD Name="ONLINE_OUTSTORE_ALLOW_SET"></FIELD>
+            <FIELD Name="ONLINE_OUTSTORE_CALLAGV"></FIELD>
+            <FIELD Name="ONLINE_OUTSTORE_UNLOAD"></FIELD>
+
+            <FIELD Name="OUTSTORE_ARM_SET"></FIELD>
+            <FIELD Name="OUTSTORE_CALLAGV"></FIELD>
+            <FIELD Name="OUTSTORE_LOAD"></FIELD>
+            <FIELD Name="OUTSTORE_BACK0"></FIELD>
+            <FIELD Name="OUTSTORE_BACK1"></FIELD>
+            <FIELD Name="OUTSTORE_BACK2"></FIELD>
+            <FIELD Name="OUTSTORE_BACK3"></FIELD>
+            <FIELD Name="OUTSTORE_BACK4"></FIELD>
+            <FIELD Name="OUTSTORE_BACK5"></FIELD>
+            <FIELD Name="OUTSTORE_BACK6"></FIELD>
+            <FIELD Name="ExLine_ARM_SET"></FIELD>
+            <FIELD Name="ExLine_ISENOUGH"></FIELD>
+            <FIELD Name="ExLine_SCANN_ISENOUGH"></FIELD>
+            <FIELD Name="ExLine_BACK0"></FIELD>
+            <FIELD Name="ExLine_BACK1"></FIELD>
+            <FIELD Name="ExLine_BACK2"></FIELD>
+          </FIELDS>
+        </TELEGRAM>
+
+
+      </TELEGRAMS>
+    </TelegramDescriptionHandler>
+
+
+  </CONTROLSET>
+
+</MFC.NET>

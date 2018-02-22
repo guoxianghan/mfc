@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping  xmlns="urn:nhibernate-mapping-2.2" schema="DBO" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.MES.MESSystemSpoolsEntity" schema="DBO" table="tblFdProd" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="FdTagNo">
+      <column name="FdTagNo" not-null="true" />
+      <generator class="identity" />
+    </id> 
+    <property name="GroupID" column="GroupID" />
+    <property name="StructBarCode" column="StructBarCode" />
+    <property name="BobbinNo" column="BobbinNo" />
+    <property name="Length" column="Length" />
+    <property name="CName" column="CName" /> 
+    <property name="Const" column="Const" /> 
+ </class>
+</hibernate-mapping>

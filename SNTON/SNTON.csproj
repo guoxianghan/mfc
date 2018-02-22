@@ -1,0 +1,439 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C854452C-2B72-4053-AC45-F86D39FE56C4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SNTON</RootNamespace>
+    <AssemblyName>SNTON</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CSScriptLibrary, Version=3.12.2.0, Culture=neutral, PublicKeyToken=70fcc3d18c749033, processorArchitecture=MSIL">
+      <HintPath>..\packages\CS-Script.bin.3.12.2.1\lib\net45\CSScriptLibrary.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentNHibernate, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentNHibernate.2.0.3.0\lib\net40\FluentNHibernate.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MFCLib, Version=7.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\MFC\MFCLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MITSUBISHI.Component.DotSupportMsg, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5d8f6a8a93196d7a, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\MELSEC\Act\Control\MITSUBISHI.Component.DotSupportMsg.dll</HintPath>
+    </Reference>
+    <Reference Include="MITSUBISHI.Component.DotUtlType, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6b44489e63a9c4bd, processorArchitecture=x86">
+      <HintPath>C:\MELSEC\Act\Control\MITSUBISHI.Component.DotUtlType.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Mono.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\CS-Script.bin.3.12.2.1\lib\net45\Mono.CSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NHibernate.Mapping.Attributes, Version=4.0.0.1, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\NHibernate.Mapping.Attributes.4.0.0.1\lib\net40\NHibernate.Mapping.Attributes.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.121.2.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\packages\Oracle.ManagedDataAccess.12.1.2400\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceContracts, Version=7.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MFCLib.7.1.7\lib\net452\ServiceContracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack, Version=4.5.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.4.5.10\lib\net45\ServiceStack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Client, Version=4.5.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Client.4.5.10\lib\net45\ServiceStack.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Common, Version=4.5.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Common.4.5.10\lib\net45\ServiceStack.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=4.0.0.0, Culture=neutral, PublicKeyToken=e06fbc6124f57c43, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Interfaces.4.5.10\lib\portable-wp80+sl5+net45+win8+wpa81+monotouch+monoandroid+xamarin.ios10\ServiceStack.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Text, Version=4.5.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Text.4.5.10\lib\net45\ServiceStack.Text.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TIBCO.EMS">
+      <HintPath>ExternalAssemblies\TIBCO.EMS.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessLogic\BusinessLogic.cs" />
+    <Compile Include="BusinessLogic\UserInterfaceBackend\IUserInterfaceBackend.cs" />
+    <Compile Include="BusinessLogic\UserInterfaceBackend\UIHelper.cs" />
+    <Compile Include="BusinessLogic\UserInterfaceBackend\UserInterfaceBackend.cs" />
+    <Compile Include="Components\ACTLogic\ACTLogicBase.cs" />
+    <Compile Include="Components\AGV\AGVConfig.cs" />
+    <Compile Include="Components\AGV\AGVMagMarkerMapConfig.cs" />
+    <Compile Include="Components\AGV\AGVRoute.cs" />
+    <Compile Include="Components\AGV\AGVRouteArchive.cs" />
+    <Compile Include="Components\AGV\AGVStatus.cs" />
+    <Compile Include="Components\AGV\AGVTasks.cs" />
+    <Compile Include="Components\AGV\IAGVConfig.cs" />
+    <Compile Include="Components\AGV\IAGVMagMarkerMapConfig.cs" />
+    <Compile Include="Components\AGV\IAGVRoute.cs" />
+    <Compile Include="Components\AGV\IAGVRouteArchive.cs" />
+    <Compile Include="Components\AGV\IAGVStatus.cs" />
+    <Compile Include="Components\AGV\IAGVTasks.cs" />
+    <Compile Include="Components\CleanUp\CleanUpBrokerBase.cs" />
+    <Compile Include="Components\ComLogic\AGVLogic.cs" />
+    <Compile Include="Components\ComLogic\ComLogic.cs" />
+    <Compile Include="Components\ComLogic\EquipLineLogic.cs" />
+    <Compile Include="Components\ComLogic\EquipTaskLogic.cs" />
+    <Compile Include="Components\ComLogic\MidStoreLineLogic.cs" />
+    <Compile Include="Components\ComLogic\MidStoreRobotArmLogic.cs" />
+    <Compile Include="Components\Config\ButtonLocationConfig.cs" />
+    <Compile Include="Components\Config\IButtonLocationConfig.cs" />
+    <Compile Include="Components\Equipment\EquipCommand.cs" />
+    <Compile Include="Components\Equipment\EquipConfig.cs" />
+    <Compile Include="Components\Equipment\EquipConfiger.cs" />
+    <Compile Include="Components\Equipment\EquipConfiger2.cs" />
+    <Compile Include="Components\Equipment\EquipControllerConfig.cs" />
+    <Compile Include="Components\Equipment\EquipProduction.cs" />
+    <Compile Include="Components\Equipment\EquipStatus.cs" />
+    <Compile Include="Components\Equipment\EquipTask.cs" />
+    <Compile Include="Components\Equipment\EquipTaskPruduct.cs" />
+    <Compile Include="Components\Equipment\EquipTaskView.cs" />
+    <Compile Include="Components\Equipment\EquipTaskView2.cs" />
+    <Compile Include="Components\Equipment\IEquipCommand.cs" />
+    <Compile Include="Components\Equipment\IEquipConfig.cs" />
+    <Compile Include="Components\Equipment\IEquipConfiger.cs" />
+    <Compile Include="Components\Equipment\IEquipConfiger2.cs" />
+    <Compile Include="Components\Equipment\IEquipControllerConfig.cs" />
+    <Compile Include="Components\Equipment\IEquipProduction.cs" />
+    <Compile Include="Components\Equipment\IEquipStatus.cs" />
+    <Compile Include="Components\Equipment\IEquipTask.cs" />
+    <Compile Include="Components\Equipment\IEquipTaskProduct.cs" />
+    <Compile Include="Components\Equipment\IEquipTaskView.cs" />
+    <Compile Include="Components\Equipment\IEquipTaskView2.cs" />
+    <Compile Include="Components\FieldsDescription\MXFieldsDescription.cs" />
+    <Compile Include="Components\FieldsDescription\IMXFieldsDescription.cs" />
+    <Compile Include="Components\FieldsDescription\MXField.cs" />
+    <Compile Include="Components\MessageInfo\IMessageInfo.cs" />
+    <Compile Include="Components\MessageInfo\MessageInfo.cs" />
+    <Compile Include="Components\MES\IMESSystemSpools.cs" />
+    <Compile Include="Components\MES\ItblProdCodeStructMach.cs" />
+    <Compile Include="Components\MES\ItblProdCodeStructMark.cs" />
+    <Compile Include="Components\MES\MESSystemSpools.cs" />
+    <Compile Include="Components\MES\tblProdCodeStructMach.cs" />
+    <Compile Include="Components\MES\tblProdCodeStructMark.cs" />
+    <Compile Include="Components\MidStorage\IMidStorage.cs" />
+    <Compile Include="Components\MidStorage\IMidStorageSpools.cs" />
+    <Compile Include="Components\MidStorage\MidStorage.cs" />
+    <Compile Include="Components\MidStorage\MidStorageSpools.cs" />
+    <Compile Include="Components\Parser\IMXParser.cs" />
+    <Compile Include="Components\Parser\MXParser.cs" />
+    <Compile Include="Components\RobotArm\IRobotArmTaskSpool.cs" />
+    <Compile Include="Components\RobotArm\RobotArmTask.cs" />
+    <Compile Include="Components\RobotArm\RobotArmTaskSpool.cs" />
+    <Compile Include="Components\Spools\ISpools.cs" />
+    <Compile Include="Components\Spools\Spools.cs" />
+    <Compile Include="Components\SQLCommand\ISQLCommandBroker.cs" />
+    <Compile Include="Components\SQLCommand\SQLCommandBroker.cs" />
+    <Compile Include="Components\SystemParameters\ISystemParameters.cs" />
+    <Compile Include="Components\SystemParameters\ISystemParametersConfiguration.cs" />
+    <Compile Include="Components\SystemParameters\SystemParameters.cs" />
+    <Compile Include="Components\SystemParameters\SystemParametersConfiguration.cs" />
+    <Compile Include="Components\Textkeys\ITextKeysReadIn.cs" />
+    <Compile Include="Components\Textkeys\TextKeysReadIn.cs" />
+    <Compile Include="Com\IMXCommModule.cs" />
+    <Compile Include="Com\McProtocol.cs" />
+    <Compile Include="Com\MXDataBlock.cs" />
+    <Compile Include="Com\MXPLCClient.cs" />
+    <Compile Include="Com\MXQPLCClient.cs" />
+    <Compile Include="Constants\SNTONCommConstants.cs" />
+    <Compile Include="Constants\SNTONConstants.cs" />
+    <Compile Include="Constants\SNTONTelegram.cs" />
+    <Compile Include="Entities\Business\FedExException.cs" />
+    <Compile Include="Entities\Business\SortationChuteTransient.cs" />
+    <Compile Include="Entities\Business\SortationSelfPickUp.cs" />
+    <Compile Include="Entities\DBTables\AGV\AGVConfigEntity.cs" />
+    <Compile Include="Entities\DBTables\AGV\AGVMagMarkerMapConfigEntity.cs" />
+    <Compile Include="Entities\DBTables\AGV\AGVRouteArchiveEntity.cs" />
+    <Compile Include="Entities\DBTables\AGV\AGVRouteEntity.cs" />
+    <Compile Include="Entities\DBTables\AGV\AGVStatusEntity.cs" />
+    <Compile Include="Entities\DBTables\AGV\AGVTasksEntity.cs" />
+    <Compile Include="Entities\DBTables\Config\ButtonLocationConfigEntity.cs" />
+    <Compile Include="Entities\DBTables\EntityBase.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipConfigEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipConfiger2Entity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipConfigerEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipControllerConfigEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipProductionEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipStatusEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipTaskView2Entity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipTaskViewEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipTaskEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipTaskProductEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipCommandEntity.cs" />
+    <Compile Include="Entities\DBTables\Message\MessageEntity.cs" />
+    <Compile Include="Entities\DBTables\MES\MESSystemSpoolsEntity.cs" />
+    <Compile Include="Entities\DBTables\MES\tblProdCodeStructMachEntity.cs" />
+    <Compile Include="Entities\DBTables\MES\tblProdCodeStructMarkEntity.cs" />
+    <Compile Include="Entities\DBTables\MidStorage\MidStorageSpoolsCountEntity.cs" />
+    <Compile Include="Entities\DBTables\MidStorage\MidStorageEntity.cs" />
+    <Compile Include="Components\RobotArm\IRobotArmTask.cs" />
+    <Compile Include="Entities\DBTables\MidStorage\MidStorageSpoolsEntity.cs" />
+    <Compile Include="Entities\DBTables\RobotArmTask\RobotArmTaskEntity.cs" />
+    <Compile Include="Entities\DBTables\RobotArmTask\RobotArmTaskSpoolEntity.cs" />
+    <Compile Include="Entities\DBTables\Spools\SpoolsEntity.cs" />
+    <Compile Include="Entities\DBTables\SystemParameters\SystemParametersConfigurationEntity.cs" />
+    <Compile Include="Entities\DBTables\SystemParameters\SystemParametersEntity.cs" />
+    <Compile Include="Com\MXTPLCClient.cs" />
+    <Compile Include="Com\MXCom.cs" />
+    <Compile Include="SNTON.cs" />
+    <Compile Include="Misc\RoundRobin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Misc\Storage.cs" />
+    <Compile Include="WebServices\Constants.cs" />
+    <Compile Include="WebServices\ResponseBase.cs" />
+    <Compile Include="WebServices\ResponseError.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\IUserInterfaceBackend.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\AGV\AGVConfigUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\AGV\AGVRouteArchiveUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\AGV\AGVTaskDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\EquipWatch\InStoreageLineDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Equip\EquipCallDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Equip\EquipConfigDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Equip\EquipControllerConfigDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Equip\EquipInfoDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Equip\EquipProductionDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Equip\EquipProductionSearchRequest.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Equip\EquipStatusDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Equip\EquipTaskStatusDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\MessageData.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Message\MessageDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Message\MessageSearchCondition.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\MidStorage\MidStorageBaseDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\MidStorage\MidStorageDetailDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\MidStorage\MidStorageInfoDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\RobotArmTask\RobotArmTaskDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\SearchCondition.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Spool\SpoolDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\SystemParameters\SystemParametersUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Requests\AGV\AGVRuteSearchRequest.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Requests\Equip\EquipSearchRequest.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Requests\SystemParameters\SystemParametersRequest.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\AGV\AGVConfigResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\AGV\AGVRouteArchiveResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\AGV\AGVTaskResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\EquipWatch\InStoreageLineResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\Equip\EquipConfigInfoResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\Equip\EquipConfigResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\Equip\EquipConfigStatusResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\Equip\EquipControllerConfigResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\Equip\EquipProductionResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\Message\MessageResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Requests\Message\MessageSearchRequest.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\MidStorage\MidStorageBaseResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\RobotArmTask\RobotArmTaskResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\Spools\SpoolsResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\SystemParameters\SystemParametersResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\UserInterfaceBackend.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ExternalAssemblies\TIBCO.EMS.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Oracle.cfg.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\MSSQL.cfg.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="BusinessLogic\Sortation\" />
+    <Folder Include="WebServices\UserInterfaceBackend\Models\SystemParameter\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\AGVConfig.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\AGVMagMarkerMapConfig.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\AGVRoute.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\AGVRouteArchive.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\AGVStatus.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\AGVTasks.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipConfig.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipControllerConfig.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipProduction.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipTask.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\Message.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\MidStorage.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\Spools.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\SystemParameters.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\SystemParametersConfiguration.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipStatus.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\ButtonLocationConfig.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="ActProgTypeLib">
+      <Guid>{CD7846DF-1C99-4BC0-8A8D-FBFB7FC26ACB}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipTaskProduct.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipCommand.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\RobotArmTask.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\MESSQL.cfg.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\MESSystemSpools.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\tblProdCodeStructMach.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\tblProdCodeStructMark.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipConfiger.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipTaskView.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\MidStorageSpools.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\MidStorageSpoolsCount.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipTaskView2.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\RobotArmTaskSpool.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipConfiger2.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
+  <session-factory>
+    <property name="connection.driver_class">NHibernate.Driver.OracleManagedDataClientDriver</property>
+    <property name="connection.connection_string">
+      User Id=FEDSHDEV; Password=AirWayBill88; Data Source=Vilsg-FEDSH-WmsDev; Pooling=true; Enlist=false; Statement Cache Size=50; Min Pool Size=10; Incr Pool Size=5; Decr Pool Size=2;
+    </property>
+    <property name="connection.isolation">ReadCommitted</property>
+    <property name="show_sql">false</property>
+    <property name="adonet.batch_size">1</property>
+    <property name="dialect">NHibernate.Dialect.Oracle10gDialect</property>
+    <property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
+    <mapping resource="VI.Resources.Hibernate.Mappings.ConfigValue.hbm.xml" assembly="MFCLib"/>
+    <mapping resource="VI.Resources.Hibernate.Mappings.ConfigChoice.hbm.xml" assembly="MFCLib"/>
+    <mapping resource="VI.Resources.Hibernate.Mappings.ConfigParam.hbm.xml" assembly="MFCLib"/>
+    <mapping resource="VI.Resources.Hibernate.Mappings.InfoMessage.hbm.xml" assembly="MFCLib"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SystemLog.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.OperationsLog.hbm.xml" assembly="FedEx"/>
+    <!-- Temporary disabled until view is created.
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SortReportArchive.hbm.xml" assembly="FedEx"/>
+    -->
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SorterInfo.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.InterceptionParcel.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.InterceptionSession.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.InterceptedParcel.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SelfPickup.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SelfPickupChute.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SelfPickupList.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.ParcelInfo.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SelectionAndHandCode.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.Chute.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.ExceptionChute.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SortPlan.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SortPlanRule.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SortPlanRuleChute.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SortPlanSession.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SortReport.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.GFH_AWB.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.GFH_AWBCODE.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.GFH_MPS.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.GFH_ROUTING.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.SorterDetail.hbm.xml" assembly="FedEx"/>
+    <mapping resource="FedEx.Resources.Hibernate.Mappings.Operator.hbm.xml" assembly="FedEx"/>
+  </session-factory>
+</hibernate-configuration>

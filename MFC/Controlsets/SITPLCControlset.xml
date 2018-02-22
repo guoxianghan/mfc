@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+  <CONTROLSET>
+    <DATABASE Type="VI.MFC.Components.Database.Oracle.PooledOracleDatabaseLayer" Id="SITPLC$EXT$Database" Enabled="true">
+      <USE_GLOBAL_DEFINITION>standard database</USE_GLOBAL_DEFINITION>
+      <CONFIG MaxHashtableEntries="64" MaxReturnBufferSize="512" PoolSize="3" SentryTimeoutInMs="1000" WarnTimeoutInMs="5000"></CONFIG>
+      <CLIENT_ID>SIT-PLC MFC Thread</CLIENT_ID>
+    </DATABASE>
+
+    <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="SITPLC$EXT$SequencerInbound" Enabled="true">
+      <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+    </SEQUENCEHANDLER>
+    
+    <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="SITPLC$EXT$SequencerOutbound" Enabled="true">
+      <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+    </SEQUENCEHANDLER>
+
+    <PACKETIZER Type="VI.MFC.Components.Packetizer.SLEPacketizer" Id="SITPLC$EXT$Packetizer" Enabled="true">
+      <LENGTH>$TELEGRAMLENGTH$</LENGTH>
+      <STARTDELIMITER>02</STARTDELIMITER>
+      <ENDDELIMITER>03</ENDDELIMITER>
+      <MAXPACKETLENGTH>$TELEGRAMLENGTH$</MAXPACKETLENGTH>
+      <MINIMALANALYSISLENGTH>10</MINIMALANALYSISLENGTH>
+    </PACKETIZER>
+
+    <PACKETIZER Type="VI.MFC.Components.Packetizer.SLEPacketizer" Id="SITPLC$EXT$ClientPacketizer" Enabled="true">
+      <LENGTH>8</LENGTH>
+      <STARTDELIMITER>02</STARTDELIMITER>
+      <ENDDELIMITER>03</ENDDELIMITER>
+      <MAXPACKETLENGTH>8</MAXPACKETLENGTH>
+      <MINIMALANALYSISLENGTH>5</MINIMALANALYSISLENGTH>
+    </PACKETIZER>
+
+    <PARSER Type="VI.MFC.Components.Parser.VIParser" Id="SITPLC$EXT$Parser" Enabled="true">
+      <CONFIG CommModule="SITPLC_$EXT$" TelegramDescriptions="PLCTelegramDescriptions"></CONFIG>
+      <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+    </PARSER>
+
+    <LOGIC Type="VI.MFC.Logic.VILogic" Id="SITPLC$EXT$Logic" Enabled="true">
+      <CONFIG CommModule="SITPLC_$EXT$" Parser="SITPLC$EXT$Parser" DatabaseLayer="SITPLC$EXT$Database"></CONFIG>
+      <WATCHDOG Enabled="$SENDWATCHDOG$" TimeoutInSecs="30" TelegramId="99" RetriesBeforeDisconnection="3"></WATCHDOG>
+      <STATUS Enabled="$SENDSTATUS$" TimeoutInSecs="10" TelegramId="$STATUSTELEGRAMID$" UDPNotificationPort="$UDPNOTIFICATIONPORT$"></STATUS>
+      <ASYNCHRON UsesAsynchronousMessages="1"></ASYNCHRON>
+    </LOGIC>
+    
+    <SITPLC Type="VI.MFC.COM.TCPAckCommunication" Enabled="true" Id="SITPLC_$EXT$" Name="SIT PLC $EXT$" ResourceType="PLC">
+      <!-- What type of communication do we have here?
+                 VI.MFC.COM.TCPClient = VI standard protocol, MFC is client and PLC is server
+                 VI.MFC.COM.TCPServer = VI standard protocol, MFC is server and PLC is client
+                 VI.MFC.COM.TCPAckCommunication = Acknowledge protocol, 2 way connection. -->
+      <CONFIG SequencerInbound="SITPLC$EXT$SequencerInbound" SequencerOutbound="SITPLC$EXT$SequencerOutbound" Packetizer="SITPLC$EXT$Packetizer" Parser="SITPLC$EXT$Parser"></CONFIG>
+      <LOGIC Id="SITPLC$EXT$Logic"></LOGIC>
+
+      <CONNECTION>
+
+        <TCPIP>
+          <!-- Host (network interface) to connect to. Can be name or IP-Address -->
+          <HOST>$HOST$</HOST>
+          <!-- Defines which network card to be used for the local endpoint in eg. a cluster environment -->
+          <LOCALENDPOINT>$LOCALENDPOINT$</LOCALENDPOINT>
+          <!-- V4- use IPV4
+                         V6- use IPV6 -->
+          <IPVERSION>V4</IPVERSION>
+
+          <!-- REPEATTIMEOUTINMS = How long shall we wait before resending a telegram due to missing ACK?
+                         REPEATCOUNT       = How often shall we try to resend a non-acknowledged telegram before giving up?
+                         ACKNOWLEDGETYPE   = 'COMLEVEL'    - Directly acknowledge the telegram when it comes in
+                                             'LOGICLEVEL'  - Acknowledge the telegram only after it went through the logic
+                                             'BUFFERED'    - Acknowledge the telegram when it will be processed by the logic.
+                                                             This is nearly the same as 'COMLEVEL' but with a relaxed timing. -->
+
+          <OPTIONS RepeatTimeoutInMs="500" RepeatCount="3" AcknowledgeType="BUFFERED"></OPTIONS>
+
+          <SERVER Type="VI.MFC.COM.TCPAckServer">
+            <!-- Port to use on remote computer <HOST> to connect to. -->
+            <PORT>$SERVERPORT$</PORT>
+            <!-- Different socket options. See socket api for reference. Change only in case you
+                             have a good reason to do so. -->
+            <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+            <!-- Size in bytes of the receive buffer. 16384 should be ok. -->
+            <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+            <!-- Size in bytes of the sending buffer. 16384 should be ok. -->
+            <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+            <!-- YES- close object once disconnected (rarely used)
+                             NO- do not close object once disconnected (standard) -->
+            <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+            <!-- Time to wait ins ms between connection attempts -->
+            <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+            <!-- Can be set to None, Normal (ASCII dump), UTF8, HexOnly or Mixed (binary values replaced by [0xXX] characters).
+                             Incoming data will be logged starting with '>'.
+                             Outgoing data will be logged starting with '<'.
+                             Trash bytes (non packet data) will be logged starting with '#>'
+                             Packetized data (one interpreted data packet) will be logged starting with 'P>'
+
+                             'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                             Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                             support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                             ethernet frame). -->
+
+            <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+          </SERVER>
+
+          <CLIENT Type="VI.MFC.COM.TCPAckClient">
+            <!-- Port to use on remote computer <HOST> to connect to. -->
+            <PORT>$CLIENTPORT$</PORT>
+            <!-- Different socket options. See socket api for reference. Change only in case you
+                             have a good reason to do so. -->
+            <SOCKETOPTIONS NoDelay="true" DontRoute="true" KeepAlive="true" ReuseAddress="true" Linger="false" LingerTimeoutInSecs="0"></SOCKETOPTIONS>
+            <!-- Size in bytes of the receive buffer. 16384 should be ok. -->
+            <RECEIVEBUFFERSIZE>16384</RECEIVEBUFFERSIZE>
+            <!-- Size in bytes of the sending buffer. 16384 should be ok. -->
+            <SENDBUFFERSIZE>16384</SENDBUFFERSIZE>
+            <!-- YES- close object once disconnected (rarely used)
+                             NO- do not close object once disconnected (standard) -->
+            <CLOSEONDISCONNECT>NO</CLOSEONDISCONNECT>
+            <!-- Time to wait ins ms between connection attempts -->
+            <RECONNECTTIMEOUTINMS>1000</RECONNECTTIMEOUTINMS>
+
+            <!-- Can be set to None, Normal (ASCII dump), UTF8, HexOnly or Mixed (binary values replaced by [0xXX] characters).
+                             Incoming data will be logged starting with '>'.
+                             Outgoing data will be logged starting with '<'.
+                             Trash bytes (non packet data) will be logged starting with '#>'
+                             Packetized data (one interpreted data packet) will be logged starting with 'P>'
+
+                             'MaxNumberOfBytesToLog' defines how many bytes of incoming and outgoing data we would like to log.
+                             Standard value is 512 byte. Caution when specifying greater values because not all Log4net log appenders
+                             support an unlimited number of bytes (eg. UDP appender does not log data which is larger than one
+                             ethernet frame). -->
+
+            <LOGGINGOPTIONS Type="Mixed" MaxNumberOfBytesToLog="256"></LOGGINGOPTIONS>
+            <CONFIG Packetizer="SITPLC$EXT$ClientPacketizer"></CONFIG>
+          </CLIENT>
+
+        </TCPIP>
+
+      </CONNECTION>
+    </SITPLC>
+  </CONTROLSET>
+</MFC.NET>

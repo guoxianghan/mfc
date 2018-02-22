@@ -1,0 +1,11 @@
+*.dll
+*.log
+MFC/bin/
+MFC/obj/
+MFC/SNTON/bin/
+MFC/SNTON/obj/
+packages/
+bin/
+obj/
+.bin/
+.obj/

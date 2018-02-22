@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+This template was written to work with NHibernate.Test.
+Copy the template to your NHibernate.Test project folder and rename it in hibernate.cfg.xml and change it 
+for your own use before compile tests in VisualStudio.
+-->
+<!-- This is the System.Data.dll provider for SQL Server 
+      Server=192.168.120.227;User Id=sa;Password=!@#123qwe;Database=SNTON;
+      Server=.;User Id=sa;Password=123;Database=SNTON;-->
+<hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
+	<session-factory name="NHibernate">
+		<property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
+		<property name="connection.connection_string">
+      Server=.;User Id=sa;Password=123;Database=SNTON;
+    </property>
+    <property name="connection.isolation">ReadCommitted</property>
+		<property name="adonet.batch_size">1</property>
+		<property name="show_sql">false</property>
+		<property name="dialect">NHibernate.Dialect.MsSql2008Dialect</property>
+		<!--<property name="command_timeout">60</property>-->
+		<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
+    <!--Mapping info-->
+    <!--
+    <mapping resource="VI.Resources.Hibernate.Mappings.ConfigValue.hbm.xml" assembly="MFCLib"/>
+    <mapping resource="VI.Resources.Hibernate.Mappings.ConfigChoice.hbm.xml" assembly="MFCLib"/>
+    <mapping resource="VI.Resources.Hibernate.Mappings.ConfigParam.hbm.xml" assembly="MFCLib"/>
+    <mapping resource="VI.Resources.Hibernate.Mappings.InfoMessage.hbm.xml" assembly="MFCLib"/>
+     -->
+    
+    
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.AGVConfig.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.AGVMagMarkerMapConfig.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.AGVRoute.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.AGVRouteArchive.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.AGVStatus.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.AGVTasks.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipConfig.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipProduction.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipTask.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.Message.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.MidStorage.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.Spools.hbm.xml" assembly="SNTON"/>
+    
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.SystemParameters.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.SystemParametersConfiguration.hbm.xml" assembly="SNTON"/>
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipStatus.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipControllerConfig.hbm.xml" assembly="SNTON"/>
+ 
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipTaskProduct.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipCommand.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.RobotArmTask.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.RobotArmTaskSpool.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipTaskView.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipConfiger.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.MidStorageSpools.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.MidStorageSpoolsCount.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipTaskView2.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipConfiger2.hbm.xml" assembly="SNTON"/>
+
+  </session-factory>
+</hibernate-configuration>

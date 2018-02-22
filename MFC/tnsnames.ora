@@ -1,0 +1,75 @@
+# Every line that begins with # is a comment line
+#
+# Create Oracle net service names, or aliases, for each database server 
+# you need to connect to.
+#
+# TNSNames.ora sample entry
+#
+# alias =
+#  (DESCRIPTION =
+#    (ADDRESS = (PROTOCOL = TCP)(HOST = myserver.mycompany.com)(PORT = 1521))
+#    (CONNECT_DATA =
+#      (SERVER = DEDICATED)
+#      (SERVICE_NAME = orcl)
+#    )
+#  )
+#
+# You can modify the entry below for your own database.
+# <data source alias> = Name to use in the connection string Data Source
+# <hostname or IP> = name or IP of the database server machine
+# <port> = database server machine port to use
+# <database service name> = name of the database service on the server
+Vilsg-FEDSH-WmsDev =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = TST-SFE-JIN-DB1)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = VIDOINDB)
+      (SERVER = DEDICATED)
+    )
+  )
+  
+VILSG-FEDSH-WmsIHT =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 10.153.81.143)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = VIDOINDB)
+      (SERVER = DEDICATED)
+    )
+  ) 
+  
+VILSG-FEDSH-Wms2IHT =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 10.153.81.106)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = IHTFEDSH)
+      (SERVER = DEDICATED)
+    )
+  )   
+
+#FEDSH-Wms =
+#  (DESCRIPTION=
+#    (ADDRESS_LIST=
+#	  (ADDRESS=(PROTOCOL=TCP)(HOST=FESHA-WMSDB)(PORT=1521)) 
+#    )
+#    (CONNECT_DATA=
+#      (SERVICE_NAME=FESHADB)
+#      (SERVER=DEDICATED)
+#    )
+#  )
+
+FEDSH-Wms =
+  (DESCRIPTION=
+    (ADDRESS_LIST=
+      (ADDRESS=(PROTOCOL=TCP)(HOST=10.156.72.13)(PORT=1521))
+    )
+    (CONNECT_DATA=
+      (SERVICE_NAME=FESHADB)
+      (SERVER=DEDICATED)
+    )
+  )

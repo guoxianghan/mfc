@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+    <CONTROLSET>
+        <PACKETIZER Type="VI.MFC.Components.Packetizer.SEPacketizer" Id="ADAPTO$EXT$Packetizer" Enabled="true">
+            <STARTDELIMITER>02</STARTDELIMITER>
+            <ENDDELIMITER>03</ENDDELIMITER>
+            <MAXPACKETLENGTH>300</MAXPACKETLENGTH>
+            <MINIMALANALYSISLENGTH>10</MINIMALANALYSISLENGTH>
+        </PACKETIZER>
+        <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="ADAPTO$EXT$SequencerInbound" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="ADAPTO$EXT$SequencerOutbound" Enabled="true">
+            <CONFIG Length="1" Padding="none" PaddingChar="0" MinSequence="1" MaxSequence="9" StartSequence="0"></CONFIG>
+        </SEQUENCEHANDLER>
+        <PARSER Type="VI.MFC.Components.Parser.Adapto.AdaptoParser" Id="ADAPTO$EXT$Parser" Enabled="true">
+            <CONFIG CommModule="ADAPTO_$EXT$" TelegramDescriptions="AdaptoTelegramDescriptions"></CONFIG>
+            <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
+        </PARSER>
+<!--Logic is disabled for now as the actual way of implementation is still open for discussion-->
+        <LOGIC Type="VI.MFC.Logic.Adapto.AdaptoLogic" Id="ADAPTO$EXT$Logic" Enabled="false">
+            <CONFIG CommModule="ADAPTO_$EXT$" Parser="ADAPTO$EXT$Parser" AdaptoCommanderId="Adapto$EXT$Commander"/>
+            <WATCHDOG Enabled="true" TimeoutInSecs="20" RetriesBeforeDisconnection="3"/>
+            <ASYNCHRON UsesAsynchronousMessages="1"/>
+        </LOGIC>
+        <ADAPTO Type="VI.MFC.COM.TCPAckCommunication" Enabled="true" Id="ADAPTO_$EXT$" Name="ADAPTO$EXT$" ResourceType="PLC">
+            <CONFIG SequencerInbound="ADAPTO$EXT$SequencerInbound" SequencerOutbound="ADAPTO$EXT$SequencerOutbound" 
+                    Packetizer="ADAPTO$EXT$Packetizer" Parser="ADAPTO$EXT$Parser" />
+            <LOGIC Id="ADAPTO$EXT$Logic"/>
+            <CONNECTION>
+                <TCPIP>
+                    <HOST>$HOST$</HOST>
+                    <!--<HOST>127.0.0.1</HOST>-->
+                    <LOCALENDPOINT>$LOCALENDPOINT$</LOCALENDPOINT>
+                    <IPVERSION>V4</IPVERSION>
+                    <OPTIONS AcknowledgeType="BUFFERED"></OPTIONS>
+                    <SERVER Type="VI.MFC.COM.Adapto.TCPAdaptoAckServer">
+                        <PORT>$SERVERPORT$</PORT>
+                        <CONFIG Packetizer="ADAPTO$EXT$Packetizer"></CONFIG>
+                    </SERVER>
+                    <CLIENT Type="VI.MFC.COM.Adapto.TCPAdaptoAckClient">
+                        <PORT>$CLIENTPORT$</PORT>
+                        <CONFIG Packetizer="ADAPTO$EXT$Packetizer"></CONFIG>
+                    </CLIENT>
+                </TCPIP>
+            </CONNECTION>
+        </ADAPTO>
+    </CONTROLSET>
+</MFC.NET>

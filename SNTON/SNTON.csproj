@@ -73,7 +73,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="MFCLib, Version=7.1.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\MFC\MFCLib.dll</HintPath>
+      <HintPath>..\dll\MFCLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MITSUBISHI.Component.DotSupportMsg, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5d8f6a8a93196d7a, processorArchitecture=x86">
@@ -140,7 +140,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="TIBCO.EMS">
-      <HintPath>ExternalAssemblies\TIBCO.EMS.dll</HintPath>
+      <HintPath>..\dll\TIBCO.EMS.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

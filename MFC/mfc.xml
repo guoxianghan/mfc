@@ -10,7 +10,7 @@
 
   <GLOBAL_DEFINITIONS>
     <DATABASE Name ="standard database">
-      <!-- Defines to use the given section name from the GLOBAL_DEFINITION section.-->
+      <!--   Defines to use the given section name from the GLOBAL_DEFINITION section.-->
       <!-- User: MFC51, Password: MFC51 
       
          NDS-NMFC-DEV =

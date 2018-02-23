@@ -197,14 +197,14 @@ namespace SNTON.Components.ComLogic
 
             if (i == 2)
             {
-                logger.InfoMethod("开始读取读取龙门完成指令:" + watch.ElapsedMilliseconds);
+                logger.InfoMethod("开始读取" + this.StorageArea + "号龙门完成指令:" + watch.ElapsedMilliseconds);
             }
 
             var ne = this.MXParser.ReadData(neu);
 
             if (i == 2)
             {
-                logger.InfoMethod("读取龙门完成指令耗时:" + watch.ElapsedMilliseconds);
+                logger.InfoMethod("读取" + this.StorageArea + "号龙门完成指令耗时:" + watch.ElapsedMilliseconds);
                 watch.Restart();
             }
             if (!ne.Item1)
@@ -217,13 +217,13 @@ namespace SNTON.Components.ComLogic
             if (!IsWarning && midres.res_LONGMEN_STATE != 0)
             {
                 IsWarning = true;
-                logger.WarnMethod($"{StorageArea}号龙门故障");
+                logger.WarnMethod($"{StorageArea}号龙门退出自动或故障");
                 this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = $"{StorageArea}号龙门故障", Source = "龙门故障", MsgLevel = 7 });
             }
 
             if (i == 2)
             {
-                logger.InfoMethod("ParserNeu对象转换耗时:" + watch.ElapsedMilliseconds);
+                logger.InfoMethod("" + this.StorageArea + "号龙门ParserNeu对象转换耗时:" + watch.ElapsedMilliseconds);
                 watch.Restart();
             }
             //string cmd = neu.TheName.Trim();
@@ -233,7 +233,7 @@ namespace SNTON.Components.ComLogic
 
             if (i == 2)
             {
-                logger.InfoMethod("读取龙门任务GetRobotArmTasks耗时:" + watch.ElapsedMilliseconds);
+                logger.InfoMethod("读取" + this.StorageArea + "号龙门任务GetRobotArmTasks耗时:" + watch.ElapsedMilliseconds);
                 watch.Restart();
             }
             RobotArmTaskEntity armtsk = null;
@@ -246,7 +246,7 @@ namespace SNTON.Components.ComLogic
 
             if (i == 2)
             {
-                logger.InfoMethod("读取暂存库GetMidStorages耗时:" + watch.ElapsedMilliseconds);
+                logger.InfoMethod("读取" + this.StorageArea + "号暂存库GetMidStorages耗时:" + watch.ElapsedMilliseconds);
                 watch.Restart();
             }
             var midstore = midstores[0];
@@ -269,7 +269,7 @@ namespace SNTON.Components.ComLogic
                 if (!IsWarning)
                 {
                     IsWarning = true;
-                    logger.WarnMethod($"{StorageArea}号龙门故障");
+                    logger.WarnMethod($"{StorageArea}号龙门退出自动或故障");
                     this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = $"{StorageArea}号龙门故障", Source = "龙门故障", MsgLevel = 7 });
                 }
                 return;
@@ -351,7 +351,7 @@ namespace SNTON.Components.ComLogic
             {
                 if (i == 2)
                 {
-                    logger.InfoMethod("本次龙门任务未完成耗时:" + watch.ElapsedMilliseconds);
+                    logger.InfoMethod("本次" + this.StorageArea + "号龙门任务未完成耗时:" + watch.ElapsedMilliseconds);
                     watch.Restart();
                 }
                 //logger.WarnMethod(this.StorageArea + "号龙门响应指令有误");
@@ -501,7 +501,7 @@ namespace SNTON.Components.ComLogic
                 if (!IsWarning)
                 {
                     IsWarning = true;
-                    logger.WarnMethod("龙门退出自动或有故障");
+                    logger.WarnMethod(this.StorageArea+"号龙门退出自动或有故障");
                     this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = this.RobotArmID + "号龙门退出自动或有故障", Source = this.RobotArmID + "号龙门报警", MsgLevel = 7 });
                 }
                 return;

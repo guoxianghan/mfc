@@ -78,7 +78,7 @@ namespace SNTON.BusinessLogic
                 foreach (var item in list)
                 {
                     var tmp = new WebServices.UserInterfaceBackend.Models.SystemParametersUI()
-                    { Description = item.Description, Id = item.Id, ParamName = item.ParameterName, Value = item.ParameterValue, ValueType = item.DisplayFormat.ToString() };
+                    { Description = item.Description.Trim(), Id = item.Id, ParamName = item.ParameterName.Trim(), Value = item.ParameterValue.Trim(), ValueType = item.DisplayFormat.ToString().Trim() };
 
                     try
                     {
@@ -1094,7 +1094,7 @@ namespace SNTON.BusinessLogic
                 if (GetMidStoreRobotArmLogic(i) != null)
                 {
                     if (GetMidStoreRobotArmLogic(i).IsWarning)
-                        sb.Append(i + "号龙门退出自动或故障报警; ");
+                        sb.Append(i + "号龙门退出自动或故障; ");
                     if (!GetMidStoreRobotArmLogic(i).IsCanSend)
                         sb.Append(i + "号龙门库不允许下发指令; ");
                 }

@@ -51,7 +51,7 @@ namespace SNTON.Entities.DBTables.MES
         /// （放线1数量）
         /// </summary>
         [DataMember]
-        public virtual string SupplyQty1 { get; set; }
+        public virtual int SupplyQty1 { get; set; }
         /// <summary>
         /// （放线2）
         /// </summary>
@@ -61,7 +61,7 @@ namespace SNTON.Entities.DBTables.MES
         /// （放线2数量）
         /// </summary>
         [DataMember]
-        public virtual string SupplyQty2 { get; set; }
+        public virtual int SupplyQty2 { get; set; }
 
     }
 }

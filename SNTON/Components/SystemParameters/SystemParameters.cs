@@ -103,7 +103,7 @@ namespace SNTON.Components.SystemParameters
                 var tmp = ReadSqlList<SystemParametersEntity>(session, "SELECT * FROM " + DatabaseDbTable + " WHERE ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted);
                 if (tmp.Any())
                 {
-                    var config = ReadSqlList<SystemParametersConfigurationEntity>(session, $"SELECT * FROM {DatabaseDbTable} WHERE ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted);
+                    var config = ReadSqlList<SystemParametersConfigurationEntity>(session, $"SELECT * FROM SNTON.SystemParametersConfiguration WHERE ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted);
                     foreach (var item in tmp)
                     {
                         if (item.DisplayFormat != 0 && item.DisplayFormat != 1)

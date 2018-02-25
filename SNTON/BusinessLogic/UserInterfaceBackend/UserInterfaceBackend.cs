@@ -1054,9 +1054,14 @@ namespace SNTON.BusinessLogic
                 armtsks.ForEach(x => x.IsDeleted = 1);
                 armtsks.ForEach(x => x.TaskStatus = 8);
                 var mids = this.MidStorageProvider.GetMidStorages($"IsOccupied=5 AND [StorageArea]={storeageareaid}", null);
-                var seqnos = from i in armtsks
-                             select i.SeqNo;
-                mids = mids.FindAll(x => seqnos.Contains(x.SeqNo));
+                //var seqnos = from i in armtsks
+                //             select i.SeqNo;
+                //mids = mids.FindAll(x => seqnos.Contains(x.SeqNo));
+                //foreach (var x in mids)
+                //{
+                //    x.IsOccupied = 0;
+                //    x.IdsList = "";
+                //}
                 mids.ForEach(x => x.IsOccupied = 0);
                 mids.ForEach(x => x.IdsList = "");
                 bool r = this.SqlCommandProvider.ClearInStoreageLine(armtsks, mids, null);

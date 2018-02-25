@@ -212,6 +212,7 @@ namespace SNTON.Components.SQLCommand
                 }
                 Update(session, list);
                 Update(session, mids);
+                ret = true;
             }
             catch (Exception ex)
             {

@@ -434,7 +434,21 @@ namespace SNTON.Components.ComLogic
             var dt = DateTime.Now;
             for (int i = 0; i < thisplantagv.Count - 1; i++)
             {
+
                 var agv = thisplantagv[i];
+               
+                byte status = Convert.ToByte(Status[i].ToString());
+                /// <summary>
+                /// 0=AGV处于待命状态;
+                ///1=AGV处于空闲状态;
+                ///2=AGV处于任务执行状态;
+                ///3=AGV处于故障状态;
+                /// </summary>
+                if (status == 3)
+                {
+                    //找正在执行的AGV任务,若有,则将该任务标记为故障
+                    //找实时轨迹里面最新的坐标,并将其状态改为3
+                }
                 if (this.BusinessLogic.AGVStatusProvider._DicAGVStatus.ContainsKey(agv.Id))
                 {
                     this.BusinessLogic.AGVStatusProvider._DicAGVStatus[agv.Id].Status = Convert.ToByte(Status[i].ToString());

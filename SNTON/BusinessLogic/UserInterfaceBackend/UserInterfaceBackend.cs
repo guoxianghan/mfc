@@ -1070,7 +1070,8 @@ namespace SNTON.BusinessLogic
             }
             else
             {
-                o.data.Add($"暂未发现{storeageareaid}号龙门入库任务");
+                File.WriteAllText($"./StorageArea{storeageareaid}QrCode.json", "[]");
+                o.data.Add($"清除{storeageareaid}号暂存库直通线成功");
             }
             return o;
         }
@@ -1113,7 +1114,7 @@ namespace SNTON.BusinessLogic
             if (tmp != null)
                 foreach (var item in tmp)
                 {
-                    obj.data.Add(new AGVRouteDataUI() { agvid = item.AGVId, id = item.Id, x = item.X, y = item.Y });
+                    obj.data.Add(new AGVRouteDataUI() { agvid = item.AGVId, id = item.Id, x = item.X, y = item.Y, Status=item.Status });
                 }
             return obj;
         }

@@ -590,6 +590,7 @@ namespace SNTON.Components.ComLogic
         {
             Neutrino neclear = new Neutrino() { TheName = "SendToExceptionFlow" };
             neclear.AddField("ExceptionTag", value.ToString());
+            SendData(neclear);
         }
         int InLineRobotArmTask2()
         {

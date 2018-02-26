@@ -29,5 +29,7 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.AGV
         /// </summary>
         public int agvid;
         public long id;
+
+        public byte Status { get; set; }
     }
 }

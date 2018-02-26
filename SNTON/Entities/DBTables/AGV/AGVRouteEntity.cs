@@ -10,7 +10,7 @@ namespace SNTON.Entities.DBTables.AGV
     /// <summary>
     /// DB table entity class
     /// </summary>
-    public class AGVRouteEntity: EntityBase
+    public class AGVRouteEntity : EntityBase
     {
 
         /// <summary>
@@ -24,6 +24,11 @@ namespace SNTON.Entities.DBTables.AGV
         /// </summary>
         [DataMember]
         public virtual string X { get; set; }
+        /// <summary>
+        /// Ð¡³µ×´Ì¬
+        /// </summary>
+        [DataMember]
+        public virtual byte Status { get; set; }
 
         /// <summary>
         /// Y
@@ -37,5 +42,5 @@ namespace SNTON.Entities.DBTables.AGV
         [DataMember]
         public virtual decimal Speed { get; set; }
 
-    }	
+    }
 }

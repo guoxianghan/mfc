@@ -7,6 +7,7 @@
     </id>
     <property name="AGVId" column="AGVId" />
     <property name="X" column="X" />
+    <property name="Status" column="Status" />
     <property name="Y" column="Y" />
     <property name="Speed" column="Speed" />
     <property name="Created" column="Created" />

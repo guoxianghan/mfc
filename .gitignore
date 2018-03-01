@@ -9,3 +9,4 @@ obj/
 .bin/
 .obj/
 !dll/
+.vs/

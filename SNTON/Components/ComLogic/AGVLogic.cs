@@ -42,7 +42,7 @@ namespace SNTON.Components.ComLogic
         protected override void StartInternal()
         {
             base.StartInternal();
-            //thread_AliveReq.Start();
+            thread_AliveReq.Start();
             thread_AGVStatusReq.Start();
             thread_CheckAGVTaskSend.Start();
             //thread_CreateAGVTask.Start(); 

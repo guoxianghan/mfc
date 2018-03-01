@@ -836,7 +836,10 @@ namespace SNTON.Components.ComLogic
             lr = "";
             SpoolsEntity spool = this.BusinessLogic.SpoolsProvider.GetSpoolByBarcode(barcode, null);
             if (spool != null)
+            {
+                lr = spool.BobbinNo.ToString();
                 return 1;
+            }
             var messpool = this.BusinessLogic.MESSystemProvider.GetMESSpool(barcode, null);//从MES系统查轮子信息存到本地数据库
             if (messpool == null)
                 messpool = this.BusinessLogic.MESSystemProvider.GetMESSpool(barcode, null);//从MES系统查轮子信息存到本地数据库

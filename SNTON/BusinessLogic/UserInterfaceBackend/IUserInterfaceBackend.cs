@@ -12,6 +12,7 @@ using SNTON.WebServices.UserInterfaceBackend.Requests.SystemParameters;
 using SNTON.WebServices.UserInterfaceBackend.Responses.MidStorage;
 using SNTON.WebServices.UserInterfaceBackend.Responses.RobotArmTask;
 using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
+using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
 
 namespace SNTON.BusinessLogic
 {
@@ -56,6 +57,8 @@ namespace SNTON.BusinessLogic
         AGVRouteResponse RealTimeAGVRoute();
         AGVTaskResponse RunningAGVTask();
         ResponseDataBase SetAGVTaskStatus(long id, int status);
+        ProductResponse GetProduct();
+        ResponseDataBase SaveProductLRRadio(int id, string lrratio);
         #endregion
 
         #region

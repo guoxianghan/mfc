@@ -357,6 +357,7 @@ namespace SNTON.Components.AGV
             {
                 protData.EnterWriteLock();
                 Update(session, entities);
+                ret = entities.Length;
             }
             catch (Exception e)
             {

@@ -50,5 +50,30 @@ namespace SNTON.Entities.DBTables.Equipments
         public virtual int BStation { get; set; }
         [DataMember]
         public virtual int AStation { get; set; }
+        /// <summary>
+        /// 单丝作业标准书编号
+        /// </summary>
+        [DataMember]
+        public virtual byte SupplyQty1 { get; set; }
+        /// <summary>
+        /// 单丝作业标准书编号
+        /// </summary>
+        [DataMember]
+        public virtual string Supply2 { get; set; }
+        /// <summary>
+        /// 单丝作业标准书编号
+        /// </summary>
+        [DataMember]
+        public virtual string TitleProdName { get; set; }
+        /// <summary>
+        /// 单丝作业标准书编号
+        /// </summary>
+        [DataMember]
+        public virtual byte SupplyQty2 { get; set; }
+        /// <summary>
+        /// 需要的单丝长度
+        /// </summary>
+        [DataMember]
+        public virtual int Length2 { get; set; }
     }
 }

@@ -233,7 +233,14 @@
 
     <TelegramDescriptionHandler Type="SNTON.Components.FieldsDescription.MXFieldsDescription" Id="MidStoreLineDescriptions" Assembly="SNTON.DLL" Enabled="true">
       <FIELDDEFINITION>
+        <FIELD Name="res_Warning10" Type="Int"  Length="16"  Value="D10" SPLIT="" ></FIELD>
+        <FIELD Name="res_Warning11" Type="Int"  Length="16"  Value="D11" SPLIT="" ></FIELD>
+        <FIELD Name="res_Warning12" Type="Int"  Length="16"  Value="D12" SPLIT="" ></FIELD>
+        <FIELD Name="res_Warning14" Type="Int"  Length="16"  Value="D14" SPLIT="" ></FIELD>
+        <FIELD Name="res_Warning15" Type="Int"  Length="16"  Value="D15" SPLIT="" ></FIELD>
         <FIELD Name="SERVER_STATUS" Type="Int"  Length="1"  Value="D1000" SPLIT="" ></FIELD>
+        <FIELD Name="Warning0" Type="Int"  Length="1"  Value="D650" SPLIT="" ></FIELD>
+        <FIELD Name="Warning1" Type="Int"  Length="1"  Value="D651" SPLIT="" ></FIELD>
         <!--1：自动 2.手动 3.故障-->
         <FIELD Name="LINE_STATUS" Type="Int"  Length="1"  Value="D1001" SPLIT="" ></FIELD>
         <FIELD Name="ONLINE_WHOOLCOUNT" Type="Int"  Length="1"  Value="D1002" SPLIT="" ></FIELD>

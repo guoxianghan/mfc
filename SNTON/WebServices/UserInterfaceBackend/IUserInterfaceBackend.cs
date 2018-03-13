@@ -23,6 +23,7 @@ using SNTON.WebServices.UserInterfaceBackend.Requests.SystemParameters;
 using SNTON.WebServices.UserInterfaceBackend.Responses.MidStorage;
 using SNTON.WebServices.UserInterfaceBackend.Responses.RobotArmTask;
 using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
+using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
 
 namespace SNTON.WebServices.UserInterfaceBackend
 {
@@ -376,5 +377,22 @@ namespace SNTON.WebServices.UserInterfaceBackend
         object TTT();
         #endregion
 
+        #region Product
+        [DataContractFormat]
+        [WebInvoke(UriTemplate = " Product/GetProduct", Method = "GET",
+         ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
+        [ServiceKnownType(typeof(ProductResponse))]
+        ProductResponse GetProduct();
+        /// <summary>
+        /// 更改报警比例
+        /// </summary>
+        /// <returns></returns>
+        [DataContractFormat]
+        [WebInvoke(UriTemplate = "Product/SaveProductLRRatio", Method = "POST",
+           ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
+        [ServiceKnownType(typeof(ResponseDataBase))]
+        ResponseDataBase SaveProductLRRadio(int id, string lrratio);
+
+        #endregion
     }
 }

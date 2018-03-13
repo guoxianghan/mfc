@@ -36,7 +36,7 @@ namespace SNTON.Components.ComLogic
         {
             //threadequiptask = new VIThreadEx(CheckEquipTask, null, "Check AGV task Ready", 1000);
             thread_ReadEquipLineStatus = new VIThreadEx(ReadEquipLineStatus, null, "Check EquipLine Status", 1000);
-            thread_SendCreateAGV = new VIThreadEx(SendCreateAGV, null, "SendCreateAGV", 3000);
+            thread_SendCreateAGV = new VIThreadEx(SendCreateAGV, null, "thread for SendCreateAGV", 3000);
             thread_heartbeat = new VIThreadEx(heartbeat, null, "heartbeat", 1000);
             //thread_plctest = new VIThreadEx(PLCTest, null, "PLCTest", 4000);
         }
@@ -86,6 +86,7 @@ namespace SNTON.Components.ComLogic
                     sbequipname.Append(cmd.EquipName);
                     readwas.AddField(cmd.WAStatus, "0");
                     var readr = MXParser.ReadData(readwas, true);
+                    Thread.Sleep(10);
                     if (!readr.Item1)
                     {
                         continue;
@@ -104,6 +105,7 @@ namespace SNTON.Components.ComLogic
                         n.AddField(cmd.WAStatus, item.TaskType.ToString());
                     task.Status = 9;
                     bool r = MXParser.SendData(n, 3);
+                    Thread.Sleep(10);
                     if (!r)
                     {
                         logger.WarnMethod("通知地面滚筒准备接收失败,EquipTask:" + JsonConvert.SerializeObject(task));
@@ -113,8 +115,8 @@ namespace SNTON.Components.ComLogic
                     {
                         logger.WarnMethod("通知地面滚筒准备接收,EquipTask:" + JsonConvert.SerializeObject(task));
                     }
-                    Thread.Sleep(10);
                     var light = MXParser.ReadData(n, true);
+                    Thread.Sleep(10);
                     #region 重新读取刚刚写入的光电,验证有没有写入成功
                     if (!light.Item1)
                     {
@@ -132,7 +134,9 @@ namespace SNTON.Components.ComLogic
                         else
                         {
                             task.Status = 6;
-                            this.BusinessLogic.EquipTaskViewProvider.Update(null, task);
+                            int cout = this.BusinessLogic.EquipTaskViewProvider.Update(null, task);
+                            //if (cout == 0)
+                            //    continue;
                             logger.WarnMethod("光电写入成功:" + cmd.ControlID + "," + sbequipname);
                         }
 

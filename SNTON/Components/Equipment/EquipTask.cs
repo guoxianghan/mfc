@@ -87,6 +87,7 @@ namespace SNTON.Components.Equipment
         /// </summary>
         public override void ReadBrokerData()
         {
+            var tmp = ReadSqlList<EquipTaskEntity>(null, $"SELECT top 1 * FROM {DatabaseDbTable}  order by Id desc");
         }
         #endregion
 

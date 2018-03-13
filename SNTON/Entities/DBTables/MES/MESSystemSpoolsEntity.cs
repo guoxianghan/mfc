@@ -49,5 +49,14 @@ namespace SNTON.Entities.DBTables.MES
         /// </summary>
         [DataMember]
         public virtual string BobbinNo { get; set; }
+        /// <summary>
+        /// -1入库,0放过,1替换,2补充,3补充L,4补充R
+        /// </summary
+        public virtual int InStoreToOutStoreage { get; set; }
+        /// <summary>
+        /// 单丝扫码流水号
+        /// </summary>
+        public virtual int SeqNo { get; set; }
+        public virtual long SpoolId { get; set; }
     }
 }

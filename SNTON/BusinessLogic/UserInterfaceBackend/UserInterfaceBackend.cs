@@ -40,6 +40,7 @@ using static SNTON.Constants.SNTONConstants;
 using SNTON.WebServices.UserInterfaceBackend.Responses.RobotArmTask;
 using System.IO;
 using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
+using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
 
 namespace SNTON.BusinessLogic
 {
@@ -517,7 +518,7 @@ namespace SNTON.BusinessLogic
 
             var p = from i in li
                     group new MidStorageSpoolsCountEntity { StorageArea = i.StorageArea, StructBarCode = i.StructBarCode, Length = i.Length, BobbinNo = i.BobbinNo, Count = i.Count, CName = i.CName.Trim(), Const = i.Const?.Trim() }
-                    by new { i.StorageArea, i.Length } into t
+                    by new { i.StorageArea, i.Length, i.Const } into t
                     select t;
             foreach (var items in p)
             {
@@ -921,9 +922,11 @@ namespace SNTON.BusinessLogic
             }
             equip = this.EquipTaskView2Provider.GetEquipTaskView2("[TaskGuid] in (" + sb.ToString().Trim(',') + ")", null);
             var armtskunit = this.RobotArmTaskSpoolProvider.GetRobotArmTaskSpools("[TaskGroupGUID] in (" + sb.ToString().Trim(',') + ")", null);
+            var spools = this.SpoolsProvider.GetSpoolByBarcodes(null, (from i in armtsks select i.WhoolBarCode.Trim()).ToArray());
             foreach (var item in armtsks)
             {
-                var t = new WebServices.UserInterfaceBackend.Models.RobotArmTask.RobotArmTaskDataUI() { id = item.Id, CName = item.CName.Trim(), FromWhere = item.FromWhere, PlantNo = item.PlantNo, ProductType = item.ProductType.Trim(), RobotArmID = item.RobotArmID, SeqNo = item.SeqNo, SpoolStatus = item.SpoolStatus, StorageArea = item.StorageArea, TaskGroupGUID = item.TaskGroupGUID, TaskStatus = item.TaskStatus, TaskType = item.TaskType, ToWhere = item.ToWhere, WhoolBarCode = item.WhoolBarCode.Trim(), EquipControllerId = item.EquipControllerId, SpoolSeqNo = item.SpoolSeqNo };
+                var tmpspools = spools.FirstOrDefault(x => x.FdTagNo.Trim() == item.WhoolBarCode.Trim());
+                var t = new WebServices.UserInterfaceBackend.Models.RobotArmTask.RobotArmTaskDataUI() { id = item.Id, CName = item.CName.Trim(), FromWhere = item.FromWhere, PlantNo = item.PlantNo, ProductType = item.ProductType.Trim(), RobotArmID = item.RobotArmID, SeqNo = item.SeqNo, SpoolStatus = item.SpoolStatus, StorageArea = item.StorageArea, TaskGroupGUID = item.TaskGroupGUID, TaskStatus = item.TaskStatus, TaskType = item.TaskType, ToWhere = item.ToWhere, WhoolBarCode = item.WhoolBarCode.Trim(), EquipControllerId = item.EquipControllerId, SpoolSeqNo = item.SpoolSeqNo, LR = tmpspools.BobbinNo.ToString(), Length = tmpspools.Length };
                 obj.data.Add(t);
                 #region  equip
                 if (equip != null)
@@ -944,10 +947,12 @@ namespace SNTON.BusinessLogic
                 var tmp = armtskunit?.FindAll(x => x.TaskGroupGUID == item.TaskGroupGUID);
                 if (tmp != null)
                 {
+
                     tmp = tmp.OrderBy(x => x.SeqNo).ToList();
                     foreach (var arm in tmp)
                     {
-                        t.Spools.Add(new WebServices.UserInterfaceBackend.Models.RobotArmTask.RobotArmSpoolDataUI() { SpoolSeqNo = arm.SpoolSeqNo, SpoolStatus = arm.SpoolStatus, WhoolBarCode = arm.WhoolBarCode });
+                        var tmpspool = spools.FirstOrDefault(x => x.FdTagNo.Trim() == arm.WhoolBarCode.Trim());
+                        t.Spool = (new WebServices.UserInterfaceBackend.Models.RobotArmTask.RobotArmSpoolDataUI() { SpoolSeqNo = arm.SpoolSeqNo, SpoolStatus = arm.SpoolStatus, WhoolBarCode = arm.WhoolBarCode, Length = tmpspool.Length, LR = tmpspool.BobbinNo.ToString() });
                     }
                 }
             }
@@ -1049,33 +1054,24 @@ namespace SNTON.BusinessLogic
 
             //File.WriteAllText($"./StorageArea{storeageareaid}QrCode.json", "[]");
             var armtsks = this.RobotArmTaskSpoolProvider.GetRobotArmTaskSpools("StorageArea=" + storeageareaid + " AND TaskType=2 AND [PlantNo]=" + plantno + " AND [SpoolStatus] IN(0,1) AND [RobotArmID]=" + storeageareaid, null);
-            if (armtsks != null && armtsks.Count != 0)
-            {
-                armtsks.ForEach(x => x.IsDeleted = 1);
-                armtsks.ForEach(x => x.TaskStatus = 8);
-                var mids = this.MidStorageProvider.GetMidStorages($"IsOccupied=5 AND [StorageArea]={storeageareaid}", null);
-                //var seqnos = from i in armtsks
-                //             select i.SeqNo;
-                //mids = mids.FindAll(x => seqnos.Contains(x.SeqNo));
-                //foreach (var x in mids)
-                //{
-                //    x.IsOccupied = 0;
-                //    x.IdsList = "";
-                //}
-                mids.ForEach(x => x.IsOccupied = 0);
-                mids.ForEach(x => x.IdsList = "");
-                bool r = this.SqlCommandProvider.ClearInStoreageLine(armtsks, mids, null);
-                if (!r)
-                    o.data.Add($"清除{storeageareaid}号暂存库直通线失败");
-                else
-                {
-                    File.WriteAllText($"./StorageArea{storeageareaid}QrCode.json", "[]");
-                    o.data.Add($"清除{storeageareaid}号暂存库直通线成功");
-                }
-            }
+            if (armtsks == null)
+                armtsks = new List<RobotArmTaskSpoolEntity>();
+            armtsks.ForEach(x => x.IsDeleted = 1);
+            armtsks.ForEach(x => x.TaskStatus = 8);
+
+            var mids = this.MidStorageProvider.GetMidStorages($"IsOccupied=5 AND [StorageArea]={storeageareaid}", null);
+            if (mids == null)
+                mids = new List<MidStorageEntity>();
+            mids.ForEach(x => x.IsOccupied = 0);
+            mids.ForEach(x => x.IdsList = "");
+
+            bool r = this.SqlCommandProvider.ClearInStoreageLine(armtsks, mids, null);
+            if (!r)
+                o.data.Add($"清除{storeageareaid}号暂存库直通线失败");
             else
             {
-                File.WriteAllText($"./StorageArea{storeageareaid}QrCode.json", "[]");
+                File.WriteAllText($".{SNTONConstants.FileTmpPath}/StorageArea{storeageareaid}QrCode.json", "[]");
+                File.WriteAllText($".{SNTONConstants.FileTmpPath}/StorageArea{storeageareaid}LRQrCode.json", "[]");
                 o.data.Add($"清除{storeageareaid}号暂存库直通线成功");
             }
             return o;
@@ -1119,7 +1115,7 @@ namespace SNTON.BusinessLogic
             if (tmp != null)
                 foreach (var item in tmp)
                 {
-                    obj.data.Add(new AGVRouteDataUI() { agvid = item.AGVId, id = item.Id, x = item.X, y = item.Y, Status=item.Status });
+                    obj.data.Add(new AGVRouteDataUI() { agvid = item.AGVId, id = item.Id, x = item.X.Trim(), y = item.Y.Trim(), Status = item.Status });
                 }
             return obj;
         }
@@ -1131,13 +1127,29 @@ namespace SNTON.BusinessLogic
             {
                 if (this.GetMidStoreLineLogic(i) != null)
                 {
-                    var qrcodes = this.GetMidStoreLineLogic(i).GetbarcodeQueue();
-                    obj.data.Add(new WebServices.UserInterfaceBackend.Models.EquipWatch.InStoreageLineDataUI() { QrCodes = qrcodes.ToList(), StoreageNo = i });
+                    //var qrcodes = this.GetMidStoreLineLogic(i).GetbarcodeQueue();
                 }
+                var qrcodes = GetbarcodeQueue(i);
+                obj.data.Add(new WebServices.UserInterfaceBackend.Models.EquipWatch.InStoreageLineDataUI() { QrCodes = qrcodes.ToList(), StoreageNo = i });
             }
             return obj;
         }
-
+        public Queue<string> GetbarcodeQueue(int StorageArea)
+        {
+            if (!File.Exists($".{SNTONConstants.FileTmpPath}/StorageArea{StorageArea}QrCode.json"))
+                return new Queue<string>();
+            Queue<string> obj = new Queue<string>();
+            try
+            {
+                string json = File.ReadAllText($".{SNTONConstants.FileTmpPath}/StorageArea{StorageArea}QrCode.json");
+                obj = Newtonsoft.Json.JsonConvert.DeserializeObject<Queue<string>>(json);
+            }
+            catch (Exception ex)
+            {
+                logger.WarnMethod("反序列化barcodeQueue失败", ex);
+            }
+            return obj;
+        }
         public ResponseDataBase SendToExceptionFlow(int plantno, int storeageareaid, int type)
         {
             ResponseDataBase obj = new ResponseDataBase();
@@ -1189,6 +1201,30 @@ namespace SNTON.BusinessLogic
             if (r)
                 obj.data.Add("发送指令成功");
             else obj.data.Add("发送指令失败");
+            return obj;
+        }
+
+        public ProductResponse GetProduct()
+        {
+            ProductResponse obj = new ProductResponse();
+            var list = this.ProductProvider.GetAllProductEntity();
+            if (list != null)
+                foreach (var item in list)
+                {
+                    obj.data.Add(new WebServices.UserInterfaceBackend.Models.Product.ProductDataUI() { CName = item.CName, Const = item.Const, Id = item.Id, Length = item.Length, LRRatio = item.LRRatio, PlatingType = item.PlatingType, ProductNo = item.ProductNo, ProductType = item.ProductType, SeqNo = item.SeqNo });
+                }
+            return obj;
+        }
+
+        public ResponseDataBase SaveProductLRRadio(int id, string lrratio)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            var o = this.ProductProvider.GetProductEntityByID(id);
+            o.LRRatio = lrratio;
+            int i = this.ProductProvider.UpdateEntity(null, o);
+            if (i == 1)
+                obj.data.Add("保存成功");
+            else obj.data.Add("保存失败");
             return obj;
         }
     }

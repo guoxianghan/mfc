@@ -25,5 +25,10 @@
     <property name="TaskGuid" column="TaskGuid"/>
     <property name="BStation" column="BStation" />
     <property name="AStation" column="AStation" />
+    <property name="SupplyQty1" column="SupplyQty1" />
+    <property name="Supply2" column="Supply2" />
+    <property name="TitleProdName" column="TitleProdName" />
+    <property name="SupplyQty2" column="SupplyQty2" />
+    <property name="Length2" column="Length2" />
   </class>
 </hibernate-mapping>

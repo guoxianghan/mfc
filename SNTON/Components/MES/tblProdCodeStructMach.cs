@@ -30,7 +30,7 @@ namespace SNTON.Components.MES
         /// <summary>
         /// 根据作业标准书查到作业标准详情以及工字轮类型
         /// </summary>
-        const string QUERYSQL_StructMark = @"select B.StructBarCode,B.ProdCode,B.ProdLength,P.Const,C.CName,B.Supply1,B.SupplyQty1,B.Supply2,B.SupplyQty2,B.SpoolType from tblProdCodeStructMark B 
+        const string QUERYSQL_StructMark = @"select B.StructBarCode,B.ProdCode,B.ProdLength,P.Const,C.CName,B.[TitleProdName],B.Supply1,B.SupplyQty1,B.Supply2,B.SupplyQty2,B.SpoolType from tblProdCodeStructMark B 
 Inner Join tblCommon C on C.CodeID=B.SpoolType 
 LEFT JOIN [tblProdCode] P ON B.ProdCode=P.ProdCode where C.GroupID='{1}' AND B.StructBarCode IN ({0})";
 
@@ -176,14 +176,33 @@ LEFT JOIN [tblProdCode] P ON B.ProdCode=P.ProdCode where C.GroupID='{1}' AND B.S
                     StringBuilder sb = new StringBuilder();
                     foreach (var item in list)
                     {
-                        sb.Append("'" + item.Supply1.Trim() + "',");
+                        if (!sb.ToString().Trim(',').Contains(item.Supply1.Trim()))
+                            sb.Append("'" + item.Supply1.Trim() + "',");
+                        if (!string.IsNullOrWhiteSpace(item.Supply2) && !sb.ToString().Trim(',').Contains(item.Supply2.Trim()))
+                            sb.Append("'" + item.Supply2.Trim() + "',");
                     }
                     var list4 = ReadSqlList<tblProdCodeStructMarkEntity>(null, string.Format(QUERYSQL_StructMark, sb.ToString().TrimEnd(','), "C26"));
                     foreach (var item in ret)
                     {
                         item.ProdCodeStructMark3 = list.FirstOrDefault(x => x.StructBarCode.Trim() == item.StructBarCode.Trim());
                         if (item.ProdCodeStructMark3 != null)
+                        {
                             item.ProdCodeStructMark4 = list4?.FirstOrDefault(x => x.StructBarCode.Trim() == item.ProdCodeStructMark3.Supply1.Trim());
+                            if (item.ProdCodeStructMark4 != null)
+                            {
+                                item.ProdCodeStructMark4.Count = item.ProdCodeStructMark3.SupplyQty1;
+                                item.ProdCodeStructMarks.Add(item.ProdCodeStructMark4);
+                            }
+                            if (!string.IsNullOrWhiteSpace(item.ProdCodeStructMark3.Supply2))
+                            {
+                                var ex = list4?.FirstOrDefault(x => x.StructBarCode.Trim() == item.ProdCodeStructMark3.Supply2.Trim());
+                                if (ex != null)
+                                {
+                                    ex.Count = item.ProdCodeStructMark3.SupplyQty2;
+                                    item.ProdCodeStructMarks.Add(ex);
+                                }
+                            }
+                        }
                     }
                 }
             }

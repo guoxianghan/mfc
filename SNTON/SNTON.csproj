@@ -192,9 +192,15 @@
     <Compile Include="Components\Equipment\IEquipTaskProduct.cs" />
     <Compile Include="Components\Equipment\IEquipTaskView.cs" />
     <Compile Include="Components\Equipment\IEquipTaskView2.cs" />
+    <Compile Include="Components\Equipment\IProduct.cs" />
+    <Compile Include="Components\Equipment\Product.cs" />
     <Compile Include="Components\FieldsDescription\MXFieldsDescription.cs" />
     <Compile Include="Components\FieldsDescription\IMXFieldsDescription.cs" />
     <Compile Include="Components\FieldsDescription\MXField.cs" />
+    <Compile Include="Components\InStoreToOutStore\IInStoreToOutStoreSpoolView.cs" />
+    <Compile Include="Components\InStoreToOutStore\IInStoreToOutStoreSpool.cs" />
+    <Compile Include="Components\InStoreToOutStore\InStoreToOutStoreSpoolView.cs" />
+    <Compile Include="Components\InStoreToOutStore\InStoreToOutStoreSpool.cs" />
     <Compile Include="Components\MessageInfo\IMessageInfo.cs" />
     <Compile Include="Components\MessageInfo\MessageInfo.cs" />
     <Compile Include="Components\MES\IMESSystemSpools.cs" />
@@ -209,6 +215,8 @@
     <Compile Include="Components\MidStorage\MidStorageSpools.cs" />
     <Compile Include="Components\Parser\IMXParser.cs" />
     <Compile Include="Components\Parser\MXParser.cs" />
+    <Compile Include="Components\PLCAddressCode\IMachineWarnningCode.cs" />
+    <Compile Include="Components\PLCAddressCode\MachineWarnningCode.cs" />
     <Compile Include="Components\RobotArm\IRobotArmTaskSpool.cs" />
     <Compile Include="Components\RobotArm\RobotArmTask.cs" />
     <Compile Include="Components\RobotArm\RobotArmTaskSpool.cs" />
@@ -252,6 +260,9 @@
     <Compile Include="Entities\DBTables\Equipments\EquipTaskEntity.cs" />
     <Compile Include="Entities\DBTables\Equipments\EquipTaskProductEntity.cs" />
     <Compile Include="Entities\DBTables\Equipments\EquipCommandEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\ProductEntity.cs" />
+    <Compile Include="Entities\DBTables\InStoreToOutStore\InStoreToOutStoreSpoolViewEntity.cs" />
+    <Compile Include="Entities\DBTables\InStoreToOutStore\InStoreToOutStoreSpoolEntity.cs" />
     <Compile Include="Entities\DBTables\Message\MessageEntity.cs" />
     <Compile Include="Entities\DBTables\MES\MESSystemSpoolsEntity.cs" />
     <Compile Include="Entities\DBTables\MES\tblProdCodeStructMachEntity.cs" />
@@ -260,6 +271,7 @@
     <Compile Include="Entities\DBTables\MidStorage\MidStorageEntity.cs" />
     <Compile Include="Components\RobotArm\IRobotArmTask.cs" />
     <Compile Include="Entities\DBTables\MidStorage\MidStorageSpoolsEntity.cs" />
+    <Compile Include="Entities\DBTables\PLCAddressCode\MachineWarnningCodeEntity.cs" />
     <Compile Include="Entities\DBTables\RobotArmTask\RobotArmTaskEntity.cs" />
     <Compile Include="Entities\DBTables\RobotArmTask\RobotArmTaskSpoolEntity.cs" />
     <Compile Include="Entities\DBTables\Spools\SpoolsEntity.cs" />
@@ -293,6 +305,7 @@
     <Compile Include="WebServices\UserInterfaceBackend\Models\MidStorage\MidStorageBaseDataUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\MidStorage\MidStorageDetailDataUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\MidStorage\MidStorageInfoDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Product\ProductDataUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\RobotArmTask\RobotArmTaskDataUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\SearchCondition.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\Spool\SpoolDataUI.cs" />
@@ -312,6 +325,7 @@
     <Compile Include="WebServices\UserInterfaceBackend\Responses\Message\MessageResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Requests\Message\MessageSearchRequest.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\MidStorage\MidStorageBaseResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\Product\ProductResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\RobotArmTask\RobotArmTaskResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\Spools\SpoolsResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\SystemParameters\SystemParametersResponse.cs" />
@@ -427,6 +441,18 @@
     <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipConfiger2.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\MachineWarnningCode.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\Product.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\InStoreToOutStoreSpool.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\InStoreToOutStoreSpoolView.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

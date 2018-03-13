@@ -14,5 +14,6 @@
     <property name="SupplyQty1" column="SupplyQty1" />
     <property name="Supply2" column="Supply2" />
     <property name="SupplyQty2" column="SupplyQty2" />
+    <property name="TitleProdName" column="TitleProdName"/>
   </class>
 </hibernate-mapping>

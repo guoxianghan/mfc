@@ -21,6 +21,7 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.AGV
         /// 2,线体准备好后,Ready 生成AGVTasks的TaskNo;
         /// 3,小车从线体接收完轮子后将状态改完Release
         /// 4,已发送
+        /// 7,直通口单丝已到位
         /// 8,收到回复
         /// 16,该任务正在运行,但尚未完成
         /// 17,已通知地面滚筒

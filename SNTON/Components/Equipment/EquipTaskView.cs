@@ -83,6 +83,7 @@ namespace SNTON.Components.Equipment
         /// </summary>
         public override void ReadBrokerData()
         {
+            var tmp = ReadSqlList<EquipTaskViewEntity>(null, $"SELECT top 1 * FROM {DatabaseDbTable}  order by ID desc");
             try
             {
 
@@ -163,8 +164,6 @@ namespace SNTON.Components.Equipment
             int r = 0;
             if (equiptsks == null || equiptsks.Length == 0)
                 return 0;
-            var list = new List<EquipTaskEntity>();
-            EquipTaskEntity tsk = null;
             if (session == null)
             {
                 r = BrokerDelegate(() => Update(session, equiptsks), ref session);
@@ -173,12 +172,14 @@ namespace SNTON.Components.Equipment
             try
             {
                 protData.EnterWriteLock();
+                var list = new List<EquipTaskEntity>();
+                EquipTaskEntity tsk = null;
                 foreach (var item in equiptsks)
                 {
                     tsk = new EquipTaskEntity() { Length = item.Length, Created = item.Created, TaskGuid = item.TaskGuid, Deleted = item.Deleted, EquipContollerId = item.EquipContollerId, Id = item.Id, IsDeleted = item.IsDeleted, PlantNo = item.PlantNo, ProductType = item.ProductType, Source = item.Source, Status = item.Status, TaskLevel = item.TaskLevel, TaskType = item.TaskType, Updated = item.Updated, Supply1 = item.Supply1 };
                     list.Add(tsk);
                 }
-                Update(null, list);
+                Update(session, list);
                 r = equiptsks.Length;
             }
             catch (Exception ex)

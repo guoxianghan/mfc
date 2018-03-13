@@ -72,5 +72,10 @@ namespace SNTON.Entities.DBTables.MES
         /// 机台对应的4#车间的作业标准书
         /// </summary>
         public virtual tblProdCodeStructMarkEntity ProdCodeStructMark4 { get; set; }
+
+        /// <summary>
+        /// 一个三车间的作业标准书绑定多个作业标准书的(一般为1个或2个)
+        /// </summary>
+        public virtual List<tblProdCodeStructMarkEntity> ProdCodeStructMarks { get; set; } = new List<tblProdCodeStructMarkEntity>();
     }
 }

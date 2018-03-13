@@ -251,7 +251,7 @@ namespace SNTON.Constants
             /// </summary>
             Finished = 8,
         }
-
+        public const string FileTmpPath = "/tmp";
         public class TaskConfig
         {
             /// <summary>
@@ -287,7 +287,9 @@ namespace SNTON.Constants
                 return i;
             }
             /// <summary>
-            /// 返回满一车需要的单丝数量;满一车需要的请料设备数量;龙门抓取类型1大,2小,3
+            /// 返回满一车需要的单丝数量;
+            /// 满一车需要的请料设备数量;
+            /// 龙门抓取类型1大,2小,3
             /// </summary>
             /// <param name="producttype"></param>
             /// <returns></returns>
@@ -298,13 +300,20 @@ namespace SNTON.Constants
                 switch (producttype)
                 {
                     case "WS18":
-                        i = 12; j = 2; x = 1; l = 6; r = 6;
+                        i = 12;
+                        j = 2;
+                        x = 1;
+                        l = 6; r = 6;
                         break;
                     case "WS34":
-                        i = 12; j = 2; x = 2; l = 6; r = 6;
+                        i = 12;
+                        j = 2;
+                        x = 2;
+                        l = 6; r = 6;
                         break;
-                    case "WS44": 
-                        i = 8; j = 2; x = 3;
+                    case "WS44":
+                        i = 8; j = 2;
+                        x = 3;
                         l = 4; r = 4;
                         break;
                     default:

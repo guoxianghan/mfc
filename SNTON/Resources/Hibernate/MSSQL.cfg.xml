@@ -6,7 +6,7 @@ for your own use before compile tests in VisualStudio.
 -->
 <!-- This is the System.Data.dll provider for SQL Server 
       Server=192.168.120.227;User Id=sa;Password=!@#123qwe;Database=SNTON;
-      Server=./MSSQLSERVER1;User Id=sa;Password=123;Database=SNTON;-->
+      Server=.;User Id=sa;Password=123;Database=SNTON;-->
 <hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
 	<session-factory name="NHibernate">
 		<property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
@@ -69,6 +69,10 @@ for your own use before compile tests in VisualStudio.
     <mapping resource="SNTON.Resources.Hibernate.Mappings.MidStorageSpoolsCount.hbm.xml" assembly="SNTON"/>
     <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipTaskView2.hbm.xml" assembly="SNTON"/>
     <mapping resource="SNTON.Resources.Hibernate.Mappings.EquipConfiger2.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.MachineWarnningCode.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.Product.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.InStoreToOutStoreSpool.hbm.xml" assembly="SNTON"/>
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.InStoreToOutStoreSpoolView.hbm.xml" assembly="SNTON"/>
 
   </session-factory>
 </hibernate-configuration>

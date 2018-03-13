@@ -75,6 +75,8 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.RobotArmTask
 
         public string WhoolBarCode { get; set; }
 
+        public int Length { get; set; }
+        public string LR { get; set; }
         public string CName { get; set; }
         /// <summary>
         /// 龙门任务顺序
@@ -83,7 +85,7 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.RobotArmTask
         public int SeqNo { get; set; }
         public int SpoolSeqNo { get; set; }
         public int StorageArea { get; set; }
-        public List<RobotArmSpoolDataUI> Spools = new List<RobotArmSpoolDataUI>();
+        public RobotArmSpoolDataUI Spool = new RobotArmSpoolDataUI();
     }
 
     public class RobotArmSpoolDataUI
@@ -97,5 +99,7 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.RobotArmTask
         /// 任务状态:-1失效;0创建;1正在抓取;2抓取完毕;3等待AGV接收;4AGV接收完毕;5抓取失败;6接收失败;7任务失败
         /// </summary>
         public int SpoolStatus { get; set; }
+        public int Length { get; set; }
+        public string LR { get; set; }
     }
 }

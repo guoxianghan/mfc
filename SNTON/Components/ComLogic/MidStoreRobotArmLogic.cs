@@ -22,6 +22,8 @@ using SNTON.Entities.DBTables.RobotArmTask;
 using System.Xml;
 using SNTON.Entities.DBTables.AGV;
 using System.Diagnostics;
+using SNTON.Entities.DBTables.PLCAddressCode;
+using SNTON.Entities.DBTables.Message;
 
 namespace SNTON.Components.ComLogic
 {
@@ -31,16 +33,16 @@ namespace SNTON.Components.ComLogic
     public class MidStoreRobotArmLogic : ComLogic
     {
         //private VIThreadEx thread_PullingCreateRobotArmTask;
-        private VIThreadEx thread_RuningRobotArmTask;
-        private VIThreadEx thread_CheckRobotArmTask;
+        private VIThreadEx thread_RuningRobotArmTask; 
         private VIThreadEx thread_ReadDervice;
+        private VIThreadEx thread_warninginfo;
         public new static MidStoreRobotArmLogic Create(XmlNode configNode)
         {
             MidStoreRobotArmLogic mxParser = new MidStoreRobotArmLogic();
             mxParser.Init(configNode);
             return mxParser;
         }
-
+        List<MachineWarnningCodeEntity> _WarnningCode = new List<MachineWarnningCodeEntity>();
         public override void Init(XmlNode configNode)
         {
             base.Init(configNode);
@@ -52,15 +54,15 @@ namespace SNTON.Components.ComLogic
             //this.Parser
             //   this.CommModule.Parser 
             thread_RuningRobotArmTask = new VIThreadEx(RuningRobotArmTask, null, "RuningRobotArmTask", 10);
-            thread_CheckRobotArmTask = new VIThreadEx(CheckRobotArmTask, null, "CheckRobotArmTask", 1000);
+            //thread_CheckRobotArmTask = new VIThreadEx(CheckRobotArmTask, null, "CheckRobotArmTask", 1000);
             thread_ReadDervice = new VIThreadEx(ReadDervice, null, "ReadDervice Status", 400);
+            thread_warninginfo = new VIThreadEx(ReadWarningInfo, null, "ReadMidStoreRobotArmWarnning", 5000);
         }
         protected override void StartInternal()
         {
-            thread_ReadDervice.Start();
-            //thread_CheckRobotArmTask.Start();
-            //thread_PullingCreateRobotArmTask.Start();
+            thread_ReadDervice.Start(); 
             thread_RuningRobotArmTask.Start();
+            thread_warninginfo.Start();
             base.StartInternal();
         }
 
@@ -86,6 +88,40 @@ namespace SNTON.Components.ComLogic
         public override void OnDisconnect()
         {
             base.OnDisconnect();
+        }
+        void ReadWarningInfo()
+        {
+            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 1);
+            if (_WarnningCode == null)
+                return;
+            Neutrino ne = new Neutrino();
+            ne.TheName = "ReadMidStoreRobotArmWarnning";
+            foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
+            {
+                ne.AddField(item.Key.Trim(), "0");
+            }
+            var n = this.MXParser.ReadData(ne, true);
+            foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
+            {
+                int plcvalue = n.Item2.GetInt(item.Key.Trim());
+
+                if (plcvalue != 0)
+                {
+                    var bit = _WarnningCode.FirstOrDefault(x => x.AddressName.Trim() == item.Key && x.BIT == plcvalue);
+                    if (bit == null)
+                        continue;
+                    if (!bit.Value)
+                    {
+                        bit.Value = true;
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号龙门" + bit.Description.Trim(), Source = this.StorageArea + "号龙门报警", MsgLevel = 7 });
+                    }
+                    _WarnningCode.FindAll(x => x.AddressName.Trim() == item.Key && x.BIT != plcvalue).ForEach(x => x.Value = false);
+                }
+                else
+                    _WarnningCode.ForEach(x => x.Value = false);
+
+            }
+
         }
         /// <summary>
         /// 反馈回调
@@ -501,8 +537,8 @@ namespace SNTON.Components.ComLogic
                 if (!IsWarning)
                 {
                     IsWarning = true;
-                    logger.WarnMethod(this.StorageArea+"号龙门退出自动或有故障");
-                    this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = this.RobotArmID + "号龙门退出自动或有故障", Source = this.RobotArmID + "号龙门报警", MsgLevel = 7 });
+                    logger.WarnMethod(this.StorageArea + "号龙门退出自动或故障");
+                    this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = this.RobotArmID + "号龙门退出自动或故障", Source = this.RobotArmID + "号龙门报警", MsgLevel = 7 });
                 }
                 return;
             }
@@ -553,8 +589,11 @@ namespace SNTON.Components.ComLogic
                 {
                     int ONLINE_INSTORE_RobotArmSeqNo = this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).ONLINE_INSTORE_RobotArmSeqNo();
                     if (ONLINE_INSTORE_RobotArmSeqNo == 0)
+                    {
+                        //this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = $"{this.StorageArea}号龙门库直通线流水号:{ONLINE_INSTORE_RobotArmSeqNo},龙门任务流水号:{armtskrunning.SpoolSeqNo},单丝二维码:{armtskrunning.WhoolBarCode.Trim()}", MsgLevel = 7, Source = $"{this.StorageArea}号龙门库直通线流水号错误" });
                         return;
-                    else if (ONLINE_INSTORE_RobotArmSeqNo != armtskrunning.SpoolSeqNo)
+                    }
+                    else if (ONLINE_INSTORE_RobotArmSeqNo != armtskrunning.SpoolSeqNo && armtskrunning.TaskType != 1)
                     {
                         this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = $"{this.StorageArea}号龙门库直通线流水号:{ONLINE_INSTORE_RobotArmSeqNo},龙门任务流水号:{armtskrunning.SpoolSeqNo},单丝二维码:{armtskrunning.WhoolBarCode.Trim()}", MsgLevel = 7, Source = $"{this.StorageArea}号龙门库直通线流水号错误" });
                         return;

@@ -32,6 +32,8 @@ using SNTON.Components.MES;
 using SNTON.Components.RobotArm;
 using SNTON.Components.ComLogic;
 using SNTON.Components.SQLCommand;
+using SNTON.Components.PLCAddressCode;
+using SNTON.Components.InStoreToOutStore;
 
 namespace SNTON.BusinessLogic
 {
@@ -474,6 +476,31 @@ namespace SNTON.BusinessLogic
             set { buttonLocationConfigProvider = value; }
         }
         #endregion
+        #region Product
+#pragma warning disable 649
+        [ConfigBoundProperty("ProductProviderId")]
+        private string productProviderId;
+#pragma warning restore 649
+
+        private IProduct productProvider;
+        /* brokerNode
+
+		*/
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public IProduct ProductProvider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref productProvider, productProviderId, this);
+
+                return productProvider;
+            }
+            set { productProvider = value; }
+        }
+        #endregion
+
 
         #region AGVTasks
 #pragma warning disable 649
@@ -546,7 +573,34 @@ namespace SNTON.BusinessLogic
 
 
 
+        #region product
+        #region InStoreToOutStoreSpool
+#pragma warning disable 649
+        [ConfigBoundProperty("InStoreToOutStoreSpoolViewProviderId")]
+        private string inStoreToOutStoreSpoolViewProviderId;
+#pragma warning restore 649
 
+        private IInStoreToOutStoreSpoolView inStoreToOutStoreSpoolViewProvider;
+        /* brokerNode
+
+		*/
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public IInStoreToOutStoreSpoolView InStoreToOutStoreSpoolViewProvider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref inStoreToOutStoreSpoolViewProvider, inStoreToOutStoreSpoolViewProviderId, this);
+
+                return inStoreToOutStoreSpoolViewProvider;
+            }
+            set { inStoreToOutStoreSpoolViewProvider = value; }
+        }
+        #endregion
+
+
+        #endregion
 
 
 
@@ -663,7 +717,28 @@ namespace SNTON.BusinessLogic
             set { equipTaskProvider = value; }
         }
         #endregion
+        #region EquipTask
+#pragma warning disable 649
+        [ConfigBoundProperty("MachineWarnningCodeProviderId")]
+        private string machineWarnningCodeProviderId;
+#pragma warning restore 649
 
+        private IMachineWarnningCode machineWarnningCodeProvider;
+
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public IMachineWarnningCode MachineWarnningCodeProvider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref machineWarnningCodeProvider, machineWarnningCodeProviderId, this);
+
+                return machineWarnningCodeProvider;
+            }
+            set { machineWarnningCodeProvider = value; }
+        }
+        #endregion
 
         #region SQLCommandProviderid
         [ConfigBoundProperty("SQLCommandProviderid")]
@@ -785,6 +860,31 @@ namespace SNTON.BusinessLogic
                 return midStorageProvider;
             }
             set { midStorageProvider = value; }
+        }
+        #endregion
+
+        #region IInStoreToOutStoreSpool
+#pragma warning disable 649
+        [ConfigBoundProperty("InStoreToOutStoreSpoolProviderId")]
+        private string inStoreToOutStoreSpoolProviderId;
+#pragma warning restore 649
+
+        private IInStoreToOutStoreSpool inStoreToOutStoreSpoolProvider;
+        /* brokerNode
+
+		*/
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public IInStoreToOutStoreSpool InStoreToOutStoreSpoolProvider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref inStoreToOutStoreSpoolProvider, inStoreToOutStoreSpoolProviderId, this);
+
+                return inStoreToOutStoreSpoolProvider;
+            }
+            set { inStoreToOutStoreSpoolProvider = value; }
         }
         #endregion
 

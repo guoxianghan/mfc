@@ -1,6 +1,7 @@
 ﻿using NHibernate;
 using SNTON.Entities.DBTables.AGV;
 using SNTON.Entities.DBTables.Equipments;
+using SNTON.Entities.DBTables.InStoreToOutStore;
 using SNTON.Entities.DBTables.MidStorage;
 using SNTON.Entities.DBTables.RobotArmTask;
 using System;
@@ -31,7 +32,7 @@ namespace SNTON.Components.SQLCommand
         /// <param name="insetarmtsks"></param>
         /// <param name="session"></param>
         /// <returns></returns>
-        bool OutStoreageTask(List<EquipTaskViewEntity> updateequiptsks, List<MidStorageSpoolsEntity> updatemids, AGVTasksEntity insertagvtsk, List<RobotArmTaskEntity> insetarmtsks, IStatelessSession session = null);
+        bool OutStoreageTask(List<EquipTaskViewEntity> updateequiptsks, List<MidStorageSpoolsEntity> updatemids, AGVTasksEntity insertagvtsk, List<RobotArmTaskEntity> insetarmtsks, List<InStoreToOutStoreSpoolEntity> outspools, IStatelessSession session = null);
         /// <summary>
         /// 清空直通线入库任务
         /// </summary>

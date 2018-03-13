@@ -689,7 +689,28 @@
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </RobotArmTaskSpoolProvider>
-
+	<MachineWarnningCodeProvider Assembly="SNTON.DLL" Type="SNTON.Components.PLCAddressCode.MachineWarnningCode" Id="MachineWarnningCodeProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </MachineWarnningCodeProvider>
+    <InStoreToOutStoreSpoolProvider Assembly="SNTON.DLL" Type="SNTON.Components.RobotArm.InStoreToOutStoreSpool" Id="InStoreToOutStoreSpoolProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </InStoreToOutStoreSpoolProvider>
+    <InStoreToOutStoreSpoolViewProvider Assembly="SNTON.DLL" Type="SNTON.Components.InStoreToOutStore.InStoreToOutStoreSpoolView" Id="InStoreToOutStoreSpoolViewProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </InStoreToOutStoreSpoolViewProvider>
+    <ProductProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.Product" Id="ProductProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </ProductProvider>
+    
+    
     <!--Business Logic Component Configuration Options:-->
     <BusinessLogic Assembly="SNTON.DLL" Type="SNTON.BusinessLogic.BusinessLogic" Id="BusinessLogic" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
@@ -726,7 +747,12 @@ SystemParametersConfigurationProviderId="SystemParametersConfigurationProvider"
               EquipTaskView2ProviderId="EquipTaskView2ProviderId"
               RobotArmTaskSpoolProviderId="RobotArmTaskSpoolProviderId"
               EquipConfiger2ProviderId="EquipConfiger2ProviderId"
-              SQLCommandProviderid="SQLCommandProviderid"
+              SQLCommandProviderid="SQLCommandProviderid"			  
+              MachineWarnningCodeProviderId="MachineWarnningCodeProvider"
+              InStoreToOutStoreSpoolProviderId="InStoreToOutStoreSpoolProvider"
+              ProductProviderId="ProductProvider"
+              InStoreToOutStoreSpoolViewProviderId="InStoreToOutStoreSpoolViewProvider"
+
        />
     </BusinessLogic>
 

@@ -25,7 +25,7 @@ namespace SNTON.Components.Spools
         /// <param name="theSession"></param>
         /// <returns></returns>
         SpoolsEntity GetSpoolByMidStorageId(int midStorageId, IStatelessSession theSession);
-
+        List<SpoolsEntity> GetSpoolByBarcodes(IStatelessSession theSession, params string[] barcode);
         /// <summary>
         /// Get Spools by AGV Id
         /// </summary>

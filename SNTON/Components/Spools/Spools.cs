@@ -331,5 +331,38 @@ namespace SNTON.Components.Spools
             //}
             throw new NotImplementedException("尚未实现该方法");
         }
+
+        public List<SpoolsEntity> GetSpoolByBarcodes(IStatelessSession session, params string[] barcode)
+        {
+            List<SpoolsEntity> ret = new List<SpoolsEntity>();
+
+            if (barcode == null || barcode.Length == 0)
+                return ret;
+            if (session == null)
+            {
+                ret = BrokerDelegate(() => GetSpoolByBarcodes(session, barcode), ref session);
+                return ret;
+            }
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var item in barcode)
+                {
+                    sb.Append("'" + item.Trim() + "',");
+                }
+                string sql = $" [FdTagNo] IN({sb.ToString().Trim(',')})";
+                var tmp = ReadSqlList<SpoolsEntity>(session, "SELECT * FROM " + DatabaseDbTable + " WHERE ISDELETED="
+                    + Constants.SNTONConstants.DeletedTag.NotDeleted + " AND " + sql + "");
+                if (tmp.Any())
+                {
+                    ret = tmp.ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.ErrorMethod("Failed to get GetSpoolByBarcode", e);
+            }
+            return ret;
+        }
     }
 }

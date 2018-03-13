@@ -36,8 +36,8 @@ namespace SNTON.Components.ComLogic
             //To avoid the compiling error
             //By Song@2018.01.14.
             //thread_CreateAGVTask = new VIThreadEx(CreateAGVTask, null, "Create AGV task Send", 2000);
-            thread_AliveReq = new VIThreadEx(AliveReq, null, "send AliveAck", 1000);
-            thread_AGVStatusReq = new VIThreadEx(AGVStatusReq, null, "send AGVStatusReq", 20000);
+            thread_AliveReq = new VIThreadEx(AliveReq, null, "send AliveAck", 2000);
+            thread_AGVStatusReq = new VIThreadEx(AGVStatusReq, null, "send AGVStatusReq", 10000);
         }
         protected override void StartInternal()
         {
@@ -61,22 +61,24 @@ namespace SNTON.Components.ComLogic
             //tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks("TaskNo=100000000000001822");
             //HLCallCmd(tmp[0]);
             //return;
-            if (tmp != null)
-                foreach (var item in tmp)
+            if (tmp == null)
+                return;
+            tmp = tmp.OrderByDescending(x => x.TaskType).ToList();
+            foreach (var item in tmp)
+            {
+                if (item.Status == (byte)AGVTaskStatus.Ready)
                 {
-                    if (item.Status == (byte)AGVTaskStatus.Ready)
-                    {
-                        var eqtsk = BusinessLogic.EquipTaskProvider.GetEquipTaskEntitySqlWhere($"TaskGuid='{item.TaskGuid.ToString()}'", null);
-                        if (item.TaskNo == 0)
-                            item.TaskNo = Convert.ToInt64(this.Sequencer.GetNextSequenceNo());
-                        HLCallCmd(item);
-                        item.Status = (byte)AGVTaskStatus.Sent;
-                        item.Updated = DateTime.Now;
-                        BusinessLogic.AGVTasksProvider.UpdateEntity(item, null);
-                        logger.InfoMethod("向小车发送Sent指令");
-                        break;
-                    }
+                    var eqtsk = BusinessLogic.EquipTaskProvider.GetEquipTaskEntitySqlWhere($"TaskGuid='{item.TaskGuid.ToString()}'", null);
+                    if (item.TaskNo == 0)
+                        item.TaskNo = Convert.ToInt64(this.Sequencer.GetNextSequenceNo());
+                    HLCallCmd(item);
+                    item.Status = (byte)AGVTaskStatus.Sent;
+                    item.Updated = DateTime.Now;
+                    BusinessLogic.AGVTasksProvider.UpdateEntity(item, null);
+                    logger.InfoMethod("向小车发送Sent指令");
+                    break;
                 }
+            }
         }
         /// <summary>
         /// 检测设备任务,创建对应的AGVTask,只创建拉走轮子的AGVTask
@@ -318,7 +320,7 @@ namespace SNTON.Components.ComLogic
             agvtsk.Updated = DateTime.Now;
             agvid = neutrino.GetIntOrDefault("AGVID");
             var eqtsk = BusinessLogic.EquipTaskProvider.GetEquipTaskEntityNotDeleted($"TaskGuid='{agvtsk.TaskGuid.ToString()}'", null);
-
+            var outstoreagespools = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpoolEntity($"GUID='{agvtsk.TaskGuid.ToString()}'", null);
             byte status = 0;
             switch (Action)
             {
@@ -334,6 +336,14 @@ namespace SNTON.Components.ComLogic
                     }
                     eqtsk?.ForEach(x => x.Status = 5);
                     logger.InfoMethod($"AGV调度成功,小车id:{agvid},开始执行:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",TaskNo:" + TaskNo);
+                    #region 更新直通口任务状态 
+                    if (outstoreagespools != null)
+                    {
+                        outstoreagespools.ForEach(x => x.Status = 16);
+                        //var save = outstoreagespools.FindAll(x => x.PlantNo == agvtsk.PlantNo && x.StoreageNo == agvtsk.StorageArea);
+                        this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.UpdateEntity(null, outstoreagespools.ToArray());
+                    }
+                    #endregion
                     break;
                 case 2://执行结束
                     status = (byte)AGVTaskStatus.Finished;
@@ -345,6 +355,13 @@ namespace SNTON.Components.ComLogic
                     }
                     this.BusinessLogic.AGVRouteProvider.DeleteAGVRoute(agvid, null);
                     eqtsk?.ForEach(x => x.Status = 7);
+                    #region 任务完成后,删除直通口记录 
+                    if (outstoreagespools != null)
+                    {
+                        outstoreagespools.ForEach(x => x.Status = 128);
+                        this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.UpdateEntity(null, outstoreagespools.ToArray());
+                    }
+                    #endregion
                     logger.InfoMethod($"AGV调度成功,小车id;{agvid},任务完成:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",TaskNo:" + TaskNo);
                     break;
                 default:
@@ -436,7 +453,7 @@ namespace SNTON.Components.ComLogic
             {
 
                 var agv = thisplantagv[i];
-               
+
                 byte status = Convert.ToByte(Status[i].ToString());
                 /// <summary>
                 /// 0=AGV处于待命状态;

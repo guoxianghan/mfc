@@ -13,6 +13,7 @@ using SNTON.Entities.DBTables.Equipments;
 using SNTON.Entities.DBTables.MidStorage;
 using SNTON.Entities.DBTables.AGV;
 using SNTON.Entities.DBTables.RobotArmTask;
+using SNTON.Entities.DBTables.InStoreToOutStore;
 
 namespace SNTON.Components.SQLCommand
 {
@@ -113,12 +114,12 @@ namespace SNTON.Components.SQLCommand
 
         }
 
-        public bool OutStoreageTask(List<EquipTaskViewEntity> updateequiptsks, List<MidStorageSpoolsEntity> updatemids, AGVTasksEntity insertagvtsk, List<RobotArmTaskEntity> insetarmtsks, IStatelessSession session = null)
+        public bool OutStoreageTask(List<EquipTaskViewEntity> updateequiptsks, List<MidStorageSpoolsEntity> updatemids, AGVTasksEntity insertagvtsk, List<RobotArmTaskEntity> insetarmtsks, List<InStoreToOutStoreSpoolEntity> outspools, IStatelessSession session = null)
         {
             bool ret = false;
             if (session == null)
             {
-                ret = BrokerDelegate(() => OutStoreageTask(updateequiptsks, updatemids, insertagvtsk, insetarmtsks, session), ref session);
+                ret = BrokerDelegate(() => OutStoreageTask(updateequiptsks, updatemids, insertagvtsk, insetarmtsks, outspools, session), ref session);
                 return ret;
             }
             try
@@ -127,25 +128,29 @@ namespace SNTON.Components.SQLCommand
 
                 var equiptsklist = new List<EquipTaskEntity>();
                 EquipTaskEntity tsk = null;
-                foreach (var item in updateequiptsks)
-                {
-                    tsk = new EquipTaskEntity() { Length = item.Length, Created = item.Created, TaskGuid = item.TaskGuid, Deleted = item.Deleted, EquipContollerId = item.EquipContollerId, Id = item.Id, IsDeleted = item.IsDeleted, PlantNo = item.PlantNo, ProductType = item.ProductType, Source = item.Source, Status = item.Status, TaskLevel = item.TaskLevel, TaskType = item.TaskType, Updated = item.Updated, Supply1 = item.Supply1 };
-                    equiptsklist.Add(tsk);
-                }
-                Update(null, equiptsklist);
+                if (updateequiptsks != null)
+                    foreach (var item in updateequiptsks)
+                    {
+                        tsk = new EquipTaskEntity() { Length = item.Length, Created = item.Created, TaskGuid = item.TaskGuid, Deleted = item.Deleted, EquipContollerId = item.EquipContollerId, Id = item.Id, IsDeleted = item.IsDeleted, PlantNo = item.PlantNo, ProductType = item.ProductType, Source = item.Source, Status = item.Status, TaskLevel = item.TaskLevel, TaskType = item.TaskType, Updated = item.Updated, Supply1 = item.Supply1 };
+                        equiptsklist.Add(tsk);
+                    }
                 List<MidStorageEntity> midlist = new List<MidStorageEntity>();
                 foreach (var item in updatemids)
                 {
                     midlist.Add(new MidStorageEntity() { Created = item.Created, Deleted = item.Deleted, Description = item.Description, HCoordinate = item.HCoordinate, Id = item.Id, IdsList = item.IdsList, IsDeleted = item.IsDeleted, IsEnable = item.IsEnable, IsOccupied = item.IsOccupied, IsVisible = item.IsVisible, SeqNo = item.SeqNo, StorageArea = item.StorageArea, Updated = item.Updated, VCoordinate = item.VCoordinate });
                 }
+                Update(session, equiptsklist);
                 Update(session, midlist);
                 Insert(session, insertagvtsk);
                 Insert(session, insetarmtsks);
+                if (outspools != null)
+                    Insert(session, outspools);
+                ret = true;
             }
             catch (Exception ex)
             {
                 ret = false;
-                logger.ErrorMethod("创建出库任务", ex);
+                logger.ErrorMethod("创建直通线出库任务失败", ex);
             }
             finally
             {
@@ -208,7 +213,7 @@ namespace SNTON.Components.SQLCommand
                 List<RobotArmTaskEntity> list = new List<RobotArmTaskEntity>();
                 foreach (var entity in armtsks)
                 {
-                    list.Add(new RobotArmTaskEntity() { WhoolBarCode = entity.WhoolBarCode, AGVSeqNo = entity.AGVSeqNo, CName = entity.CName, Completed = entity.Completed, Created = entity.Created, Deleted = entity.Deleted, EquipControllerId = entity.EquipControllerId, FromWhere = entity.FromWhere, Id = entity.Id, IsDeleted = entity.IsDeleted, PlantNo = entity.PlantNo, ProductType = entity.ProductType, RobotArmID = entity.RobotArmID, SeqNo = entity.SeqNo, SpoolStatus = entity.SpoolStatus, StorageArea = entity.StorageArea, TaskGroupGUID = entity.TaskGroupGUID, TaskLevel = entity.TaskLevel, TaskStatus = entity.TaskStatus, TaskType = entity.TaskType, ToWhere = entity.FromWhere, Updated = DateTime.Now });
+                    list.Add(new RobotArmTaskEntity() { WhoolBarCode = entity.WhoolBarCode, AGVSeqNo = entity.AGVSeqNo, CName = entity.CName, Completed = entity.Completed, Created = entity.Created, Deleted = entity.Deleted, EquipControllerId = entity.EquipControllerId, FromWhere = entity.FromWhere, Id = entity.Id, IsDeleted = entity.IsDeleted, PlantNo = entity.PlantNo, ProductType = entity.ProductType, RobotArmID = entity.RobotArmID, SeqNo = entity.SeqNo, SpoolStatus = entity.SpoolStatus, StorageArea = entity.StorageArea, TaskGroupGUID = entity.TaskGroupGUID, TaskLevel = entity.TaskLevel, TaskStatus = entity.TaskStatus, TaskType = entity.TaskType, ToWhere = entity.FromWhere, Updated = DateTime.Now, SpoolSeqNo = entity.SpoolSeqNo });
                 }
                 Update(session, list);
                 Update(session, mids);
@@ -217,7 +222,7 @@ namespace SNTON.Components.SQLCommand
             catch (Exception ex)
             {
                 ret = false;
-                logger.ErrorMethod("ClearInStoreageLine", ex);
+                logger.ErrorMethod("清除直通线功能失败", ex);
             }
             finally
             {

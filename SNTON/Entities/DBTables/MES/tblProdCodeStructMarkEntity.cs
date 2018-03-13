@@ -63,5 +63,14 @@ namespace SNTON.Entities.DBTables.MES
         [DataMember]
         public virtual int SupplyQty2 { get; set; }
 
+        /// <summary>
+        /// 4X 0.22NT
+        /// </summary>
+        [DataMember]
+        public virtual string TitleProdName { get; set; }
+        /// <summary>
+        /// 一个机台需要的该种单丝的数量
+        /// </summary>
+        public virtual int Count { get; set; }
     }
 }

@@ -82,6 +82,7 @@ namespace SNTON.Components.Equipment
         /// </summary>
         public override void ReadBrokerData()
         {
+            var tmp = ReadSqlList<EquipTaskView2Entity>(null, $"SELECT top 1 * FROM {DatabaseDbTable}  order by EquipTaskID desc");
         }
 
         public List<EquipTaskView2Entity> GetEquipTaskView2(string sqlwhere, IStatelessSession session = null)

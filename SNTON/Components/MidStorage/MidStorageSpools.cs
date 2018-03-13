@@ -162,7 +162,7 @@ namespace SNTON.Components.MidStorage
 
         public List<MidStorageSpoolsEntity> GetMidStorages(string sql, IStatelessSession session)
         {
-            List<MidStorageSpoolsEntity> ret = null;
+            List<MidStorageSpoolsEntity> ret = new List<MidStorageSpoolsEntity>();
             if (session == null)
             {
                 ret = BrokerDelegate(() => GetMidStorages(sql, session), ref session);
@@ -176,7 +176,7 @@ namespace SNTON.Components.MidStorage
                 
                 string sqls = "SELECT * FROM " + DatabaseDbTable + " WHERE ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted + " AND " + sql;
                 var tmp = ReadSqlList<MidStorageSpoolsEntity>(session, sqls);
-                if (tmp.Any())
+                if (tmp != null && tmp.Any())
                 {
                     StringBuilder sb = new StringBuilder();
                     foreach (var item in tmp)

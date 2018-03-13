@@ -32,6 +32,7 @@ using SNTON.WebServices.UserInterfaceBackend.Responses.MidStorage;
 using VI.MFC.Logging;
 using SNTON.WebServices.UserInterfaceBackend.Responses.RobotArmTask;
 using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
+using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
 
 namespace SNTON.WebServices.UserInterfaceBackend
 {
@@ -900,6 +901,36 @@ namespace SNTON.WebServices.UserInterfaceBackend
             {
                 logger.InfoMethod($"重发AGV指令SetAGVTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
                 obj = BusinessLogic.SetAGVTaskStatus(id, status);
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<ResponseDataBase>(ex);
+            }
+            return obj;
+        }
+
+        public ProductResponse GetProduct()
+        {
+            ProductResponse obj = new ProductResponse();
+            try
+            {
+                //logger.InfoMethod($"重发AGV指令SetAGVTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                obj = BusinessLogic.GetProduct();
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<ProductResponse>(ex);
+            }
+            return obj;
+        }
+
+        public ResponseDataBase SaveProductLRRadio(int id, string lrratio)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            try
+            {
+                //logger.InfoMethod($"重发AGV指令SetAGVTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                obj = BusinessLogic.SaveProductLRRadio(id, lrratio);
             }
             catch (Exception ex)
             {

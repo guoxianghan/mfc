@@ -24,7 +24,7 @@ namespace SNTON.Components.MES
         /// <summary>
         /// 根据作业标准书查到作业标准详情以及工字轮类型
         /// </summary>
-        const string QUERYSQL_StructMark = @"select A.FdTagNo,A.StructBarcode,A.Length,C.CName,P.Const,C.GroupID from tblFdProd A Inner Join tblProdCodeStructMark B on A.StructBarCode=B.StructBarCode
+        const string QUERYSQL_StructMark = @"select A.FdTagNo,A.StructBarcode,A.Length,C.CName,B.[TitleProdName],P.Const,C.GroupID from tblFdProd A Inner Join tblProdCodeStructMark B on A.StructBarCode=B.StructBarCode
 Inner Join tblCommon C on C.CodeID=B.SpoolType 
 LEFT JOIN [dbo].[tblProdCode] P ON B.ProdCode=P.ProdCode where C.GroupID='C06' AND B.StructBarCode  in ({0})";
 

@@ -909,7 +909,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             return obj;
         }
 
-        public ProductResponse GetProduct()
+        public object GetProduct()
         {
             ProductResponse obj = new ProductResponse();
             try
@@ -924,13 +924,13 @@ namespace SNTON.WebServices.UserInterfaceBackend
             return obj;
         }
 
-        public ResponseDataBase SaveProductLRRadio(int id, string lrratio)
+        public object SaveProductLRRadio(int id, string lrratio, int seqno)
         {
             ResponseDataBase obj = new ResponseDataBase();
             try
             {
                 //logger.InfoMethod($"重发AGV指令SetAGVTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.SaveProductLRRadio(id, lrratio);
+                obj = BusinessLogic.SaveProductLRRadio(id, lrratio, seqno);
             }
             catch (Exception ex)
             {

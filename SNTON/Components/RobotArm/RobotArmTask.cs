@@ -99,7 +99,7 @@ namespace SNTON.Components.RobotArm
             }
             try
             {
-                var tmp = ReadList<RobotArmTaskEntity>(session, string.Format("FROM {0} where  ID = {1} AND ISDELETED={2} orderby ID desc", EntityDbTable, Id, Constants.SNTONConstants.DeletedTag.NotDeleted));
+                var tmp = ReadList<RobotArmTaskEntity>(session, string.Format("FROM {0} where  ID = {1} AND ISDELETED={2} order by ID desc", EntityDbTable, Id, Constants.SNTONConstants.DeletedTag.NotDeleted));
                 if (tmp.Any())
                 {
                     ret = tmp.FirstOrDefault();
@@ -139,7 +139,7 @@ namespace SNTON.Components.RobotArm
 
         public List<RobotArmTaskEntity> GetRobotArmTasks(string sqlwhere, IStatelessSession session = null)
         {
-            List<RobotArmTaskEntity> ret = null;
+            List<RobotArmTaskEntity> ret = new List<RobotArmTaskEntity>();
 
             if (session == null)
             {

@@ -33,7 +33,7 @@ namespace SNTON.Components.ComLogic
     public class MidStoreRobotArmLogic : ComLogic
     {
         //private VIThreadEx thread_PullingCreateRobotArmTask;
-        private VIThreadEx thread_RuningRobotArmTask; 
+        private VIThreadEx thread_RuningRobotArmTask;
         private VIThreadEx thread_ReadDervice;
         private VIThreadEx thread_warninginfo;
         public new static MidStoreRobotArmLogic Create(XmlNode configNode)
@@ -60,7 +60,7 @@ namespace SNTON.Components.ComLogic
         }
         protected override void StartInternal()
         {
-            thread_ReadDervice.Start(); 
+            thread_ReadDervice.Start();
             thread_RuningRobotArmTask.Start();
             thread_warninginfo.Start();
             base.StartInternal();
@@ -371,6 +371,7 @@ namespace SNTON.Components.ComLogic
                 }
                 if (r)
                 {
+
                     var equiptsks = this.BusinessLogic.EquipTaskProvider.GetEquipTaskEntitySqlWhere($"TaskGuid='{armtsk.TaskGroupGUID}'", null);
                     if (equiptsks != null && equiptsks.Count != 0)
                     {
@@ -552,7 +553,7 @@ namespace SNTON.Components.ComLogic
             IsCanSend = true;
             //TaskStatus 任务状态:-1失效;0创建;1正在抓取;2抓取完毕;3等待AGV接收;4AGV接收完毕;5抓取失败;6接收失败;7任务失败
             var armtsks = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskStatus IN (0,1,2) AND StorageArea='{StorageArea}' AND RobotArmID='{this.RobotArmID}'", null);
-            if (armtsks == null)
+            if (armtsks == null || armtsks.Count == 0)
                 return;
             RobotArmTaskEntity armtskrunning = null;
             /*

@@ -91,8 +91,8 @@ namespace SNTON.Components.ComLogic
         {
             thread_ReadBarCode.Start();
             thread_heartbeat.Start();
-            thread_LineStatusCallAGV.Start();
             thread_warninginfo.Start();
+            thread_LineStatusCallAGV.Start();
             base.StartInternal();
         }
         int BACKUP3 = 0;
@@ -473,9 +473,9 @@ namespace SNTON.Components.ComLogic
                 if (barcodeQueue.Count != 0)
                 {
                     #region  0暂存库已满,1入库;2出库
-                    int agvseqno = 0;
+                    int agvseqno = getNextSeqNo();
                     int outstoreagequeue = 0;//直通口出库时告诉线体替换或通过
-                    int i = InLineRobotArmTask3(out agvseqno, out outstoreagequeue);//1入库;2出库
+                    int i = InLineRobotArmTask3(agvseqno, out outstoreagequeue);//1入库;2出库
                     if (i == 0)
                     {
                         if (!IsStoreageEnough)
@@ -490,7 +490,7 @@ namespace SNTON.Components.ComLogic
                     if (i == 2)
                     {
                         neclear.AddField("ONLINE_SeqNo_Write", agvseqno.ToString());//出库流水号 AGV任务流水号
-                        neclear.AddField("BACKUP6", outstoreagequeue.ToString());//出库流水号 AGV任务流水号
+                        neclear.AddField("BACKUP6", outstoreagequeue.ToString());//出库队列
                     }
 
                     neclear.AddField("IN_OR_OUT", i.ToString());
@@ -764,11 +764,11 @@ namespace SNTON.Components.ComLogic
         /// <param name="outstoreagequeue">直通口出库时告诉线体替换或通过</param>
         /// </summary>
         /// <returns></returns>
-        int InLineRobotArmTask3(out int agvseqno, out int outstoreagequeue)
+        int InLineRobotArmTask3(int agvseqno, out int outstoreagequeue)
         {
             int cmd = 1;
             outstoreagequeue = 0;
-            agvseqno = 0;
+            //agvseqno = 0;
             //barcodeQueue.Enqueue("7C2W8Q");
             var codeseqt = barcodeLRQueue.Peek();
             string codet = codeseqt.FdTagNo.Trim();
@@ -785,13 +785,27 @@ namespace SNTON.Components.ComLogic
             List<MESSystemSpoolsEntity> list = barcodeLRQueue.ToList();
             var levellist = this.BusinessLogic.ProductProvider.GetAllProductEntity(null);
             islevel = CheckSpoolIsLevel(spool, levellist);
-            List<InStoreToOutStoreSpoolViewEntity> ttt = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpool(this.StorageArea, this.PlantNo, null);
-            if (islevel && tskconfig.Item4 < barcodeLRQueue.Count && ttt != null && ttt.Count < 2)
+            var l = from i in list
+                    group new MESSystemSpoolsEntity() { StructBarCode = i.StructBarCode.Trim(), Length = i.Length, BobbinNo = i.BobbinNo, BobbinNo2 = i.BobbinNo2, CName = i.CName, Const = i.Const, FdTagNo = i.FdTagNo.Trim(), GroupID = i.GroupID, InStoreToOutStoreage = i.InStoreToOutStoreage, SeqNo = i.SeqNo, SpoolId = i.SpoolId }
+                    by new { i.StructBarCode, i.Length } into t
+                    select t;
+
+            if (l.Count() > 1)
+            {
+                cmd = 1;
+                islevel = false;
+            }
+            //List<InStoreToOutStoreSpoolViewEntity> ttt = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpool(this.StorageArea, this.PlantNo, null);
+            var agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks($"IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,7,8,9) AND [StorageLineNo]=2 AND [StorageArea]={this.StorageArea} AND [PlantNo]={this.PlantNo}", null);
+            if (agvrunningtsk == null) agvrunningtsk = new List<AGVTasksEntity>();
+            //var ccc = ttt.FindAll(x => x.Status <= 3).GroupBy(x => x.Guid);
+            if (islevel && tskconfig.Item4 < barcodeLRQueue.Count && agvrunningtsk != null && agvrunningtsk.Count() <= 2 && l.Count() == 1)
             {//满足优先级且大于半车,搭配出库
              //若需要调整,判断库里是否有能满足搭配出库的单丝
              //替换/补充 1,3 2,4
              //-2库位不足,-1入库,0出库,1替换,2补充,3补充L,4补充R
                 int instore = InStoreToOutStore(tskconfig, list);
+                #region MyRegion
                 switch (instore)
                 {
                     case -2:
@@ -807,6 +821,7 @@ namespace SNTON.Components.ComLogic
                         cmd = 1;
                         break;
                 }
+                #endregion
             }
             if (cmd == 2)
             {//创建出库任务
@@ -815,7 +830,6 @@ namespace SNTON.Components.ComLogic
                 bool issuccesstooutstore = CreateInStoreToOutStore(agvseqno, guid, createtime, midstores, tskconfig, list, out outstoreagequeue);
                 if (issuccesstooutstore)
                 {
-
                     //将该批次保存下来
                     return 2;
                 }
@@ -912,6 +926,7 @@ namespace SNTON.Components.ComLogic
             var lr = from i in list select i.BobbinNo;
             inlineoutqueue = 0;
             StringBuilder inorout = new StringBuilder();
+            //inorout.Append("1");
             int armtskseqno = 0;
             MESSystemSpoolsEntity spool = list[0];
             //midstores = midstores.FindAll(x => !string.IsNullOrEmpty(x.StructBarCode) && x.StructBarCode.Trim() == codeseqt.StructBarCode.Trim());
@@ -921,21 +936,51 @@ namespace SNTON.Components.ComLogic
 
             try
             {
-
-                var spools = this.BusinessLogic.SpoolsProvider.GetSpoolByBarcodes(null, (from i in list select i.FdTagNo.Trim()).ToArray());
+                var spools = this.BusinessLogic.SpoolsProvider.GetSpoolByBarcodes(null, (from i in list where !string.IsNullOrWhiteSpace(i.FdTagNo) select i.FdTagNo.Trim()).ToArray());
                 foreach (var item in list)
                 {//1替换,2补充,3补充L,4补充R
                     try
                     {
-                        item.SpoolId = spools.FirstOrDefault(x => x.FdTagNo.Trim() == item.FdTagNo.Trim()).Id;
+                        if (item.InStoreToOutStoreage != 3 && item.InStoreToOutStoreage != 4 && item.InStoreToOutStoreage != 2)
+                            item.SpoolId = spools.FirstOrDefault(x => x.FdTagNo.Trim() == item.FdTagNo.Trim()).Id;
                         #region MyRegion
-                        if (item.InStoreToOutStoreage == 1)
-                        {//出 替换
+                        if (!string.IsNullOrEmpty(item.BobbinNo) && string.IsNullOrEmpty(item.BobbinNo2))
+                        {//通过
                             inorout.Append("1");
-
-                            #region 替换
+                        }
+                        else if (string.IsNullOrEmpty(item.BobbinNo))
+                        {//补充
+                            var mid = midstores.FindAll(x => x.IsOccupied == 1 && x.StructBarCode == spool.StructBarCode.Trim() && x.BobbinNo == item.BobbinNo2.ToArray()[0]).OrderByDescending(x => x.Updated).FirstOrDefault();
+                            //inorout.Append("1");
+                            instorearmtsks.Add(new RobotArmTaskEntity()
+                            {
+                                #region MyRegion
+                                CName = mid.CName.Trim(),
+                                Created = createtime,
+                                StorageArea = this.StorageArea,
+                                SeqNo = ++armtskseqno,
+                                PlantNo = this.PlantNo,
+                                RobotArmID = this.RobotArmID,
+                                TaskType = 1,
+                                ToWhere = 2,
+                                TaskLevel = 7,
+                                ProductType = tskconfig.Item3.ToString(),
+                                AGVSeqNo = agvseqno,
+                                FromWhere = mid.SeqNo,
+                                SpoolSeqNo = item.SeqNo,
+                                WhoolBarCode = mid.FdTagNo.Trim(),
+                                TaskGroupGUID = guid
+                                #endregion
+                            });
+                            mid.IsOccupied = 4;
+                            item.SpoolId = mid.SpoolId;
+                            midsupdate.Add(mid);
+                        }
+                        else
+                        {//替换
+                            inorout.Append("0");
                             //入库
-                            var midin = midstores.FindAll(x => x.Spool == null && x.IsOccupied == 0).OrderBy(x => x.SeqNo).FirstOrDefault();
+                            var midin = midstores.FindAll(x => x.Spool == null && x.IsOccupied == 0).OrderByDescending(x => x.Updated).FirstOrDefault();
                             midin.IsOccupied = 5;
                             midin.IdsList = spools.FirstOrDefault(x => x.FdTagNo.Trim() == item.FdTagNo.Trim())?.Id.ToString();
                             midsupdate.Add(midin);
@@ -959,71 +1004,12 @@ namespace SNTON.Components.ComLogic
                                 TaskGroupGUID = guid
                                 #endregion
                             });
-
-                            MidStorageSpoolsEntity midout = null;
-                            if (item.BobbinNo.Trim() == "L")
-                            {//把L替换成R
-                                midout = midstores.FindAll(x => x.IsOccupied == 1 && x.StructBarCode == spool.StructBarCode.Trim() && x.BobbinNo == 'R').OrderBy(x => x.Updated).FirstOrDefault();
-                                instorearmtsks.Add(new RobotArmTaskEntity()
-                                {
-                                    #region MyRegion
-                                    CName = item.CName.Trim(),
-                                    Created = createtime,
-                                    StorageArea = this.StorageArea,
-                                    SeqNo = ++armtskseqno,
-                                    PlantNo = this.PlantNo,
-                                    RobotArmID = this.RobotArmID,
-                                    TaskType = 1,
-                                    ToWhere = 2,
-                                    TaskLevel = 7,
-                                    ProductType = tskconfig.Item3.ToString(),
-                                    AGVSeqNo = agvseqno,
-                                    FromWhere = midout.SeqNo,
-                                    SpoolSeqNo = item.SeqNo,
-                                    WhoolBarCode = midout.FdTagNo.Trim(),
-                                    TaskGroupGUID = guid
-                                    #endregion
-                                });
-                                midout.IsOccupied = 4;
-                                item.SpoolId = midout.SpoolId;
-                                midsupdate.Add(midout);
-                            }
-                            else
-                            {//把R替换成L
-                                midout = midstores.FindAll(x => x.IsOccupied == 1 && x.StructBarCode == spool.StructBarCode.Trim() && x.BobbinNo == 'L').OrderBy(x => x.Updated).FirstOrDefault();
-                                instorearmtsks.Add(new RobotArmTaskEntity()
-                                {
-                                    #region MyRegion
-                                    CName = item.CName.Trim(),
-                                    Created = createtime,
-                                    StorageArea = this.StorageArea,
-                                    SeqNo = ++armtskseqno,
-                                    PlantNo = this.PlantNo,
-                                    RobotArmID = this.RobotArmID,
-                                    TaskType = 1,
-                                    ToWhere = 2,
-                                    TaskLevel = 7,
-                                    ProductType = tskconfig.Item3.ToString(),
-                                    AGVSeqNo = agvseqno,
-                                    FromWhere = midout.SeqNo,
-                                    SpoolSeqNo = item.SeqNo,
-                                    WhoolBarCode = midout.FdTagNo.Trim(),
-                                    TaskGroupGUID = guid
-                                    #endregion
-                                });
-                                midout.IsOccupied = 4;
-                                item.SpoolId = midout.SpoolId;
-                                midsupdate.Add(midout);
-                            }
-                            #endregion
-                        }
-                        else if (item.InStoreToOutStoreage == 3)
-                        {//补充L
-                            var midout = midstores.FindAll(x => x.IsOccupied == 1 && x.StructBarCode == spool.StructBarCode.Trim() && x.BobbinNo == 'L').OrderBy(x => x.Updated).FirstOrDefault();
+                            //出库
+                            var midout = midstores.FindAll(x => x.IsOccupied == 1 && x.StructBarCode == spool.StructBarCode.Trim() && x.BobbinNo == item.BobbinNo2.ToArray()[0]).OrderByDescending(x => x.Updated).FirstOrDefault();
                             instorearmtsks.Add(new RobotArmTaskEntity()
                             {
                                 #region MyRegion
-                                CName = midout.CName.Trim(),
+                                CName = item.CName.Trim(),
                                 Created = createtime,
                                 StorageArea = this.StorageArea,
                                 SeqNo = ++armtskseqno,
@@ -1041,56 +1027,31 @@ namespace SNTON.Components.ComLogic
                                 #endregion
                             });
                             midout.IsOccupied = 4;
-                            item.SpoolId = midout.SpoolId;
+                            //item.SpoolId = midout.SpoolId;
                             midsupdate.Add(midout);
                         }
-                        else if (item.InStoreToOutStoreage == 4)
-                        {//补充R
-                            var midout = midstores.FindAll(x => x.IsOccupied == 1 && x.StructBarCode == spool.StructBarCode.Trim() && x.BobbinNo == 'R').OrderBy(x => x.Updated).FirstOrDefault();
-                            instorearmtsks.Add(new RobotArmTaskEntity()
-                            {
-                                #region MyRegion
-                                CName = midout.CName.Trim(),
-                                Created = createtime,
-                                StorageArea = this.StorageArea,
-                                SeqNo = ++armtskseqno,
-                                PlantNo = this.PlantNo,
-                                RobotArmID = this.RobotArmID,
-                                TaskType = 1,
-                                ToWhere = 2,
-                                TaskLevel = 7,
-                                ProductType = tskconfig.Item3.ToString(),
-                                AGVSeqNo = agvseqno,
-                                FromWhere = midout.SeqNo,
-                                SpoolSeqNo = item.SeqNo,
-                                WhoolBarCode = midout.FdTagNo.Trim(),
 
-                                TaskGroupGUID = guid
-                                #endregion
-                            });
-                            midout.IsOccupied = 4;
-                            item.SpoolId = midout.SpoolId;
-                            midsupdate.Add(midout);
-                        }
-                        else
-                        {
-                            inorout.Append("0");
-                        }
                         #endregion
                     }
                     catch (Exception ex)
                     {
                         ex.ToString();
+                        logger.ErrorMethod("创建直通出库任务失败", ex);
+                        return false;
                     }
                 }
-                inlineoutqueue = System.Convert.ToInt32(inorout.ToString(), 2);
+                char[] arr = inorout.ToString().ToCharArray();
+                Array.Reverse(arr);
+                string Reverse_inorout = new string(arr);
+                inlineoutqueue = System.Convert.ToInt32(Reverse_inorout.ToString(), 2);
                 List<InStoreToOutStoreSpoolEntity> ret = new List<InStoreToOutStoreSpoolEntity>();
                 foreach (var item in list)
                 {
                     ret.Add(new InStoreToOutStoreSpoolEntity() { AGVSeqNo = agvseqno, Created = createtime, Guid = guid, InLineNo = 2, SpoolId = item.SpoolId, Status = 0, PlantNo = this.PlantNo, StoreageNo = this.StorageArea });
                 }
-                AGVTasksEntity insertagvtsk = new AGVTasksEntity() { Created = createtime, TaskGuid = guid, PlantNo = this.PlantNo, ProductType = spool.CName, SeqNo = agvseqno, StorageArea = this.StorageArea, StorageLineNo = 2, TaskLevel = 6, TaskType = 2, EquipIdListTarget = TaskConfig.AGVStation(this.StorageArea, 2) };
-                bool issuccess = this.BusinessLogic.SqlCommandProvider.OutStoreageTask(null, midsupdate, insertagvtsk, instorearmtsks, null);
+                AGVTasksEntity insertagvtsk = new AGVTasksEntity() { Created = createtime, TaskGuid = guid, PlantNo = this.PlantNo, ProductType = spool.CName, SeqNo = agvseqno, StorageArea = this.StorageArea, StorageLineNo = 2, TaskLevel = 6, TaskType = 2, EquipIdListTarget = TaskConfig.AGVStation(this.StorageArea, 2), Status = 1 };
+                bool issuccess = this.BusinessLogic.SqlCommandProvider.OutStoreageTask(null, midsupdate, insertagvtsk, instorearmtsks, ret);
+                logger.InfoMethod("出库队列为:" + Reverse_inorout.ToString() + ",guid:" + guid.ToString());
                 return issuccess;
             }
             catch (Exception ex)
@@ -1109,7 +1070,15 @@ namespace SNTON.Components.ComLogic
         /// <param name="list">直通线上的单丝</param>
         private int InStoreToOutStore(Tuple<int, int, int, int, int> tskconfig, List<MESSystemSpoolsEntity> list)
         {
-            var lr = from i in list select i.BobbinNo;
+            try
+            {
+                var llr = from i in list select new { i.BobbinNo, i.BobbinNo2 };
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("创建直通线出库任务失败", ex);
+                return -1;
+            }
             MESSystemSpoolsEntity codeseqt = list[0];
             while (list.Count < tskconfig.Item1)
             {
@@ -1152,58 +1121,104 @@ namespace SNTON.Components.ComLogic
             int cl24 = tskconfig.Item4 / 2 - l24.Count;//24段需要补充几个L
             int cr24 = tskconfig.Item4 / 2 - r24.Count;//24段需要补充几个R
                                                        //0放过,1替换,2补充,3补充L,4补充R
-            if (cl13 <= 0)
-            {//需要将L替换成R
-                cr13 = cl13 + cr13;//需要补充R
-                p13.FindAll(x => x.BobbinNo == "L").Take(-cl13).ToList().ForEach(x => x.InStoreToOutStoreage = 1);
-                p13.FindAll(x => x.InStoreToOutStoreage == 2).ForEach(x => x.InStoreToOutStoreage = 4);
-            }
-            else if (cr13 <= 0)
-            {//需要将R替换成L
-                cl13 = cl13 + cr13;//需要补充L
-                p13.FindAll(x => x.BobbinNo == "R").Take(-cr13).ToList().ForEach(x => x.InStoreToOutStoreage = 1);
-                p13.FindAll(x => x.InStoreToOutStoreage == 2).ForEach(x => x.InStoreToOutStoreage = 3);
-            }
-            if (cl24 <= 0)
-            {//需要将L替换成R
-                cr24 = cl24 + cr24;//需要补充R
-                p24.FindAll(x => x.BobbinNo == "L").Take(-cl24).ToList().ForEach(x => x.InStoreToOutStoreage = 1);
-                p24.FindAll(x => x.InStoreToOutStoreage == 2).ForEach(x => x.InStoreToOutStoreage = 4);
-            }
-            else if (cr24 <= 0)
-            {//需要将R替换成L
-                cl24 = cl24 + cr24;//需要补充L
-                p24.FindAll(x => x.BobbinNo == "R").Take(-cr24).ToList().ForEach(x => x.InStoreToOutStoreage = 1);
-                p24.FindAll(x => x.InStoreToOutStoreage == 2).ForEach(x => x.InStoreToOutStoreage = 3);
-            }
-
-            return 0;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="storageno">暂存库编号,1,2,3</param>
-        /// <param name="list">所有未分配任务的送料EquipTask</param>
-        /// 
-        /// <param name="inlinecount">直通线上的单丝数量</param>
-        /// <param name="lineno">线体编号</param>
-        ///<returns></returns>
-        public int CreateRobotAGVTask(short storageno, List<EquipTaskViewEntity> list, int inlinecount, int lineno = 1)
-        {//所有同种规格的单丝
-            int result = 0;
-            var Storage = list.FindAll(x => x.StorageArea.Trim() == storageno.ToString());
-            var agvroutes = Storage.GroupBy(x => x.AGVRoute.Trim());
-            foreach (var item in agvroutes)
+            if (cl13 < 0 || cr13 < 0)
             {
-                result = NewMethod(storageno, item, inlinecount, lineno);
-                if (result == 1)
-                    return 1;
+                if (cl13 + cr13 == 0)
+                {
+                    if (cl13 > 0)
+                    {//找cl13个R替换成L
+                        p13.FindAll(x => x.BobbinNo == "R").Take(cl13).ToList().ForEach(x => x.InStoreToOutStoreage = 1);
+                        p13.FindAll(x => x.BobbinNo == "R").Take(cl13).ToList().ForEach(x => x.BobbinNo2 = "L");
+                    }
+                    else
+                    {//找-cl13个L替换成R
+                        p13.FindAll(x => x.BobbinNo == "L").Take(-cl13).ToList().ForEach(x => x.InStoreToOutStoreage = 1);
+                        p13.FindAll(x => x.BobbinNo == "L").Take(-cl13).ToList().ForEach(x => x.BobbinNo2 = "R");
+                    }
+                }
+                else
+                {//有替换的有补充的
+                    if (cl13 > 0)
+                    {//补充几个L
+                        var addL = cl13 + cr13;
+                        p13.FindAll(x => x.InStoreToOutStoreage == 2).Take(addL).ToList().ForEach(x => x.InStoreToOutStoreage = 3);
+                        p13.FindAll(x => x.InStoreToOutStoreage == 3).Take(addL).ToList().ForEach(x => x.BobbinNo2 = "L");
+                    }
+                    else if (cr13 > 0)
+                    {//补充几个L
+                        var addR = cl13 + cr13;
+                        p13.FindAll(x => x.InStoreToOutStoreage == 2).Take(addR).ToList().ForEach(x => x.InStoreToOutStoreage = 4);
+                        p13.FindAll(x => x.InStoreToOutStoreage == 4).Take(addR).ToList().ForEach(x => x.BobbinNo2 = "R");
+                    }
+                }
+            }
+            else
+            {
+                if (cl13 > 0)
+                {//补充几个L
+
+                    p13.FindAll(x => x.InStoreToOutStoreage == 2).Take(cl13).ToList().ForEach(x => x.InStoreToOutStoreage = 3);
+                    p13.FindAll(x => x.InStoreToOutStoreage == 3).Take(cl13).ToList().ForEach(x => x.BobbinNo2 = "L");
+                }
+                if (cr13 > 0)
+                {//补充几个L
+
+                    p13.FindAll(x => x.InStoreToOutStoreage == 2).Take(cr13).ToList().ForEach(x => x.InStoreToOutStoreage = 4);
+                    p13.FindAll(x => x.InStoreToOutStoreage == 4).Take(cr13).ToList().ForEach(x => x.BobbinNo2 = "R");
+                }
+            }
+            //if (cl13 <= 0)
+            //{//需要将L替换成R
+            //    cr13 = cl13 + cr13;//需要补充R
+            //    p13.FindAll(x => x.BobbinNo == "L").Take(-cl13).ToList().ForEach(x => x.InStoreToOutStoreage = 1);
+            //    //p13.FindAll(x => x.InStoreToOutStoreage == 2).ForEach(x => x.InStoreToOutStoreage = 4);
+            //}
+            //else if (cr13 <= 0)
+            //{//需要将R替换成L
+            //    //cl13 = cl13 + cr13;//需要补充L
+            //    p13.FindAll(x => x.BobbinNo == "R").Take(-cr13).ToList().ForEach(x => x.InStoreToOutStoreage = 1);
+            //    //p13.FindAll(x => x.InStoreToOutStoreage == 2).ForEach(x => x.InStoreToOutStoreage = 3);
+            //}
+            if (cl24 > 0)
+            {//
+                //cr24 = cl24 + cr24;//需要补充L
+                //p24.FindAll(x => x.BobbinNo == "L").Take(cl24).ToList().ForEach(x => x.InStoreToOutStoreage = 1);//-1入库,0放过,1替换,2补充,3补充L,4补充R
+                p24.FindAll(x => x.InStoreToOutStoreage == 2).Take(cl24).ToList().ForEach(x => x.InStoreToOutStoreage = 3);
+                p24.FindAll(x => x.InStoreToOutStoreage == 3).Take(cl24).ToList().ForEach(x => x.BobbinNo2 = "L");
+            }
+            if (cr24 > 0)
+            {//
+                //p24.FindAll(x => x.BobbinNo == "R").Take(cr24).ToList().ForEach(x => x.InStoreToOutStoreage = 1);
+                p24.FindAll(x => x.InStoreToOutStoreage == 2).Take(cr24).ToList().ForEach(x => x.InStoreToOutStoreage = 4);
+                p24.FindAll(x => x.InStoreToOutStoreage == 4).Take(cr24).ToList().ForEach(x => x.BobbinNo2 = "R");
+            }
+            if (cl24 < 0)
+            {//需要将L替换成R
+                //cr24 = cl24 + cr24;
+                p24.FindAll(x => x.BobbinNo == "L").Take(-cl24).ToList().ForEach(x => x.InStoreToOutStoreage = 1);//-1入库,0放过,1替换,2补充,3补充L,4补充R
+                p24.FindAll(x => x.BobbinNo == "L").Take(-cl24).ToList().ForEach(x => x.BobbinNo2 = "R");//-1入库,0放过,1替换,2补充,3补充L,4补充R
+                //p24.FindAll(x => x.InStoreToOutStoreage == 2).ForEach(x => x.InStoreToOutStoreage = 4);
+            }
+            if (cr24 < 0)
+            {//需要将R替换成L
+                //cl24 = cl24 + cr24;
+                p24.FindAll(x => x.BobbinNo == "R").Take(-cr24).ToList().ForEach(x => x.InStoreToOutStoreage = 1);
+                p24.FindAll(x => x.BobbinNo == "R").Take(-cr24).ToList().ForEach(x => x.BobbinNo2 = "L");
+                //p24.FindAll(x => x.InStoreToOutStoreage == 2).ForEach(x => x.InStoreToOutStoreage = 3);
+            }
+            try
+            {
+                var llr = from i in list select new { i.BobbinNo, i.BobbinNo2 };
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("创建直通线出库任务失败", ex);
+                return -1;
             }
             return 0;
-
         }
+
+
         int seq1 = 1;
         int lastseqno = 1;
         Random ran = new Random(DateTime.Now.Second);
@@ -1227,118 +1242,7 @@ namespace SNTON.Components.ComLogic
             }
             return lastseqno;
         }
-        /// <summary>
-        /// 检测是否有能够创建AGV任务的EquipTask
-        /// </summary>
-        /// <param name="storageno"></param>
-        /// <param name="supply1">按照单丝标准书分组的单组设备任务</param>
-        /// <returns>1创建任务;0没有创建任务</returns>
-        private int NewMethod(short storageno, IGrouping<string, EquipTaskViewEntity> supply1, int inlinecount, int lineno = 1)
-        {
-            int seq = getNextSeqNo();
-            EquipTaskViewEntity exequiptsk = supply1.FirstOrDefault();
-            var tskconfig = TaskConfig.GetEnoughAGVEquipCount(exequiptsk.ProductType);//8 / 12
-            if (tskconfig.Item1 == 0)
-            {
-                logger.WarnMethod("未知的单丝型号");
-                return 0;
-            }
-            int needstoeageno = tskconfig.Item1 - inlinecount;
-            //if (needstoeageno == 0)
-            //{
-            //    logger.InfoMethod("直通线上的单丝刚好够一车");
-            //    return 1;
-            //}
-            var mids = this.BusinessLogic.MidStorageProvider.GetMidStorageByArea(storageno, null);
-            mids = mids.FindAll(x => x.IsOccupied == 1 && x.Spool.StructBarCode.Trim() == exequiptsk.Supply1.Trim());
-            if (needstoeageno > mids.Count)
-            {
-                StringBuilder sb = new StringBuilder();
-                supply1.ToList().ForEach(x => sb.Append(x.EquipContollerId + ","));
-                //logger.InfoMethod(storageno + "号暂存库中的单丝不满足出库数量,单丝作业标准书:" + supply1.Key.Trim() + ",地面滚筒id:" + sb.ToString().Trim(','));
-                return 0;
-            }
-            if (needstoeageno <= mids.Count())
-            {
-                #region MyRegion
-                //暂存库单丝轮数量足够创建一车任务并且需要该类型单丝轮的设备也满一车
-                //创建龙门Task和AGVTask
-                //更新EquipTask状态
-                //更新库位状态
-                var guid = Guid.NewGuid();
-                //通过GUID标记一个龙门任务单元
-                DateTime createtime = DateTime.Now;
-                RobotArmTaskEntity armtsk = null;
-                List<RobotArmTaskEntity> listarmtsk = new List<RobotArmTaskEntity>();
-                var agvtsk = new AGVTasksEntity() { Created = createtime, SeqNo = seq, TaskGuid = guid, PlantNo = PlantNo, ProductType = exequiptsk.ProductType, Status = 0, TaskLevel = 5 };
 
-                var tskspools = mids.OrderBy(x => x.Updated).Take(needstoeageno).ToList();//先取出入库时间早的单丝轮 
-                foreach (var spool in tskspools)
-                {
-                    #region 将库里的单丝分配龙门出库任务
-                    armtsk = new RobotArmTaskEntity();
-                    armtsk.Created = createtime;
-                    armtsk.TaskGroupGUID = guid;
-                    armtsk.FromWhere = spool.SeqNo;
-                    armtsk.PlantNo = PlantNo;
-                    armtsk.RobotArmID = storageno.ToString();
-                    armtsk.TaskLevel = 5;
-                    armtsk.TaskType = 0;
-                    armtsk.AGVSeqNo = seq;
-                    armtsk.ToWhere = lineno;
-                    armtsk.TaskStatus = 0;
-                    if (lineno == 1)
-                        armtsk.TaskType = 0;
-                    else
-                        armtsk.TaskType = 1;
-                    armtsk.SpoolStatus = 0;
-                    //armtsk.EquipControllerId = 1;
-                    armtsk.StorageArea = StorageArea;
-                    armtsk.WhoolBarCode = spool.Spool.FdTagNo;
-                    armtsk.ProductType = tskconfig.Item3.ToString();
-                    spool.Updated = DateTime.Now;
-                    spool.IsOccupied = 2;
-                    listarmtsk.Add(armtsk);
-                    #endregion
-                }
-
-                var creaequptsk = supply1.OrderByDescending(x => x.Created).Take(tskconfig.Item2).OrderBy(x => x.AStation);
-                if (creaequptsk.Count() < tskconfig.Item2)
-                {
-                    logger.InfoMethod("没有足够的叫料设备");
-                    return 0;
-                }
-                foreach (var equtsk in creaequptsk)
-                {
-                    equtsk.Status = 1;
-                    equtsk.TaskGuid = guid;
-                    equtsk.Updated = createtime;
-                    agvtsk.EquipIdListActual = agvtsk.EquipIdListActual + ";" + equtsk.EquipContollerId.ToString();
-                }
-                agvtsk.TaskType = 2;
-                if (needstoeageno == 0)
-                    agvtsk.Status = 2;
-                #region 更新EquipTask 更新暂存库位置状态 创建AGVTask 创建龙门Task
-                agvtsk.StorageArea = storageno;
-                agvtsk.StorageLineNo = lineno;
-                agvtsk.EquipIdListActual = agvtsk.EquipIdListActual.Trim(';');
-                agvtsk.EquipIdListTarget = TaskConfig.AGVStation(storageno, lineno);
-                logger.InfoMethod("=================================================================================");
-                this.BusinessLogic.EquipTaskViewProvider.Update(null, creaequptsk.ToArray());
-                logger.InfoMethod("更新EquipTask状态成功," + guid.ToString());
-                this.BusinessLogic.MidStorageProvider.UpdateMidStore(null, mids.ToArray());
-                logger.InfoMethod("更新暂存库位置状态成功," + guid.ToString());
-                this.BusinessLogic.AGVTasksProvider.CreateAGVTask(agvtsk, null); //同时创建AGVTask
-                logger.InfoMethod("创建AGVTask成功," + guid.ToString());
-                this.BusinessLogic.RobotArmTaskProvider.InsertArmTask(listarmtsk, null);
-                logger.InfoMethod("创建龙门Task成功," + guid.ToString());
-                logger.InfoMethod("=================================================================================");
-                #endregion
-                return 1;//一次只执行一个龙门Task 
-                #endregion
-            }
-            return 0;
-        }
         /// <summary>
         /// 直通线上扫到的条码,从MES查具体信息,然后插入到自己的数据库
         /// -1错误的LR面信息;0MES系统不存在此二维码;1添加成功;2添加失败

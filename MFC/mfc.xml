@@ -226,7 +226,7 @@
       </VARIABLES>
     </CONTROLSET>
 
-    <CONTROLSET Name ="PLC_MidStoreLine3" Enabled ="false" path =".\Controlsets\MidStoreLineControlset.xml">
+    <CONTROLSET Name ="PLC_MidStoreLine3" Enabled ="true" path =".\Controlsets\MidStoreLineControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="MidStoreLine3"/>
         <VARIABLE Name="$HOST$" Value="192.168.120.75"/>

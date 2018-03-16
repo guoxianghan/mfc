@@ -36,7 +36,7 @@ namespace SNTON.Components.ComLogic
         }
         public EquipTaskLogic()
         {
-            thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 5000);
+            thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 2000);
         }
         /// <summary>
         /// 轮询地面滚筒请求,分车间,暂存库,供料区域,AGV路线创建龙门AGV任务
@@ -46,12 +46,13 @@ namespace SNTON.Components.ComLogic
             //int seq = getNextSeqNo();
             //this.BusinessLogic.AGVTasksProvider.CreateAGVTask(new AGVTasksEntity() {  Created=DateTime.Now, ProductType="WS44",SeqNo=seq, PlantNo=3}, null);
             var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Status IN (0,10) AND PlantNo=3", null);
+            //equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Id IN(37029,37020)", null);
             var agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8)", null);
             if (agvrunningtsk == null)
                 agvrunningtsk = new List<AGVTasksEntity>();
             if (equiptsks == null || equiptsks.Count == 0)
                 return;
-            equiptsks = equiptsks.OrderBy(x => x.Created).ToList();
+            equiptsks = equiptsks.OrderBy(x => x.Id).ToList();
             var kong = equiptsks.FindAll(x => x.TaskType == 1);
             DateTime dt = DateTime.Now;
             #region 创建拉空轮的任务 
@@ -161,49 +162,56 @@ namespace SNTON.Components.ComLogic
                     continue;
                 bool iscreated = false;
                 int result = 0;
-                var equiptsks = item.OrderByDescending(x => x.Created).Take(2).ToList();
+                var equiptsks = item.OrderBy(x=>x.Id).Take(2).ToList();
                 var supply1 = equiptsks.GroupBy(x => x.Supply1.Trim()).ToList()[0];
                 for (short i = 1; i <= 3; i++)
                 {
                     ///直通口检测是否可以创建送满轮任务
+                    //agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8)", null);
+                    //if (agvrunningtsk.FindAll(x => x.StorageArea == i && x.StorageLineNo == 2).Count >= 2)
+                    //    continue;//直通线缓存满
                     iscreated = InStoreHasSpools(equiptsks.ToList(), i);
                     if (iscreated)
                     {
                         equiptsks.ToList().ForEach(x => x.Status = 4);
-                        break;
+                        int count = this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
+                        if (count != 0)
+                            break;
                     }
                 }
                 if (!iscreated)
                 {
                     for (short storeno = 1; storeno <= 3; storeno++)
                     {
+                        armtsks = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskStatus in(0,1,2,3)");//找到正在执行的ArmTask
+                        agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8,9)", null);
                         #region MyRegion
-                        if (armtsks.Exists(x => x.StorageArea == storeno))
+                        if (armtsks.FindAll(x => x.StorageArea == storeno).Count >= 3)
                             continue;//有正在执行的龙门任务
-                        if (agvrunningtsk.FindAll(x => x.StorageArea == storeno).Count >= 3)
+                        if (agvrunningtsk.FindAll(x => x.StorageArea == storeno && x.StorageLineNo == 1).Count >= 3)
                             continue;//出库线体满
                                      ///从暂存库创建出库任务
                         result = NewMethodLR(storeno, supply1, 0, 1);
                         if (result == 1)
                         {
+                            equiptsks.ToList().ForEach(x => x.Status = 1);
                             iscreated = true;
+                            this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
                             break;
+                        }
+                        else
+                        {
+                            if (storeno == 2 || storeno == 3)
+                            {
+                                equiptsks.ToList().ForEach(x => x.Status = 10);
+                                this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
+                            }
                         }
                         #endregion
                     }
                 }
                 #endregion
 
-                if (iscreated)
-                {
-                    equiptsks.ToList().ForEach(x => x.Status = 1);
-                    this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
-                }
-                else if (result == -1)
-                {
-                    equiptsks.ToList().ForEach(x => x.Status = 10);
-                    this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
-                }
 
             }
         }
@@ -232,12 +240,14 @@ namespace SNTON.Components.ComLogic
             {
                 return false;
             }
-            var instore = list.FirstOrDefault(x => x.Status == 3 && x.StructBarCode.Trim() == prod.ProdCodeStructMark4.StructBarCode.Trim());
+            var instore = list.FindAll(x => x.Status == 3 && x.StructBarCode.Trim() == prod.ProdCodeStructMark4.StructBarCode.Trim());
             if (instore == null)
                 return false;
-            instore.Status = 5;//等待申请调度AGV
-            this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.UpdateEntity(null, instore);
-            var agvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTask($"TaskGuid in ('{instore.Guid.ToString()}')");
+            instore.ForEach(x => x.Status = 8);//等待申请调度AGV
+            int count = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.UpdateEntity(null, instore.ToArray());
+            if (count == 0)
+                return false;
+            var agvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTask($"TaskGuid in ('{instore[0].Guid.ToString()}')");
             if (agvtsk != null)
             {
                 agvtsk.Status = 2;
@@ -245,8 +255,10 @@ namespace SNTON.Components.ComLogic
                 agvtsk.EquipIdListActual = equiptsks[0].EquipContollerId.ToString() + ";" + equiptsks[1].EquipContollerId.ToString();
                 //agvtsk.EquipIdListTarget = TaskConfig.AGVStation(storeageno, 2);
                 agvtsk.Updated = DateTime.Now;
-                this.BusinessLogic.AGVTasksProvider.UpdateEntity(agvtsk);
-                return true;
+                equiptsks.ForEach(x => x.TaskGuid = agvtsk.TaskGuid);
+                equiptsks.ForEach(x => x.Status = 4);
+                bool r = this.BusinessLogic.AGVTasksProvider.UpdateEntity(agvtsk);
+                return r;
             }
             else return false;
         }

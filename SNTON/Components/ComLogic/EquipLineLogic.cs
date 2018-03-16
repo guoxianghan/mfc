@@ -62,7 +62,7 @@ namespace SNTON.Components.ComLogic
                 equipcmd = this.BusinessLogic.EquipConfigerProvider.GetEquipConfigerEntities(null);
             //var equiptsk = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"[STATUS]=1 AND PlantNo={PlantNo} AND PLCNo={PLCNo}", null);
             //16收到中控系统的调车指令,小车分配成功
-            var agvtsks = this.BusinessLogic.AGVTasksProvider.GetAGVTasks($"[STATUS] IN(16) AND [PlantNo]={PlantNo} and id>=2322", null);
+            var agvtsks = this.BusinessLogic.AGVTasksProvider.GetAGVTasks($"[STATUS] IN(8,16,19) AND [PlantNo]={PlantNo} and id>=15008", null);
             if (agvtsks == null || agvtsks.Count == 0)
                 return;
 
@@ -86,7 +86,7 @@ namespace SNTON.Components.ComLogic
                     sbequipname.Append(cmd.EquipName);
                     readwas.AddField(cmd.WAStatus, "0");
                     var readr = MXParser.ReadData(readwas, true);
-                    Thread.Sleep(10);
+                    Thread.Sleep(1000);
                     if (!readr.Item1)
                     {
                         continue;
@@ -105,7 +105,7 @@ namespace SNTON.Components.ComLogic
                         n.AddField(cmd.WAStatus, item.TaskType.ToString());
                     task.Status = 9;
                     bool r = MXParser.SendData(n, 3);
-                    Thread.Sleep(10);
+                    Thread.Sleep(1000);
                     if (!r)
                     {
                         logger.WarnMethod("通知地面滚筒准备接收失败,EquipTask:" + JsonConvert.SerializeObject(task));
@@ -116,7 +116,7 @@ namespace SNTON.Components.ComLogic
                         logger.WarnMethod("通知地面滚筒准备接收,EquipTask:" + JsonConvert.SerializeObject(task));
                     }
                     var light = MXParser.ReadData(n, true);
-                    Thread.Sleep(10);
+                    Thread.Sleep(1000);
                     #region 重新读取刚刚写入的光电,验证有没有写入成功
                     if (!light.Item1)
                     {
@@ -151,7 +151,11 @@ namespace SNTON.Components.ComLogic
                 if (EquipTask.Exists(x => x.Status != 6))
                     continue;
                 //判断2个是否都写成功  
-                item.Status = 17;
+                if (item.Status == 16)
+                    item.Status = 19;
+                else if (item.Status == 8)
+                    item.Status = 9;
+                else item.Status = 20;
                 this.BusinessLogic.AGVTasksProvider.UpdateEntity(item, null);
                 #endregion
             }

@@ -379,19 +379,20 @@ namespace SNTON.WebServices.UserInterfaceBackend
 
         #region Product
         [DataContractFormat]
-        [WebInvoke(UriTemplate = " Product/GetProduct", Method = "GET",
+        [WebInvoke(UriTemplate = "Product/GetProduct", Method = "GET",
          ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
         [ServiceKnownType(typeof(ProductResponse))]
-        ProductResponse GetProduct();
+        object GetProduct();
         /// <summary>
-        /// 更改报警比例
+        /// 更改报警比例?id={id}&lrratio={lrratio}&seqno={seqno}
         /// </summary>
         /// <returns></returns>
+        [OperationContract]
         [DataContractFormat]
         [WebInvoke(UriTemplate = "Product/SaveProductLRRatio", Method = "POST",
-           ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
+               ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
         [ServiceKnownType(typeof(ResponseDataBase))]
-        ResponseDataBase SaveProductLRRadio(int id, string lrratio);
+        object SaveProductLRRadio(int id, string lrratio, int seqno);
 
         #endregion
     }

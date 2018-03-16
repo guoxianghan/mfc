@@ -98,7 +98,7 @@ namespace SNTON.Components.Equipment
             }
             try
             {
-                var tmp = ReadList<EquipStatusEntity>(session, string.Format("FROM {0} WHERE  equipid = {1}  AND ISDELETED={2}orderby ID desc", EntityDbTable, equipid, Constants.SNTONConstants.DeletedTag.NotDeleted));
+                var tmp = ReadList<EquipStatusEntity>(session, string.Format("FROM {0} WHERE  equipid = {1}  AND ISDELETED={2} order by ID desc", EntityDbTable, equipid, Constants.SNTONConstants.DeletedTag.NotDeleted));
                 if (tmp.Any())
                 {
                     ret = tmp.FirstOrDefault();
@@ -122,7 +122,7 @@ namespace SNTON.Components.Equipment
             }
             try
             {
-                var tmp = ReadList<EquipStatusEntity>(session, string.Format("FROM {0} where  ID = {1} AND ISDELETED={2} orderby ID desc", EntityDbTable, Id, Constants.SNTONConstants.DeletedTag.NotDeleted));
+                var tmp = ReadList<EquipStatusEntity>(session, string.Format("FROM {0} where  ID = {1} AND ISDELETED={2} order by ID desc", EntityDbTable, Id, Constants.SNTONConstants.DeletedTag.NotDeleted));
                 if (tmp.Any())
                 {
                     ret = tmp.FirstOrDefault();

@@ -219,27 +219,30 @@ namespace SNTON.Components.AGV
             return;
         }
 
-        public void UpdateEntity(AGVTasksEntity entity, IStatelessSession session = null)
+        public bool UpdateEntity(AGVTasksEntity entity, IStatelessSession session = null)
         {
+            bool r = false;
             if (session == null)
             {
-                BrokerDelegate(() => UpdateEntity(entity, session), ref session);
-                return;
+                r = BrokerDelegate(() => UpdateEntity(entity, session), ref session);
+                return r;
             }
             try
             {
                 protData.EnterWriteLock();
                 base.Update(session, entity);
+                r = true;
             }
             catch (Exception e)
             {
                 logger.ErrorMethod("更新AGV状态失败,guid: " + entity.TaskGuid.ToString(), e);
+                r = false;
             }
             finally
             {
                 protData.ExitWriteLock();
             }
-            return;
+            return r;
         }
 
         public List<AGVTasksEntity> GetAGVTasks(string sqlwhere, IStatelessSession session = null)

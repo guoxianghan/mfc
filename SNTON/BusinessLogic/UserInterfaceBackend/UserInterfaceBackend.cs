@@ -952,6 +952,8 @@ namespace SNTON.BusinessLogic
                     foreach (var arm in tmp)
                     {
                         var tmpspool = spools.FirstOrDefault(x => x.FdTagNo.Trim() == arm.WhoolBarCode.Trim());
+                        if (tmpspool == null)
+                            tmpspool = this.SpoolsProvider.GetSpoolByBarcode(arm.WhoolBarCode.Trim(), null);
                         t.Spool = (new WebServices.UserInterfaceBackend.Models.RobotArmTask.RobotArmSpoolDataUI() { SpoolSeqNo = arm.SpoolSeqNo, SpoolStatus = arm.SpoolStatus, WhoolBarCode = arm.WhoolBarCode, Length = tmpspool.Length, LR = tmpspool.BobbinNo.ToString() });
                     }
                 }
@@ -1216,11 +1218,17 @@ namespace SNTON.BusinessLogic
             return obj;
         }
 
-        public ResponseDataBase SaveProductLRRadio(int id, string lrratio)
+        public ResponseDataBase SaveProductLRRadio(int id, string lrratio, int seqno)
         {
             ResponseDataBase obj = new ResponseDataBase();
             var o = this.ProductProvider.GetProductEntityByID(id);
+            if (o == null)
+            {
+                obj.data.Add("错误的ID");
+                return obj;
+            }
             o.LRRatio = lrratio;
+            o.SeqNo = Convert.ToByte(seqno);
             int i = this.ProductProvider.UpdateEntity(null, o);
             if (i == 1)
                 obj.data.Add("保存成功");

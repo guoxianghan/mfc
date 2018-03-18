@@ -87,55 +87,8 @@ namespace SNTON.Components.ComLogic
                 }
             }
 
-            #endregion 
-            /* 
-            var three_equiptsks = equiptsks.FindAll(x => x.StorageArea == "3" && x.TaskType == 2);
-            var two_equiptsks = equiptsks.FindAll(x => x.StorageArea == "12" && x.TaskType == 2);
-
-            var grouptwo = three_equiptsks.GroupBy(x => x.AGVRoute);
-            var armtsks = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskStatus in(0,1,2,3)");//找到正在执行的ArmTask
-            if (armtsks == null)
-                armtsks = new List<RobotArmTaskEntity>();
-           
-            #region 3#暂存库 拉满轮任务
-            var threearmtsks = armtsks.FindAll(x => x.StorageArea == 3);
-            if (threearmtsks.Count == 0)
-            {//创建3#暂存库的龙门Task和AGVTask,同时更新EquipTask状态  
-                if (agvrunningtsk.FindAll(x => x.StorageArea == 3).Count < 3)
-                    CreateRobotAGVTask(3, three_equiptsks, 0, 1);
-                else
-                {
-                    this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "3#出库线体满", Source = "3#出库线体满", MsgLevel = 7 });
-                }
-            }
-
-
-            int iscreated = 0;
-            #region MyRegion
-            var onearmtsks = armtsks.FindAll(x => x.StorageArea == 1);
-            if (onearmtsks.Count == 0)
-            {//创建1#暂存库的龙门Task和AGVTask,同时更新EquipTask状态     
-                if (agvrunningtsk.FindAll(x => x.StorageArea == 1).Count < 3)
-                    iscreated = CreateRobotAGVTask(1, two_equiptsks, 0, 1);
-                else
-                {
-                    this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "1#出库线体满", Source = "1#出库线体满", MsgLevel = 7 });
-                }
-            }
-            var twoarmtsks = armtsks.FindAll(x => x.StorageArea == 2);
-            if (twoarmtsks.Count == 0 && iscreated == 0)
-            {//创建2#暂存库的龙门Task和AGVTask,同时更新EquipTask状态    
-                if (agvrunningtsk.FindAll(x => x.StorageArea == 2).Count < 3)
-                    CreateRobotAGVTask(2, two_equiptsks, 0, 1);
-                else
-                {
-                    this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "2#出库线体满", Source = "2#出库线体满", MsgLevel = 7 });
-                }
-            }
-
             #endregion
-            #endregion
-            */
+
             var agvtsk2 = equiptsks.FindAll(x => x.TaskType == 2);
             CheckEquipTaskToCreate(agvtsk2);
         }
@@ -162,7 +115,7 @@ namespace SNTON.Components.ComLogic
                     continue;
                 bool iscreated = false;
                 int result = 0;
-                var equiptsks = item.OrderBy(x=>x.Id).Take(2).ToList();
+                var equiptsks = item.OrderBy(x => x.Id).Take(2).ToList();
                 var supply1 = equiptsks.GroupBy(x => x.Supply1.Trim()).ToList()[0];
                 for (short i = 1; i <= 3; i++)
                 {
@@ -270,43 +223,7 @@ namespace SNTON.Components.ComLogic
         int seq = 1;
         int lastseqno = 1;
         Random ran = new Random(DateTime.Now.Second);
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="storageno">暂存库编号,1,2,3</param>
-        /// <param name="list">所有未分配任务的送料EquipTask</param> 
-        /// <param name="inlinecount">直通线上的单丝数量</param>
-        /// <param name="lineno">线体编号</param>
-        ///<returns></returns>
-        public int CreateRobotAGVTask(short storageno, List<EquipTaskViewEntity> list, int inlinecount, int lineno = 1)
-        {
-            int result = 0;
-            //list = list.OrderBy(x => x.Created).ToList();
-            List<EquipTaskViewEntity> Storage = null;
-            //if (storageno == 3)
-            //    Storage = list.FindAll(x => x.StorageArea.Trim() == storageno.ToString());
-            //else Storage = list.FindAll(x => x.StorageArea.Trim() == "12");
-            var agvroutes = Storage.GroupBy(x => x.AGVRoute.Trim());
-            foreach (var item in agvroutes)
-            {
-                var supply1s = item.GroupBy(x => x.Supply1);//按照作业标准书编号分组
-                foreach (var supply1 in supply1s)
-                {//所有同种规格的单丝 
-                    if (supply1.Count() < 2)
-                        continue;
-                    //先判断直通口
-                    result = NewMethodLR(storageno, supply1, inlinecount, lineno);
-                    if (result == 1)
-                        return 1;
-                    else if (result == -1 && (storageno == 2 || storageno == 3))
-                    {
-                        supply1.ToList().ForEach(x => x.Status = 10);
-                        this.BusinessLogic.EquipTaskViewProvider.Update(null, supply1.ToArray());
-                    }
-                }
-            }
-            return 0;
-        }
+
         List<int> SeqNo3 = new List<int>();
         int getNextSeqNo()
         {
@@ -350,7 +267,7 @@ namespace SNTON.Components.ComLogic
                 this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = exequiptsk.ProductType.Trim(), MsgLevel = 6, Source = "未知的单丝型号" });
                 return 0;
             }
-            var creaequptsk = supply1.OrderByDescending(x => x.Created).Take(tskconfig.Item2).OrderBy(x => x.AStation).ToList();
+            var creaequptsk = supply1.OrderBy(x => x.Id).Take(tskconfig.Item2).OrderBy(x => x.AStation).ToList();
             if (creaequptsk.Count() < tskconfig.Item2)
             {
                 //logger.InfoMethod("没有足够的叫料设备");

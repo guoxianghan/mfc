@@ -924,13 +924,13 @@ namespace SNTON.WebServices.UserInterfaceBackend
             return obj;
         }
 
-        public object SaveProductLRRadio(int id, string lrratio, int seqno)
+        public object SaveProductLRRadio(int id, string lrratio, int seqno,byte IsWarnning)
         {
             ResponseDataBase obj = new ResponseDataBase();
             try
             {
                 //logger.InfoMethod($"重发AGV指令SetAGVTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.SaveProductLRRadio(id, lrratio, seqno);
+                obj = BusinessLogic.SaveProductLRRadio(id, lrratio, seqno, IsWarnning);
             }
             catch (Exception ex)
             {

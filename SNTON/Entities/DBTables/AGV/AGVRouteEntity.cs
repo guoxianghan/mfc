@@ -26,6 +26,12 @@ namespace SNTON.Entities.DBTables.AGV
         public virtual string X { get; set; }
         /// <summary>
         /// 小车状态
+        /// 每一位对应一个小车的通讯状态值
+        /// 每位上的值含义如下：
+        /// 0=AGV处于待命状态
+        /// 1=AGV处于空闲状态
+        /// 2=AGV处于任务执行状态
+        /// 3=AGV处于故障状态
         /// </summary>
         [DataMember]
         public virtual byte Status { get; set; }

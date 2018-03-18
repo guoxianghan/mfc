@@ -41,7 +41,7 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.MidStorage
         /// 入库时间
         /// </summary>
         public DateTime? InStoreageTime { get; set; }
-        public int OriginalId { get;  set; }
+        public int OriginalId { get; set; }
     }
     /// <summary>
     /// 库区,单丝类型的数量统计
@@ -49,7 +49,7 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.MidStorage
     public class MidStorageCountDataUI
     {
         public int StorageArea { get; set; }
-        public string Length { get; set; }
+        public int Length { get; set; }
         public string Cname { get; set; }
         public string StructBarCode { get; set; }
         public string BobbinNo { get; set; }
@@ -62,5 +62,6 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.MidStorage
         /// 规格 0.30ST
         /// </summary>
         public string Const { get; set; }
+        public bool IsWarning { get; set; } = false;
     }
 }

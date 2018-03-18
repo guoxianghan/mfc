@@ -522,7 +522,7 @@ namespace SNTON.Components.ComLogic
                 string x = neutrino.GetField("CurrentX");
                 string y = neutrino.GetField("CurrentY");
                 short speed = Convert.ToInt16(neutrino.GetField("Speed"));
-                AGVRouteEntity a = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y };
+                AGVRouteEntity a = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = 0 };
                 AGVRouteArchiveEntity en = new AGVRouteArchiveEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y };
                 this.BusinessLogic.AGVRouteProvider.AddAGVRoute(null, a);
                 this.BusinessLogic.AGVRouteArchiveProvider.AddAGVRoute(null, en);

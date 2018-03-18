@@ -58,7 +58,7 @@ namespace SNTON.BusinessLogic
         AGVTaskResponse RunningAGVTask();
         ResponseDataBase SetAGVTaskStatus(long id, int status);
         ProductResponse GetProduct();
-        ResponseDataBase SaveProductLRRadio(int id, string lrratio, int seqno);
+        ResponseDataBase SaveProductLRRadio(int id, string lrratio, int seqno, byte IsWarnning);
         #endregion
 
         #region

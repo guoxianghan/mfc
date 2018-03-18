@@ -12,7 +12,7 @@ namespace SNTON.Entities.DBTables.MidStorage
         [DataMember]
         public virtual int StorageArea { get; set; }
         [DataMember]
-        public virtual string Length { get; set; }
+        public virtual int Length { get; set; }
         [DataMember]
         public virtual string CName { get; set; }
         [DataMember]

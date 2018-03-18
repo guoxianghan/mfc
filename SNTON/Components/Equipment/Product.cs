@@ -157,7 +157,7 @@ namespace SNTON.Components.Equipment
             try
             {
                 protData.EnterWriteLock();
-                Update(session, products);
+                Update(session, products.ToList());
                 i = products.Length;
             }
             catch (Exception ex)

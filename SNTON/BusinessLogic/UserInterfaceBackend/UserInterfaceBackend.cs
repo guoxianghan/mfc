@@ -513,9 +513,10 @@ namespace SNTON.BusinessLogic
         {
             MidStorageCountResponse obj = new MidStorageCountResponse();
             var li = this.MidStorageProvider.GetMidStorageAccount(null);
+            var products = this.ProductProvider.GetAllProductEntity(null);
             //li = li.FindAll(x => x != null);
-            var d = li.GroupBy(x => x.StorageArea, (y, z) => z.GroupBy(x => x.Length));
-
+            //var d = li.GroupBy(x => x.StorageArea, (y, z) => z.GroupBy(x => x.Length));
+            li = li.FindAll(x => x.Length != 0 && !string.IsNullOrEmpty(x.StructBarCode) && !string.IsNullOrEmpty(x.Const));
             var p = from i in li
                     group new MidStorageSpoolsCountEntity { StorageArea = i.StorageArea, StructBarCode = i.StructBarCode, Length = i.Length, BobbinNo = i.BobbinNo, Count = i.Count, CName = i.CName.Trim(), Const = i.Const?.Trim() }
                     by new { i.StorageArea, i.Length, i.Const } into t
@@ -525,6 +526,9 @@ namespace SNTON.BusinessLogic
                 try
                 {
                     string Const = items.FirstOrDefault()?.Const;
+                    var item = items.FirstOrDefault();
+                    var product = products.FirstOrDefault(x => x.CName.Trim() == item.CName.Trim() && x.Const.Trim() == item.Const.Trim() && x.Length == item.Length);
+                    #region MyRegion
                     var l = items.ToList().FindAll(x => !string.IsNullOrEmpty(x.BobbinNo) && x.BobbinNo.Trim() == "L");
                     var r = items.ToList().FindAll(x => !string.IsNullOrEmpty(x.BobbinNo) && x.BobbinNo.Trim() == "R");
                     var o = items.ToList().FindAll(x => string.IsNullOrEmpty(x.BobbinNo) || (x.BobbinNo.Trim() != "R" && x.BobbinNo.Trim() != "L"));
@@ -541,18 +545,44 @@ namespace SNTON.BusinessLogic
                     {
                         o.ForEach(x => oc += x.Count);
                     }
+
+                    bool iswarning = false;
+                    if (product != null && product.IsWarning == 1)
+                    {
+                        if (lc == 0 || rc == 0)
+                        {
+                            if (Math.Abs(lc - rc) >= 12)
+                                iswarning = true;
+                        }
+                        else
+                        {
+                            try
+                            {
+                                double mid = Math.Round((float)lc / (float)rc, 5);
+                                double warning = Math.Round(Convert.ToDouble(product.LRRatio.Split(':')[0]) / Convert.ToDouble(product.LRRatio.Split(':')[1]), 5);
+                                if (mid != warning)
+                                    iswarning = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                ex.ToString();
+                            }
+                        }
+                    }
                     if (areaid == 0)
                     {
-                        obj.data.Add(new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageCountDataUI() { L = lc, R = rc, other = oc, Count = lc + rc + oc, Cname = items.FirstOrDefault().CName, Length = items.FirstOrDefault().Length, StorageArea = items.FirstOrDefault().StorageArea, StructBarCode = items.FirstOrDefault().StructBarCode, Description = $"L:{lc}   R:{rc}  其他:{oc}", Const = Const });
+                        obj.data.Add(new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageCountDataUI() { L = lc, R = rc, other = oc, Count = lc + rc + oc, Cname = items.FirstOrDefault().CName, Length = items.FirstOrDefault().Length, StorageArea = items.FirstOrDefault().StorageArea, StructBarCode = items.FirstOrDefault().StructBarCode, Description = $"L:{lc}   R:{rc}  其他:{oc}", Const = Const, IsWarning = iswarning });
                     }
                     else if (items.Key.StorageArea == areaid)
                     {
                         obj.data.Add(new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageCountDataUI() { L = lc, R = rc, other = oc, Count = lc + rc + oc, Cname = items.FirstOrDefault().CName, Length = items.FirstOrDefault().Length, StorageArea = items.FirstOrDefault().StorageArea, StructBarCode = items.FirstOrDefault().StructBarCode, Description = $"L:{lc}   R:{rc}  其他:{oc}", Const = Const });
                     }
-                }
-                catch (Exception)
-                {
+                    #endregion
 
+                }
+                catch (Exception ex)
+                {
+                    logger.ErrorMethod("MidStorageDescription error,areaid is " + areaid, ex);
                 }
 
             }
@@ -1218,7 +1248,7 @@ namespace SNTON.BusinessLogic
             return obj;
         }
 
-        public ResponseDataBase SaveProductLRRadio(int id, string lrratio, int seqno)
+        public ResponseDataBase SaveProductLRRadio(int id, string lrratio, int seqno, byte iswarning)
         {
             ResponseDataBase obj = new ResponseDataBase();
             var o = this.ProductProvider.GetProductEntityByID(id);
@@ -1228,6 +1258,7 @@ namespace SNTON.BusinessLogic
                 return obj;
             }
             o.LRRatio = lrratio;
+            o.IsWarning = iswarning;
             o.SeqNo = Convert.ToByte(seqno);
             int i = this.ProductProvider.UpdateEntity(null, o);
             if (i == 1)

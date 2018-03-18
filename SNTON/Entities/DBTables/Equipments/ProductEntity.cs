@@ -60,5 +60,11 @@ namespace SNTON.Entities.DBTables.Equipments
         [DataMember]
         public virtual byte SeqNo { get; set; }
 
+        /// <summary>
+        /// 是否启用报警: 0不启用;1启用
+        /// </summary>
+        [DataMember]
+        public virtual byte IsWarning { get; set; }
+
     }
 }

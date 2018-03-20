@@ -11,6 +11,8 @@ using log4net;
 using System.Xml;
 using VI.MFC.Logging;
 using SNTON.Entities.DBTables.Equipments;
+using VI.MFC.Utils;
+using SNTON.Constants;
 
 namespace SNTON.Components.Equipment
 {
@@ -21,10 +23,11 @@ namespace SNTON.Components.Equipment
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const string EntityDbTable = "ProductEntity";
         private const string DatabaseDbTable = "SNTON.Product";
+        private VIThreadEx thread_realtimeequiptask;
 
         // only for unittest
         //private readonly Dictionary<long, EmployeeEnt> employeeList = new Dictionary<long, EmployeeEnt>();
-        public List<ProductEntity> Products { get; set; }
+        public List<ProductEntity> PruductCache { get; set; }
         #region Class constructor
         /// <summary>
         /// Static class creation
@@ -42,7 +45,7 @@ namespace SNTON.Components.Equipment
         /// </summary>
         public Product()
         {
-
+            thread_realtimeequiptask = new VIThreadEx(ReadProductCache, null, "thread for reading ReadProductCache ", SNTONConstants.ReadingCacheInternal);
         }
         /// <summary>
         /// PLACEHOLDER: Please extend if required.
@@ -75,6 +78,7 @@ namespace SNTON.Components.Equipment
         /// </summary>
         protected override void StartInternal()
         {
+            thread_realtimeequiptask.Start();
             base.StartInternal();//start the cleanup thread
             logger.InfoMethod(EntityDbTable + " broker started.");
         }
@@ -85,12 +89,13 @@ namespace SNTON.Components.Equipment
         /// </summary>
         public override void ReadBrokerData()
         {
-            if (Products == null)
-                Products = GetAllProductEntity(null);
         }
         #endregion
 
-
+        void ReadProductCache()
+        {
+            PruductCache = GetAllProductEntity(null);
+        }
 
         public ProductEntity GetProductEntityByID(long Id, IStatelessSession session)
         {

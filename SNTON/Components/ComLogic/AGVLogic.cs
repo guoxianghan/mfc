@@ -522,10 +522,21 @@ namespace SNTON.Components.ComLogic
                 string x = neutrino.GetField("CurrentX");
                 string y = neutrino.GetField("CurrentY");
                 short speed = Convert.ToInt16(neutrino.GetField("Speed"));
-                AGVRouteEntity a = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = 0 };
-                AGVRouteArchiveEntity en = new AGVRouteArchiveEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y };
-                this.BusinessLogic.AGVRouteProvider.AddAGVRoute(null, a);
-                this.BusinessLogic.AGVRouteArchiveProvider.AddAGVRoute(null, en);
+                byte status = Convert.ToByte(neutrino.GetField("Status"));
+                var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status };
+                if (this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.ContainsKey(agvid))
+                {
+                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute[agvid] = tmp;
+                }
+                else
+                {
+                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.Add(agvid, tmp);
+                }
+
+                //AGVRouteEntity a = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status };
+                //AGVRouteArchiveEntity en = new AGVRouteArchiveEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y };
+                //this.BusinessLogic.AGVRouteProvider.AddAGVRoute(null, a);
+                //this.BusinessLogic.AGVRouteArchiveProvider.AddAGVRoute(null, en);
             }
             catch (Exception e)
             {

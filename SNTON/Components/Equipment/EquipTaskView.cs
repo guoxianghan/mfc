@@ -11,6 +11,8 @@ using System.Reflection;
 using System.Xml;
 using VI.MFC.Logging;
 using SNTON.Entities.DBTables.AGV;
+using VI.MFC.Utils;
+using SNTON.Constants;
 
 namespace SNTON.Components.Equipment
 {
@@ -19,7 +21,8 @@ namespace SNTON.Components.Equipment
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const string EntityDbTable = "EquipTaskViewEntity";
         private const string DatabaseDbTable = "dbo.EquipTaskView";
-
+        public List<EquipTaskViewEntity> RealTimeEquipTaskStatus { get; set; }
+        private VIThreadEx thread_realtimeequiptask;
         // only for unittest
         //private readonly Dictionary<long, EmployeeEnt> employeeList = new Dictionary<long, EmployeeEnt>();
 
@@ -40,7 +43,11 @@ namespace SNTON.Components.Equipment
         /// </summary>
         public EquipTaskView()
         {
-
+            thread_realtimeequiptask = new VIThreadEx(RealTimeTask, null, "thread for reading realtimeequiptask ", SNTONConstants.ReadingCacheInternal);
+        }
+        void RealTimeTask()
+        {
+            RealTimeEquipTaskStatus = GetEquipTaskViewEntities($"[STATUS] IN (0,1,2,3,4,5,6,10)", null);
         }
         /// <summary>
         /// PLACEHOLDER: Please extend if required.
@@ -73,6 +80,7 @@ namespace SNTON.Components.Equipment
         /// </summary>
         protected override void StartInternal()
         {
+            thread_realtimeequiptask.Start();
             base.StartInternal();//start the cleanup thread
             logger.InfoMethod(EntityDbTable + " broker started.");
         }

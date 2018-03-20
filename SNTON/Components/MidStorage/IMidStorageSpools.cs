@@ -20,6 +20,6 @@ namespace SNTON.Components.MidStorage
         MidStorageSpoolsEntity GetMidStorageById(int storageid, int id, IStatelessSession session);
         List<MidStorageSpoolsEntity> GetMidStorages(string sql, IStatelessSession session);
         int UpdateMidStore(IStatelessSession session, params MidStorageSpoolsEntity[] mids);
-        //void UpdateMidStore(IStatelessSession session, MidStorageSpoolsEntity[] midStorageSpoolsEntity);
+        List<MidStorageSpoolsEntity> RealTimeMidStoreCache { get; set; }
     }
 }

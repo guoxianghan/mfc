@@ -418,7 +418,7 @@ namespace SNTON.BusinessLogic
             //Console.WriteLine("storagearea:" + storagearea);
             MidStorageBaseResponse obj = new MidStorageBaseResponse();
             List<MidStorageSpoolsEntity> list = new List<MidStorageSpoolsEntity>();
-            list = this.MidStorageSpoolsProvider.GetMidStorageByArea((short)storagearea, null);
+            list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == (short)storagearea);
             if (list != null)
                 foreach (var item in list)
                 {
@@ -444,7 +444,7 @@ namespace SNTON.BusinessLogic
         {
             MidStorageDetailResponse obj = new MidStorageDetailResponse();
             int hours = this.SystemParametersProvider.GetSystemParametersSpoolTimeOut(null);
-            var list = this.MidStorageSpoolsProvider.GetMidStorageByArea((short)storagearea, null);
+            var list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == (short)storagearea);
             list = list.OrderBy(x => x.SeqNo).ToList();
             foreach (var item in list)
             {
@@ -512,8 +512,8 @@ namespace SNTON.BusinessLogic
         public MidStorageCountResponse MidStorageDescription(int areaid)
         {
             MidStorageCountResponse obj = new MidStorageCountResponse();
-            var li = this.MidStorageProvider.GetMidStorageAccount(null);
-            var products = this.ProductProvider.GetAllProductEntity(null);
+            var li = this.MidStorageProvider.MidStorageAccountCache;
+            var products = this.ProductProvider.PruductCache;
             //li = li.FindAll(x => x != null);
             //var d = li.GroupBy(x => x.StorageArea, (y, z) => z.GroupBy(x => x.Length));
             li = li.FindAll(x => x.Length != 0 && !string.IsNullOrEmpty(x.StructBarCode) && !string.IsNullOrEmpty(x.Const));
@@ -594,7 +594,7 @@ namespace SNTON.BusinessLogic
             //int hours = this.SystemParametersProvider.GetSystemParametersSpoolTimeOut(null);
             MidStorageInfoResponse obj = new MidStorageInfoResponse();
             //var list = this.MidStorageProvider.GetMidStorageByArea((short)storagearea, null);
-            var list = this.MidStorageSpoolsProvider.GetMidStorageByArea((short)storagearea, null);
+            var list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == storagearea);
             foreach (var item in list)
             {
                 var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageInfoDataUI() { Id = item.Id };
@@ -809,8 +809,8 @@ namespace SNTON.BusinessLogic
             //dic = getdic(); 
 
             EquipConfigStatusResponse obj = new EquipConfigStatusResponse();
-            var equip = this.EquipConfigProvider.GetEquipConfigByPlantNo(3, null);
-            var equiptsks = this.EquipTaskViewProvider.GetEquipTaskViewEntities($"[PlantNo]={plantno} AND [STATUS] IN (0,1,2,3,4,5,6,10) AND AGVStatus<=17", null);
+            var equip = this.EquipConfigProvider._AllEquipConfigList.FindAll(x => x.PlantNo == plantno);
+            var equiptsks = this.EquipTaskViewProvider.RealTimeEquipTaskStatus.FindAll(x => x.PlantNo == plantno && x.AGVStatus <= 20);
             if (equip != null)
                 foreach (var item in equip)
                 {
@@ -877,14 +877,14 @@ namespace SNTON.BusinessLogic
         {
             //0初始化EquipTask,1创建AGVTask和龙门Task,2正在抓取,3,抓取完毕,4等待调度AGV,5已调度AGV,6AGV运行中,7任务完成(拉空论或满轮),8任务失败,9已通知地面滚筒创建好任务,10库里单丝不够
             EquipTaskStatusResponse obj = new EquipTaskStatusResponse();
-            var equip = this.EquipConfigProvider.GetEquipConfigByPlantNo(3, null);
+            var equip = this.EquipConfigProvider._AllEquipConfigList.FindAll(x => x.PlantNo == PlantNo);
             string stor = "";
             if (storageareaid == 3)
                 stor = "'3'";
             else if (storageareaid == 1 || storageareaid == 2)
                 stor = "'12'";
             else stor = "'3','12'";
-            var equiptsks = this.EquipTaskViewProvider.GetEquipTaskViewEntities("[PlantNo]=3 AND [StorageArea]IN (" + stor + ") AND [STATUS] IN (0,1,2,3,4,5,6,10)", null);
+            var equiptsks = this.EquipTaskViewProvider.RealTimeEquipTaskStatus.FindAll(x => x.PlantNo == PlantNo && x.StorageArea == stor);
             foreach (var item in equiptsks)
             {
                 var d = new EquipTaskStatusDataUI() { Length = item.Length, AGVRoute = item.AGVRoute, Created = item.Created, EquipControllerId = item.EquipContollerId, EquipTaskID = item.Id, PlantNo = item.PlantNo, ProductType = item.ProductType, Status = item.Status, StorageArea = item.StorageArea, Supply1 = item.Supply1, TaskGuid = item.TaskGuid, TaskLevel = item.TaskLevel, TaskType = item.TaskType, AGVID = item.AGVId.ToString() };
@@ -1143,11 +1143,11 @@ namespace SNTON.BusinessLogic
         public AGVRouteResponse RealTimeAGVRoute()
         {
             AGVRouteResponse obj = new AGVRouteResponse();
-            var tmp = this.AGVRouteProvider.GetAllAGVRute();
+            var tmp = this.AGVRouteProvider.RealTimeAGVRute;
             if (tmp != null)
                 foreach (var item in tmp)
                 {
-                    obj.data.Add(new AGVRouteDataUI() { agvid = item.AGVId, id = item.Id, x = item.X.Trim(), y = item.Y.Trim(), Status = item.Status });
+                    obj.data.Add(new AGVRouteDataUI() { agvid = item.Value.AGVId, id = item.Value.Id, x = item.Value.X.Trim(), y = item.Value.Y.Trim(), Status = item.Value.Status });
                 }
             return obj;
         }
@@ -1239,7 +1239,7 @@ namespace SNTON.BusinessLogic
         public ProductResponse GetProduct()
         {
             ProductResponse obj = new ProductResponse();
-            var list = this.ProductProvider.GetAllProductEntity();
+            var list = this.ProductProvider.PruductCache;
             if (list != null)
                 foreach (var item in list)
                 {

@@ -12,8 +12,9 @@ namespace SNTON.Components.Equipment
     {
         ProductEntity GetProductEntityByID(long id, IStatelessSession session = null);
         List<ProductEntity> GetAllProductEntity(IStatelessSession session = null);
-        List<ProductEntity> Products { get; set; }
+        
         int UpdateEntity(IStatelessSession session, params ProductEntity[] products);
+        List<ProductEntity> PruductCache { get; set; }
     }
 }
 

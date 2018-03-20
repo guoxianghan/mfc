@@ -53,9 +53,9 @@ namespace SNTON.Components.ComLogic
         {
             //this.Parser
             //   this.CommModule.Parser 
-            thread_RuningRobotArmTask = new VIThreadEx(RuningRobotArmTask, null, "RuningRobotArmTask", 10);
+            thread_RuningRobotArmTask = new VIThreadEx(RuningRobotArmTask, null, "RuningRobotArmTask", 1000);
             //thread_CheckRobotArmTask = new VIThreadEx(CheckRobotArmTask, null, "CheckRobotArmTask", 1000);
-            thread_ReadDervice = new VIThreadEx(ReadDervice, null, "ReadDervice Status", 400);
+            thread_ReadDervice = new VIThreadEx(ReadDervice, null, "ReadDervice Status", 1000);
             thread_warninginfo = new VIThreadEx(ReadWarningInfo, null, "ReadMidStoreRobotArmWarnning", 5000);
         }
         protected override void StartInternal()

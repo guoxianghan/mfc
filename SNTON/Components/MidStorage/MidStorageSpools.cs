@@ -11,6 +11,8 @@ using VI.MFC.Logging;
 using NHibernate;
 using SNTON.Entities.DBTables.MidStorage;
 using SNTON.Entities.DBTables.Spools;
+using VI.MFC.Utils;
+using SNTON.Constants;
 
 namespace SNTON.Components.MidStorage
 {
@@ -19,10 +21,14 @@ namespace SNTON.Components.MidStorage
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const string EntityDbTable = "MidStorageSpoolsEntity";
         private const string DatabaseDbTable = "MidStorageSpools";
-
+        private VIThreadEx thread_realtimeequiptask;
         // only for unittest
         //private readonly Dictionary<long, EmployeeEnt> employeeList = new Dictionary<long, EmployeeEnt>();
-
+        public List<MidStorageSpoolsEntity> RealTimeMidStoreCache { get; set; }
+        void MidStoreCache()
+        {
+            RealTimeMidStoreCache = GetMidStorages("", null);
+        }
         #region Class constructor
         /// <summary>
         /// Static class creation
@@ -40,7 +46,7 @@ namespace SNTON.Components.MidStorage
         /// </summary>
         public MidStorageSpools()
         {
-
+            thread_realtimeequiptask = new VIThreadEx(MidStoreCache, null, "thread for reading MidStoreCache ", SNTONConstants.ReadingCacheInternal);
         }
         /// <summary>
         /// PLACEHOLDER: Please extend if required.
@@ -73,6 +79,7 @@ namespace SNTON.Components.MidStorage
         /// </summary>
         protected override void StartInternal()
         {
+            thread_realtimeequiptask.Start();
             base.StartInternal();//start the cleanup thread
             logger.InfoMethod(EntityDbTable + " broker started.");
         }
@@ -173,8 +180,10 @@ namespace SNTON.Components.MidStorage
             {
                 protData.EnterReadLock();
                 #region MyRegion
-                
-                string sqls = "SELECT * FROM " + DatabaseDbTable + " WHERE ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted + " AND " + sql;
+
+                string sqls = "SELECT * FROM " + DatabaseDbTable + " WHERE ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted;
+                if (!string.IsNullOrEmpty(sql))
+                    sqls = sqls + " AND " + sql;
                 var tmp = ReadSqlList<MidStorageSpoolsEntity>(session, sqls);
                 if (tmp != null && tmp.Any())
                 {

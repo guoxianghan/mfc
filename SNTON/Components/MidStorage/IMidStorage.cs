@@ -35,9 +35,10 @@ namespace SNTON.Components.MidStorage
         /// <param name="theSession"></param>
         /// <returns></returns>
         IList<long> GetSpoolIdListInMidStoragePosOccuiped(int midStorageId, IStatelessSession theSession);
-        MidStorageEntity GetMidStorage(string sql, IStatelessSession session); 
+        MidStorageEntity GetMidStorage(string sql, IStatelessSession session);
         int ClearMidStoreNo(IStatelessSession session, int storeageareaid, params int[] ids);
         int UpdateMidStore(IStatelessSession session, params MidStorageEntity[] mids);
         List<MidStorageSpoolsCountEntity> GetMidStorageAccount(IStatelessSession session);
+        List<MidStorageSpoolsCountEntity> MidStorageAccountCache { get; set; }
     }
 }

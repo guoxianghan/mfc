@@ -12,6 +12,10 @@ namespace SNTON.Constants
     /// </summary>
     public static class SNTONConstants
     {
+        /// <summary>
+        /// 读取缓存的时间间隔
+        /// </summary>
+        public const int ReadingCacheInternal = 3000;
         public class Splitors
         {
             /// <summary>

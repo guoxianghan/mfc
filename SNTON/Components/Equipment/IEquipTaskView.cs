@@ -14,5 +14,7 @@ namespace SNTON.Components.Equipment
         int Update(IStatelessSession session, params EquipTaskViewEntity[] equiptsks);
         int UpdateStatus(IStatelessSession session, byte status, long[] ids);
         List<EquipTaskViewEntity> GetEquipTaskViewNotDeleted(string sql, IStatelessSession session = null);
+        List<EquipTaskViewEntity> RealTimeEquipTaskStatus { get; set; }
+
     }
 }

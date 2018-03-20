@@ -12,6 +12,7 @@ using VI.MFC.Logging;
 using NHibernate;
 using SNTON.Entities.DBTables.Spools;
 using SNTON.Constants;
+using VI.MFC.Utils;
 
 namespace SNTON.Components.MidStorage
 {
@@ -20,6 +21,7 @@ namespace SNTON.Components.MidStorage
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const string EntityDbTable = "MidStorageEntity";
         private const string DatabaseDbTable = "SNTON.MidStorage";
+        private VIThreadEx thread_realtimeequiptask;
         private const string MIDSTORAGECOUNT = @"SELECT  
                                                  [StorageArea] 
                                                 ,[Length]
@@ -32,7 +34,7 @@ namespace SNTON.Components.MidStorage
 
         // only for unittest
         //private readonly Dictionary<long, EmployeeEnt> employeeList = new Dictionary<long, EmployeeEnt>();
-
+        public List<MidStorageSpoolsCountEntity> MidStorageAccountCache { get; set; }
         #region Class constructor
         /// <summary>
         /// Static class creation
@@ -50,7 +52,7 @@ namespace SNTON.Components.MidStorage
         /// </summary>
         public MidStorage()
         {
-
+            thread_realtimeequiptask = new VIThreadEx(ReadMidStorageAccountCache, null, "thread for reading ReadMidStorageAccountCache ", SNTONConstants.ReadingCacheInternal);
         }
         /// <summary>
         /// PLACEHOLDER: Please extend if required.
@@ -84,6 +86,7 @@ namespace SNTON.Components.MidStorage
         protected override void StartInternal()
         {
             base.StartInternal();//start the cleanup thread
+            thread_realtimeequiptask.Start();
             logger.InfoMethod(EntityDbTable + " broker started.");
         }
 
@@ -95,7 +98,10 @@ namespace SNTON.Components.MidStorage
         {
         }
         #endregion
-
+        void ReadMidStorageAccountCache()
+        {
+            MidStorageAccountCache = GetMidStorageAccount(null);
+        }
         public int UpdateMidStore(IStatelessSession session, params MidStorageSpoolsEntity[] mids)
         {
             int i = 0;
@@ -373,7 +379,7 @@ namespace SNTON.Components.MidStorage
             return ret;
         }
 
-        
+
 
         public int UpdateMidStore(IStatelessSession session, params MidStorageEntity[] mids)
         {
@@ -481,7 +487,7 @@ namespace SNTON.Components.MidStorage
             return ret;
         }
 
-        public int ClearMidStoreNo(IStatelessSession session,int storeageareaid, params int[]  seqnos)
+        public int ClearMidStoreNo(IStatelessSession session, int storeageareaid, params int[] seqnos)
         {
             int i = 0;
             if (session == null)

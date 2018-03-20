@@ -8,8 +8,12 @@ using System.Threading.Tasks;
 
 namespace SNTON.Components.Equipment
 {
-   public interface IEquipTaskView2
+    public interface IEquipTaskView2
     {
         List<EquipTaskView2Entity> GetEquipTaskView2(string sql, IStatelessSession session);
+        /// <summary>
+        /// 实时呼叫缓存
+        /// </summary>
+        //List<EquipTaskView2Entity> RealTimeCallInfo { get; set; }
     }
 }

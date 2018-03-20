@@ -392,7 +392,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
         [WebInvoke(UriTemplate = "Product/SaveProductLRRatio", Method = "POST",
                ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
         [ServiceKnownType(typeof(ResponseDataBase))]
-        object SaveProductLRRadio(int id, string lrratio, int seqno,byte IsWarnning);
+        object SaveProductLRRadio(int id, string lrratio, int seqno,byte iswarning);
 
         #endregion
     }

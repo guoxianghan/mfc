@@ -783,7 +783,7 @@ namespace SNTON.Components.ComLogic
 
             bool islevel = true;//是否满足优先级
             List<MESSystemSpoolsEntity> list = barcodeLRQueue.ToList();
-            var levellist = this.BusinessLogic.ProductProvider.GetAllProductEntity(null);
+            var levellist = this.BusinessLogic.ProductProvider.PruductCache;
             islevel = CheckSpoolIsLevel(spool, levellist);
             var l = from i in list
                     group new MESSystemSpoolsEntity() { StructBarCode = i.StructBarCode.Trim(), Length = i.Length, BobbinNo = i.BobbinNo, BobbinNo2 = i.BobbinNo2, CName = i.CName, Const = i.Const, FdTagNo = i.FdTagNo.Trim(), GroupID = i.GroupID, InStoreToOutStoreage = i.InStoreToOutStoreage, SeqNo = i.SeqNo, SpoolId = i.SpoolId }

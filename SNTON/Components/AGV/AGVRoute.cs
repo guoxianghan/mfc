@@ -86,7 +86,7 @@ namespace SNTON.Components.AGV
         {
         }
         #endregion
-
+        public Dictionary<short, AGVRouteEntity> RealTimeAGVRute { get; set; } = new Dictionary<short, AGVRouteEntity>();
         public List<AGVRouteEntity> GetAGVRoute(long agvId, IStatelessSession session = null)
         {
             List<AGVRouteEntity> ret = null;

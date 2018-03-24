@@ -79,8 +79,10 @@
         <FIELD Name="DestLocations01" Type="Custom" Pos="248" Length="160" Custom="^\s+[a-zA-Z0-9]*\s+$" Leadchar=" "></FIELD>
 
         <FIELD Name="Speed" Type="Alphanumeric" Pos="51" Length="3" Leadchar=" "></FIELD>
-        <FIELD Name="CurrentX" Type="Alphanumeric" Pos="54" Length="6" Leadchar=" "></FIELD>
-        <FIELD Name="CurrentY" Type="Alphanumeric" Pos="60" Length="6" Leadchar=" "></FIELD>
+        <FIELD Name="CurrentX" Type="Custom" Pos="54" Length="6" Leadchar=" " Custom="^[-]{0,1}[-0123456789]*$"></FIELD>
+        <FIELD Name="CurrentY" Type="Custom" Pos="60" Length="6" Leadchar=" " Custom="^[-]{0,1}[-0123456789]*$"></FIELD>
+        <FIELD Name="StatusAGVRoute" Type="Alphanumeric" Pos="66" Length="2" Custom="^[0-9]*\s+" Leadchar="0"></FIELD>
+        <FIELD Name="TaskNoAGVRoute" Type="Custom" Pos="68" Length="16" Custom="[a-zA-Z0-9]*" Leadchar=" "></FIELD>
 
 
 
@@ -223,6 +225,8 @@
             <FIELD Name="Speed"></FIELD>
             <FIELD Name="CurrentX"></FIELD>
             <FIELD Name="CurrentY"></FIELD>
+            <FIELD Name="StatusAGVRoute"></FIELD>
+            <FIELD Name="TaskNoAGVRoute"></FIELD>
             <!--<FIELD Name="CheckSum"></FIELD>-->
           </FIELDS>
         </TELEGRAM>

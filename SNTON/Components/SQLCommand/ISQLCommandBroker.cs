@@ -43,5 +43,6 @@ namespace SNTON.Components.SQLCommand
         bool ClearInStoreageLine(List<RobotArmTaskSpoolEntity> armtsks, List<MidStorageEntity> mids, IStatelessSession session = null);
 
         bool ExceptionRobotArmTask(List<RobotArmTaskEntity> armtsks, List<MidStorageEntity> mids, IStatelessSession session = null);
+        bool ClearInStoreToOutStoreLine(List<MidStorageEntity> updatemids, AGVTasksEntity updateagvtsk, List<RobotArmTaskEntity> updatearmtsks, List<InStoreToOutStoreSpoolEntity> updateoutspools, IStatelessSession session = null);
     }
 }

@@ -41,6 +41,7 @@ using SNTON.WebServices.UserInterfaceBackend.Responses.RobotArmTask;
 using System.IO;
 using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
+using SNTON.Entities.DBTables.InStoreToOutStore;
 
 namespace SNTON.BusinessLogic
 {
@@ -878,13 +879,14 @@ namespace SNTON.BusinessLogic
             //0初始化EquipTask,1创建AGVTask和龙门Task,2正在抓取,3,抓取完毕,4等待调度AGV,5已调度AGV,6AGV运行中,7任务完成(拉空论或满轮),8任务失败,9已通知地面滚筒创建好任务,10库里单丝不够
             EquipTaskStatusResponse obj = new EquipTaskStatusResponse();
             var equip = this.EquipConfigProvider._AllEquipConfigList.FindAll(x => x.PlantNo == PlantNo);
-            string stor = "";
+            List<EquipTaskViewEntity> equiptsks = new List<EquipTaskViewEntity>();
+
             if (storageareaid == 3)
-                stor = "'3'";
+                equiptsks = this.EquipTaskViewProvider.RealTimeEquipTaskStatus.FindAll(x => x.PlantNo == PlantNo && x.StorageArea == storageareaid.ToString());
             else if (storageareaid == 1 || storageareaid == 2)
-                stor = "'12'";
-            else stor = "'3','12'";
-            var equiptsks = this.EquipTaskViewProvider.RealTimeEquipTaskStatus.FindAll(x => x.PlantNo == PlantNo && x.StorageArea == stor);
+                equiptsks = this.EquipTaskViewProvider.RealTimeEquipTaskStatus.FindAll(x => x.PlantNo == PlantNo && x.StorageArea == "12");
+            else
+                equiptsks = this.EquipTaskViewProvider.RealTimeEquipTaskStatus.FindAll(x => x.PlantNo == PlantNo);
             foreach (var item in equiptsks)
             {
                 var d = new EquipTaskStatusDataUI() { Length = item.Length, AGVRoute = item.AGVRoute, Created = item.Created, EquipControllerId = item.EquipContollerId, EquipTaskID = item.Id, PlantNo = item.PlantNo, ProductType = item.ProductType, Status = item.Status, StorageArea = item.StorageArea, Supply1 = item.Supply1, TaskGuid = item.TaskGuid, TaskLevel = item.TaskLevel, TaskType = item.TaskType, AGVID = item.AGVId.ToString() };
@@ -1144,11 +1146,19 @@ namespace SNTON.BusinessLogic
         {
             AGVRouteResponse obj = new AGVRouteResponse();
             var tmp = this.AGVRouteProvider.RealTimeAGVRute;
-            if (tmp != null)
-                foreach (var item in tmp)
-                {
-                    obj.data.Add(new AGVRouteDataUI() { agvid = item.Value.AGVId, id = item.Value.Id, x = item.Value.X.Trim(), y = item.Value.Y.Trim(), Status = item.Value.Status });
-                }
+            //if (tmp != null)
+            //    foreach (var item in tmp)
+            //    {
+            //        obj.data.Add(new AGVRouteDataUI() { agvid = item.Value.AGVId, id = item.Value.Id, x = item.Value.X.Trim(), y = item.Value.Y.Trim(), Status = item.Value.Status, CreateTime = item.Value.Created });
+            //    }
+            for (byte i = 1; i <= 30; i++)
+            {
+                if (tmp.ContainsKey(i))
+                    obj.data.Add(new AGVRouteDataUI() { agvid = tmp[i].AGVId, id = tmp[i].Id, x = tmp[i].X.Trim(), y = tmp[i].Y.Trim(), Status = tmp[i].Status, CreateTime = tmp[i].Created });
+                else
+                    obj.data.Add(new AGVRouteDataUI { agvid = i, CreateTime = DateTime.Now, x = "0", y = "0" });
+            }
+            obj.data = obj.data.OrderBy(x => x.agvid).ToList();
             return obj;
         }
 
@@ -1229,7 +1239,55 @@ namespace SNTON.BusinessLogic
         public ResponseDataBase SetAGVTaskStatus(long id, int status)
         {
             ResponseDataBase obj = new ResponseDataBase();
-            bool r = this.AGVTasksProvider.UpdateStatus(id, status);
+            bool r = false;
+            if (status == 2)
+                r = this.AGVTasksProvider.UpdateStatus(id, status);
+            else if (status == -1)
+            {//清直通线出库任务
+             //清龙门任务,清暂存库库位
+                #region MyRegion
+                var agvtsk = this.AGVTasksProvider.GetAGVTaskEntityById(id, null);
+                List<InStoreToOutStoreSpoolEntity> outstore = new List<InStoreToOutStoreSpoolEntity>();
+                outstore = this.InStoreToOutStoreSpoolProvider.GetInStoreToOutStoreSpoolEntity($"GUID='{agvtsk.TaskGuid.ToString()}'", null);
+                outstore.ForEach(x => x.IsDeleted = 1);
+                outstore.ForEach(x => x.Status = -1);
+                agvtsk.IsDeleted = 1;
+                agvtsk.Status = 64;
+                var armtsks = this.RobotArmTaskProvider.GetRobotArmTasks("[TaskGroupGUID] in (" + agvtsk.TaskGuid.ToString() + ")", null);
+                List<MidStorageEntity> mids = new List<MidStorageEntity>();
+                if (armtsks == null)
+                    armtsks = new List<RobotArmTaskEntity>();
+                armtsks = armtsks.FindAll(x => x.SpoolStatus == 0);
+                foreach (var item in armtsks)
+                {
+                    item.IsDeleted = 1;
+                    item.TaskStatus = 8;
+                }
+                StringBuilder seqno = new StringBuilder();
+                armtsks.ForEach(x => seqno.Append(x.FromWhere + ","));
+                if (seqno.Length != 0)
+                {
+                    mids = this.MidStorageProvider.GetMidStorages($"StorageArea ={armtsks[0].StorageArea} AND FromWhere IN({seqno.ToString().Trim(',')})", null);
+                    #region MyRegion
+                    if (mids != null)
+                        foreach (var item in mids)
+                        {
+                            if (item.IsOccupied == 4)
+                                item.IsOccupied = 1;
+                            else if (item.IsOccupied == 5)
+                            {
+                                item.IsOccupied = 0;
+                                item.IdsList = "";
+                            }
+                        }
+                    #endregion
+                }
+                r = this.SqlCommandProvider.ClearInStoreToOutStoreLine(mids, agvtsk, armtsks, outstore, null);
+                if (r)
+                    obj.data.Add("清除直通线出库任务成功");
+                else obj.data.Add("清除直通线出库任务失败");
+                #endregion
+            }
             if (r)
                 obj.data.Add("发送指令成功");
             else obj.data.Add("发送指令失败");

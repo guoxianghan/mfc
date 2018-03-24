@@ -84,6 +84,10 @@ namespace SNTON.Components.AGV
         /// </summary>
         public override void ReadBrokerData()
         {
+            for (byte i = 1; i <= 30; i++)
+            {
+                RealTimeAGVRute.Add(i, new AGVRouteEntity { AGVId = i, Created = DateTime.Now, X = "0", Y = "0" });
+            }
         }
         #endregion
         public Dictionary<short, AGVRouteEntity> RealTimeAGVRute { get; set; } = new Dictionary<short, AGVRouteEntity>();

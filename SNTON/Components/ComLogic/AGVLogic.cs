@@ -37,7 +37,7 @@ namespace SNTON.Components.ComLogic
             //By Song@2018.01.14.
             //thread_CreateAGVTask = new VIThreadEx(CreateAGVTask, null, "Create AGV task Send", 2000);
             thread_AliveReq = new VIThreadEx(AliveReq, null, "send AliveAck", 2000);
-            thread_AGVStatusReq = new VIThreadEx(AGVStatusReq, null, "send AGVStatusReq", 10000);
+            thread_AGVStatusReq = new VIThreadEx(AGVStatusReq, null, "send AGVStatusReq", 1000);
         }
         protected override void StartInternal()
         {
@@ -519,10 +519,15 @@ namespace SNTON.Components.ComLogic
             {
                 int PlantNo = Convert.ToInt32(neutrino.GetField("PlantNo"));
                 short agvid = Convert.ToInt16(neutrino.GetField("AGVID"));
-                string x = neutrino.GetField("CurrentX");
-                string y = neutrino.GetField("CurrentY");
+                string x = neutrino.GetField("CurrentX").TrimStart('0');
+                string y = neutrino.GetField("CurrentY").TrimStart('0');
+                x = string.IsNullOrEmpty(x) ? "0" : x;
+                y = string.IsNullOrEmpty(y) ? "0" : y;
                 short speed = Convert.ToInt16(neutrino.GetField("Speed"));
-                byte status = Convert.ToByte(neutrino.GetField("Status"));
+                byte status = 0;
+                status = Convert.ToByte(neutrino.GetField("StatusAGVRoute"));
+                long TaskNo = 0;
+                TaskNo = long.Parse(neutrino.GetField("TaskNoAGVRoute"), System.Globalization.NumberStyles.HexNumber);
                 var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status };
                 if (this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.ContainsKey(agvid))
                 {

@@ -265,5 +265,35 @@ namespace SNTON.Components.SQLCommand
             }
             return ret;
         }
+
+        public bool ClearInStoreToOutStoreLine(List<MidStorageEntity> updatemids, AGVTasksEntity updateagvtsk, List<RobotArmTaskEntity> updatearmtsks, List<InStoreToOutStoreSpoolEntity> updateoutspools, IStatelessSession session = null)
+        {
+            bool ret = false;
+            if (session == null)
+            {
+                ret = BrokerDelegate(() => ClearInStoreToOutStoreLine(updatemids, updateagvtsk, updatearmtsks, updateoutspools,session), ref session);
+                return ret;
+            }
+            try
+            {
+                protData.EnterWriteLock();
+                
+                Update(session, updateagvtsk);
+                Update(session, updateoutspools);
+                Update(session, updatearmtsks);
+                Update(session, updatemids);
+                ret = true;
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+                logger.ErrorMethod("清除直通线功能失败", ex);
+            }
+            finally
+            {
+                protData.ExitWriteLock();
+            }
+            return ret;
+        }
     }
 }

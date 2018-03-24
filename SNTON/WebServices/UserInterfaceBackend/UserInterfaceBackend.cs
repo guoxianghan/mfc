@@ -807,9 +807,9 @@ namespace SNTON.WebServices.UserInterfaceBackend
             AGVRouteResponse obj = new AGVRouteResponse();
             try
             {
-                //logger.InfoMethod($"AGV实时轨迹RealTimeAGVRoute, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                logger.InfoMethod($"start with AGV实时轨迹RealTimeAGVRoute, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
                 obj = BusinessLogic.RealTimeAGVRoute();
-                //logger.InfoMethod($"end with AGV实时轨迹RealTimeAGVRoute, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                logger.InfoMethod($"end with AGV实时轨迹RealTimeAGVRoute, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
             catch (Exception ex)
             {
@@ -885,7 +885,9 @@ namespace SNTON.WebServices.UserInterfaceBackend
 
             try
             {
+                logger.InfoMethod($"start with RunningAGVTask, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
                 obj = BusinessLogic.RunningAGVTask();
+                logger.InfoMethod($"end with RunningAGVTask, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
             catch (Exception ex)
             {
@@ -915,7 +917,9 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 //logger.InfoMethod($"重发AGV指令SetAGVTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                logger.InfoMethod($"start with GetProduct, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
                 obj = BusinessLogic.GetProduct();
+                logger.InfoMethod($"end with GetProduct, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
             catch (Exception ex)
             {
@@ -924,7 +928,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             return obj;
         }
 
-        public object SaveProductLRRadio(int id, string lrratio, int seqno,byte IsWarnning)
+        public object SaveProductLRRadio(int id, string lrratio, int seqno, byte IsWarnning)
         {
             ResponseDataBase obj = new ResponseDataBase();
             try

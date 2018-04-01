@@ -128,10 +128,13 @@ namespace SNTON.BusinessLogic
             return mess;
         }
 
-        public ResponseBase SystemParameterSave(SystemParametersRequest request)
+        public ResponseDataBase SystemParameterSave(SystemParametersRequest request)
         {
-            ResponseBase res = new ResponseBase();
-            this.SystemParametersProvider.SaveSystemParameters(request, null);
+            ResponseDataBase res = new ResponseDataBase();
+            int i = this.SystemParametersProvider.SaveSystemParameters(request, null);
+            if (i == 0)
+                res.data.Add("保存失败");
+            else res.data.Add("保存成功");
             return res;
         }
 

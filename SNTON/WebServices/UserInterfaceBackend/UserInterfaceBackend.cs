@@ -120,7 +120,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
                 ReceiveTimeout = new TimeSpan(0, 0, 30),
                 ReaderQuotas = { MaxArrayLength = 5000000 }
             };
-
+            
             InitServices(host.AddServiceEndpoint(typeof(IUserInterfaceBackend), binding, ""));
 
             //            host.AddServiceEndpoint(typeof(IUserInterfaceBackend), new WebHttpBinding(), "");
@@ -130,7 +130,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
         {
             foreach (var behavior in endpoint.Contract.Operations.Select(operation => operation.Behaviors.Find<DataContractSerializerOperationBehavior>()))
             {
-                behavior.MaxItemsInObjectGraph = 2147483647;
+                behavior.MaxItemsInObjectGraph = 2147483647;                
             }
         }
         #endregion Initialization

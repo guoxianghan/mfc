@@ -18,4 +18,8 @@ namespace SNTON.WebServices.UserInterfaceBackend.Responses.AGV
     {
         public List<AGVRouteDataUI> data = new List<AGVRouteDataUI>();
     }
+    public class AGVRouteListResponse : ResponseBase
+    {
+        public Dictionary<short, List<AGVRouteDataUI>> data = new Dictionary<short, List<AGVRouteDataUI>>();
+    }
 }

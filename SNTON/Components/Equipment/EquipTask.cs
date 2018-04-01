@@ -210,7 +210,7 @@ namespace SNTON.Components.Equipment
             try
             {
                 protData.EnterWriteLock();
-                string sql = $"UPDATE {DatabaseDbTable} SET ISDELETED=1 WHERE CREATED<='{olderThan.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss")}' AND [Status] IN (0,1,2,3,4,5,6,9,10) AND  ISDELETED=0";
+                string sql = $"UPDATE {DatabaseDbTable} SET ISDELETED=1 WHERE CREATED<='{olderThan.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss")}' AND [Status] IN (0,8,10,12) AND  ISDELETED=0";
                 int result = RunSqlStatement(theSession, sql);
             }
             catch (Exception ex)

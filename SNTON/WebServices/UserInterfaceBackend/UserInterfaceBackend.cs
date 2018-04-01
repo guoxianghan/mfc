@@ -36,6 +36,7 @@ using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
 
 namespace SNTON.WebServices.UserInterfaceBackend
 {
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall, ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class UserInterfaceBackend : VIWebServiceHoster, IUserInterfaceBackend
     {
 
@@ -173,7 +174,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             MessageResponse obj = null;
             try
             {
-                logger.InfoMethod($"报警信息查询MessageSearch, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                logger.InfoMethod($"报警信息查询MessageSearch, searchRequest: {JsonConvert.SerializeObject(searchRequest)} ,time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
                 if ((searchRequest.endTime.HasValue && searchRequest.startTime.HasValue) && ((searchRequest.endTime < searchRequest.startTime)))
                 {
                     var e = new Exception("开始日期不能大于结束日期");
@@ -214,7 +215,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
 
         public object SaveSystemParameter(SystemParametersRequest request)
         {
-            ResponseBase obj = null;
+            ResponseDataBase obj = null;
             try
             {
                 logger.InfoMethod($"SaveSystemParameter request data is {JsonConvert.SerializeObject(request)}, time stamp: {DateTime.Now.ToString()}");
@@ -223,7 +224,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             }
             catch (Exception ex)
             {
-                obj = ResponseBase.GetResponseByException<ResponseBase>(ex);
+                obj = ResponseBase.GetResponseByException<ResponseDataBase>(ex);
             }
             return obj;
         }
@@ -814,6 +815,22 @@ namespace SNTON.WebServices.UserInterfaceBackend
             catch (Exception ex)
             {
                 obj = ResponseBase.GetResponseByException<AGVRouteResponse>(ex);
+            }
+            return obj;
+
+        }
+        public object RealTimeAGVRouteList()
+        {
+            AGVRouteListResponse obj = new AGVRouteListResponse();
+            try
+            {
+                logger.InfoMethod($"start with AGV实时轨迹RealTimeAGVRouteList, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                obj = BusinessLogic.RealTimeAGVRouteList();
+                logger.InfoMethod($"end with AGV实时轨迹RealTimeAGVRouteList, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<AGVRouteListResponse>(ex);
             }
             return obj;
 

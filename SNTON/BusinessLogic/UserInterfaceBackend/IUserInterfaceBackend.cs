@@ -27,7 +27,7 @@ namespace SNTON.BusinessLogic
         MessageResponse MessageSearch(MessageSearchRequest searchRequest);
         ResponseDataBase MessageSource();
         SystemParametersResponse SystemParameterQuery();
-        ResponseBase SystemParameterSave(SystemParametersRequest request);
+        ResponseDataBase SystemParameterSave(SystemParametersRequest request);
         SpoolsResponse GetSpoolsByBarcode(string barcode);
 
         SpoolsResponse GetSpoolsByMidStorageId(long midStorageId);
@@ -55,6 +55,7 @@ namespace SNTON.BusinessLogic
         AGVConfigInfoResponse GetAGVConfigInfo(string plantno);
         AGVRouteArchiveResponse HistoryAGVRoute(AGVRuteSearchRequest search);
         AGVRouteResponse RealTimeAGVRoute();
+        AGVRouteListResponse RealTimeAGVRouteList();
         AGVTaskResponse RunningAGVTask();
         ResponseDataBase SetAGVTaskStatus(long id, int status);
         ProductResponse GetProduct();

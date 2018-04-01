@@ -21,6 +21,10 @@ namespace SNTON.WebServices.UserInterfaceBackend.Responses.MidStorage
     public class MidStorageCountResponse : ResponseBase
     {
         public List<MidStorageCountDataUI> data { get; set; } = new List<MidStorageCountDataUI>();
+        /// <summary>
+        /// 超时数量
+        /// </summary>
+        public int TimeOutCount { get; set; }
         public int allCount
         {
             get

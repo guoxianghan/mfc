@@ -131,8 +131,9 @@ namespace SNTON.Components.SystemParameters
             return ret;
         }
 
-        public void SaveSystemParameters(SystemParametersRequest request, IStatelessSession session)
+        public int SaveSystemParameters(SystemParametersRequest request, IStatelessSession session)
         {
+            int i = 0;
             if (request == null)
             {
                 //request = new SystemParametersRequest();
@@ -141,39 +142,42 @@ namespace SNTON.Components.SystemParameters
             }
             if (session == null)
             {
-                BrokerDelegate(() => SaveSystemParameters(request, session), ref session);
-                return;
+                i = BrokerDelegate(() => SaveSystemParameters(request, session), ref session);
+                return i;
             }
             try
             {
                 StringBuilder id = new StringBuilder();
                 request?.data?.ForEach(x => id.Append(x.id + ","));
                 if (id.Length == 0)
-                { return; }
+                { return 0; }
                 List<SystemParametersEntity> r = ReadList<SystemParametersEntity>(session, " FROM " + EntityDbTable + " WHERE ID in (" + id.ToString() + ")");
-
-                foreach (var item in r)
-                {
-                    item.Updated = DateTime.Now;
-                    var t = request.data.FirstOrDefault(x => x.id == item.Id);
-                    if (t != null)
-                    {
-                        item.ParameterValue = t.value;
-                    }
-                }
 
                 if (r != null)
                 {
+                    foreach (var item in r)
+                    {
+                        item.Updated = DateTime.Now;
+                        var t = request.data.FirstOrDefault(x => x.id == item.Id);
+                        if (t != null)
+                        {
+                            item.ParameterValue = t.value;
+                        }
+                    }
                     Update(session, r);
-                    logger.InfoMethod(string.Format("Save data  is {0}   SystemParametersEntity  to DB successfully", JsonConvert.SerializeObject(request)));
+                    //logger.InfoMethod(string.Format("Save data  is {0}   SystemParametersEntity  to DB successfully", JsonConvert.SerializeObject(request)));
                 }
                 else
+                {
                     logger.ErrorMethod("Not find  SystemParameters by ID");
-
+                    return 0;
+                }
+                return 1;
             }
             catch (Exception e)
             {
                 logger.ErrorMethod("Failed to save SystemParameters", e);
+                return 0;
             }
         }
 

@@ -363,6 +363,8 @@ namespace SNTON.Components.ComLogic
         void LineCallAGV2(int midline, int seqno = 0)
         {
             string line = "";
+            if (seqno == 0)
+                return;
             if (midline == MidStoreLine.InStoreLine)
             {
                 line = "直通线";

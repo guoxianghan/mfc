@@ -85,7 +85,7 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.RobotArmTask
         public int SeqNo { get; set; }
         public int SpoolSeqNo { get; set; }
         public int StorageArea { get; set; }
-        public RobotArmSpoolDataUI Spool = new RobotArmSpoolDataUI();
+        public List<RobotArmSpoolDataUI> Spools = new List<RobotArmSpoolDataUI>();
     }
 
     public class RobotArmSpoolDataUI
@@ -96,7 +96,7 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.RobotArmTask
         public int SpoolSeqNo { get; set; }
         public string WhoolBarCode { get; set; }
         /// <summary>
-        /// 任务状态:-1失效;0创建;1正在抓取;2抓取完毕;3等待AGV接收;4AGV接收完毕;5抓取失败;6接收失败;7任务失败
+        /// 任务状态: 0待抓取;1正在抓取;2抓取完毕;
         /// </summary>
         public int SpoolStatus { get; set; }
         public int Length { get; set; }

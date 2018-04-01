@@ -32,6 +32,7 @@ namespace SNTON.Components.AGV
         /// <param name="session"></param>
         /// <returns></returns>
         List<AGVRouteEntity> GetAllAGVRute(IStatelessSession session = null);
-        Dictionary<short,AGVRouteEntity> RealTimeAGVRute { get; set; }
+        Dictionary<short, AGVRouteEntity> RealTimeAGVRute { get; set; }
+        Dictionary<short, List<AGVRouteEntity>> RealTimeAGVRute2 { get; set; }
     }
 }

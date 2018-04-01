@@ -28,6 +28,8 @@ namespace SNTON.Components.MidStorage
         void MidStoreCache()
         {
             RealTimeMidStoreCache = GetMidStorages("", null);
+            if (RealTimeMidStoreCache == null)
+                RealTimeMidStoreCache = new List<MidStorageSpoolsEntity>();
         }
         #region Class constructor
         /// <summary>
@@ -46,7 +48,7 @@ namespace SNTON.Components.MidStorage
         /// </summary>
         public MidStorageSpools()
         {
-            thread_realtimeequiptask = new VIThreadEx(MidStoreCache, null, "thread for reading MidStoreCache ", SNTONConstants.ReadingCacheInternal);
+            thread_realtimeequiptask = new VIThreadEx(MidStoreCache, null, "thread for reading MidStoreCache ", 2000);
         }
         /// <summary>
         /// PLACEHOLDER: Please extend if required.

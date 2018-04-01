@@ -6,7 +6,7 @@
       <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
     </PARSER>
     <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="PLC$EXT$SequencerInbound" Enabled="true">
-      <CONFIG Length="10" Padding="1" PaddingChar="0" MinSequence="1" MaxSequence="9999999999" StartSequence="1"></CONFIG>
+      <CONFIG Length="10" Padding="1" PaddingChar="0" MinSequence="1" MaxSequence="30000" StartSequence="1"></CONFIG>
     </SEQUENCEHANDLER>
     <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="PLC$EXT$SequencerOutbound" Enabled="true">
       <CONFIG Length="10" Padding="1" PaddingChar="0" MinSequence="1" MaxSequence="9999999999" StartSequence="1"></CONFIG>
@@ -21,7 +21,7 @@
               BusinessLogicId="BusinessLogic"
               PlantNo="$PlantNo$"
               PLCNo="$PLCNo$"
-              TaskNoSequencerId="TaskNoSequencer">
+              AGVSequencer="PLC$EXT$SequencerInbound">
       </CONFIG>
       <WATCHDOG Enabled="false" TimeoutInSecs="60" TelegramId="AliveReq"  RetriesBeforeDisconnection="3" ReplyTelegramId="AliveAck"></WATCHDOG>
     </LOGIC>

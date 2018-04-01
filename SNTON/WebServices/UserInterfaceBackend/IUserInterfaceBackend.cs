@@ -27,7 +27,7 @@ using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
 
 namespace SNTON.WebServices.UserInterfaceBackend
 {
-    [ServiceContract]
+    [ServiceContract(SessionMode = SessionMode.Allowed)]
     public interface IUserInterfaceBackend
     {
         #region Message functionality
@@ -254,6 +254,10 @@ namespace SNTON.WebServices.UserInterfaceBackend
         ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
         [ServiceKnownType(typeof(AGVRouteResponse))]
         object RealTimeAGVRoute();
+        [WebInvoke(UriTemplate = "AGV/RealTimeAGVRouteList", Method = "GET",
+        ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
+        [ServiceKnownType(typeof(AGVRouteListResponse))]
+        object RealTimeAGVRouteList();
 
 
         [WebInvoke(UriTemplate = "AGV/RunningAGVTask", Method = "GET",
@@ -392,7 +396,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
         [WebInvoke(UriTemplate = "Product/SaveProductLRRatio", Method = "POST",
                ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
         [ServiceKnownType(typeof(ResponseDataBase))]
-        object SaveProductLRRadio(int id, string lrratio, int seqno,byte iswarning);
+        object SaveProductLRRadio(int id, string lrratio, int seqno, byte iswarning);
 
         #endregion
     }

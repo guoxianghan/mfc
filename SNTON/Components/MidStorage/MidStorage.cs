@@ -34,7 +34,7 @@ namespace SNTON.Components.MidStorage
 
         // only for unittest
         //private readonly Dictionary<long, EmployeeEnt> employeeList = new Dictionary<long, EmployeeEnt>();
-        public List<MidStorageSpoolsCountEntity> MidStorageAccountCache { get; set; }
+        public List<MidStorageSpoolsCountEntity> MidStorageCountCache { get; set; }
         #region Class constructor
         /// <summary>
         /// Static class creation
@@ -100,7 +100,7 @@ namespace SNTON.Components.MidStorage
         #endregion
         void ReadMidStorageAccountCache()
         {
-            MidStorageAccountCache = GetMidStorageAccount(null);
+            MidStorageCountCache = GetMidStorageAccount(null);
         }
         public int UpdateMidStore(IStatelessSession session, params MidStorageSpoolsEntity[] mids)
         {

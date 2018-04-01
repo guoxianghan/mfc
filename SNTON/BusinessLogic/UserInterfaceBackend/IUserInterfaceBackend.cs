@@ -27,7 +27,7 @@ namespace SNTON.BusinessLogic
         MessageResponse MessageSearch(MessageSearchRequest searchRequest);
         ResponseDataBase MessageSource();
         SystemParametersResponse SystemParameterQuery();
-        ResponseBase SystemParameterSave(SystemParametersRequest request);
+        ResponseDataBase SystemParameterSave(SystemParametersRequest request);
         SpoolsResponse GetSpoolsByBarcode(string barcode);
 
         SpoolsResponse GetSpoolsByMidStorageId(long midStorageId);

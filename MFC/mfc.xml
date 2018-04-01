@@ -150,10 +150,10 @@
   <CONTROLSETS>
     <CONTROLSET Name ="TelegramDescriptions" Enabled ="true" path =".\Controlsets\TelDescControlset.xml"/>
     <!--AGV Configuration-->
-    <CONTROLSET Name ="PLC_AGV" Enabled ="true" path =".\Controlsets\AGVControlset.xml">
+    <CONTROLSET Name ="PLC_AGV" Enabled ="false" path =".\Controlsets\AGVControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="AGV"/>
-        <VARIABLE Name="$HOST$" Value="192.168.31.218"/>
+        <VARIABLE Name="$HOST$" Value="192.168.1.251"/>
         <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
         <VARIABLE Name="$PORT$" Value="9000"/>
         <VARIABLE Name="$PlantNo$" Value="003"/>
@@ -248,7 +248,7 @@
         <VARIABLE Name="$HOST$" Value="192.168.120.90"/>
         <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
         <VARIABLE Name="$PORT$" Value="4021"/>
-        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic2"/>
       </VARIABLES>
     </CONTROLSET>
     <!--B 区-->
@@ -261,7 +261,7 @@
         <VARIABLE Name="$HOST$" Value="192.168.120.91"/>
         <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
         <VARIABLE Name="$PORT$" Value="6000"/>
-        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic2"/>
       </VARIABLES>
     </CONTROLSET>
     <CONTROLSET Name ="EquipTaskLogic" Enabled ="false" path =".\Controlsets\EquipTaskControlset.xml">

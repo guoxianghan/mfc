@@ -102,8 +102,8 @@ namespace SNTON.Components.Equipment
             }
             try
             {
-                if (EquipConfigers != null)
-                    return EquipConfigers;
+                //if (EquipConfigers != null)
+                //    return EquipConfigers;
                 var tmp = ReadSqlList<EquipConfigerEntity>(session, "SELECT * FROM " + DatabaseDbTable + "  where IsEnable=0 and isdeleted=" + Constants.SNTONConstants.DeletedTag.NotDeleted);
                 if (tmp.Any())
                 {

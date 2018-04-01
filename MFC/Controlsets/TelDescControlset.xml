@@ -431,6 +431,7 @@
         <FIELD Name="res_Warning1" Type="Int"  Length="16"  Value="D651" SPLIT="" ></FIELD>
         <!---->
         <FIELD Name="res_Warning2" Type="Int"  Length="16"  Value="D652" SPLIT="" ></FIELD>
+        <FIELD Name="res_Warning3" Type="Int"  Length="16"  Value="D657" SPLIT="" ></FIELD>
         <!--手动反馈响应结束-->
       </FIELDDEFINITION>
       <TELEGRAMS>

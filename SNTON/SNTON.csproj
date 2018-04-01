@@ -104,14 +104,6 @@
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.1.2400\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ServiceContracts, Version=7.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MFCLib.7.1.7\lib\net452\ServiceContracts.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ServiceStack, Version=4.5.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ServiceStack.4.5.10\lib\net45\ServiceStack.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="ServiceStack.Client, Version=4.5.10.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ServiceStack.Client.4.5.10\lib\net45\ServiceStack.Client.dll</HintPath>
       <Private>True</Private>
@@ -165,6 +157,7 @@
     <Compile Include="Components\ComLogic\AGVLogic.cs" />
     <Compile Include="Components\ComLogic\ComLogic.cs" />
     <Compile Include="Components\ComLogic\EquipLineLogic.cs" />
+    <Compile Include="Components\ComLogic\EquipLineLogic2.cs" />
     <Compile Include="Components\ComLogic\EquipTaskLogic.cs" />
     <Compile Include="Components\ComLogic\MidStoreLineLogic.cs" />
     <Compile Include="Components\ComLogic\MidStoreRobotArmLogic.cs" />
@@ -336,6 +329,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

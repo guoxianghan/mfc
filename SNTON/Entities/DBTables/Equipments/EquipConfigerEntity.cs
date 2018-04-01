@@ -137,5 +137,17 @@ namespace SNTON.Entities.DBTables.Equipments
         /// 任务需要的产品规格
         /// </summary>
         public virtual string ProductType { get; set; }
+        /// <summary>
+        /// 1拉空轮,2送满轮
+        /// </summary>
+        public virtual int Request { get; set; }
+        /// <summary>
+        /// 是否已经给光电,0无,W400
+        /// </summary>
+        public virtual int Light { get; set; }
+        /// <summary>
+        /// 是否已经创建任务
+        /// </summary>
+        public virtual int IsEquipTask { get; set; }
     }
 }

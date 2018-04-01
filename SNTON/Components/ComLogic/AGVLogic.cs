@@ -44,8 +44,7 @@ namespace SNTON.Components.ComLogic
             base.StartInternal();
             thread_AliveReq.Start();
             thread_AGVStatusReq.Start();
-            thread_CheckAGVTaskSend.Start();
-            //thread_CreateAGVTask.Start(); 
+            thread_CheckAGVTaskSend.Start(); 
         }
 
         private void CheckAGVTaskSend()

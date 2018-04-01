@@ -25,6 +25,6 @@ namespace SNTON.Components.SystemParameters
         /// <param name="Id"></param>
         /// <param name="paramValue"></param>
         /// <param name="theSession"></param>
-        void SaveSystemParameters(SystemParametersRequest request, IStatelessSession theSession);
+        int SaveSystemParameters(SystemParametersRequest request, IStatelessSession theSession);
     }
 }

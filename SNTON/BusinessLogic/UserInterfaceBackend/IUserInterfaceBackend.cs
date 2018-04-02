@@ -55,6 +55,7 @@ namespace SNTON.BusinessLogic
         AGVConfigInfoResponse GetAGVConfigInfo(string plantno);
         AGVRouteArchiveResponse HistoryAGVRoute(AGVRuteSearchRequest search);
         AGVRouteResponse RealTimeAGVRoute();
+        AGVRouteListResponse RealTimeAGVRouteList();
         AGVTaskResponse RunningAGVTask();
         ResponseDataBase SetAGVTaskStatus(long id, int status);
         ProductResponse GetProduct();

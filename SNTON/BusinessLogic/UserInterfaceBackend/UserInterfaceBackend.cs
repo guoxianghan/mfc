@@ -427,7 +427,10 @@ namespace SNTON.BusinessLogic
                 foreach (var item in list)
                 {
                     var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageBaseDataUI() { Id = item.Id, StorageArea = item.StorageArea, X = item.HCoordinate, Y = item.VCoordinate };
-                    mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
+                    if (storagearea == 1 || storagearea == 2)
+                        mid.Id = ConvertLocation12(Convert.ToInt32(item.SeqNo));
+                    else
+                        mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
                     mid.OriginalId = item.SeqNo;
                     if (item.Spool != null)
                         mid.Barcodes = item.Spool.FdTagNo.Trim();
@@ -454,7 +457,10 @@ namespace SNTON.BusinessLogic
             {
                 var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageDetailDataUI() { Id = item.Id, StorageArea = item.StorageArea, Description = item.Description, Barcodes = item.FdTagNo?.Trim(), BobbinNo = item.BobbinNo, Cname = item.CName, Length = item.Length, StructBarCode = item.StructBarCode?.Trim() };
                 //mid.Barcodes = item.IdsList;
-                mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
+                if (storagearea == 1 || storagearea == 2)
+                    mid.Id = ConvertLocation12(Convert.ToInt32(item.SeqNo));
+                else
+                    mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
                 mid.OriginalId = item.SeqNo;
                 //mid.IsEnable = item.IsEnable;
                 //mid.IsOccupied = item.IsOccupied;
@@ -513,15 +519,16 @@ namespace SNTON.BusinessLogic
             return Status;
         }
 
-        public MidStorageCountResponse MidStorageDescription(int areaid)
+        public MidStorageCountResponse MidStorageDescription(int storeageid)
         {
             MidStorageCountResponse obj = new MidStorageCountResponse();
-            var li = this.MidStorageProvider.MidStorageAccountCache;
+            var midstorecount = this.MidStorageProvider.MidStorageCountCache;
             var products = this.ProductProvider.PruductCache;
-            //li = li.FindAll(x => x != null);
-            //var d = li.GroupBy(x => x.StorageArea, (y, z) => z.GroupBy(x => x.Length));
-            li = li.FindAll(x => x.Length != 0 && !string.IsNullOrEmpty(x.StructBarCode) && !string.IsNullOrEmpty(x.Const));
-            var p = from i in li
+            int hours = this.SystemParametersProvider.GetSystemParametersSpoolTimeOut(null);
+
+            midstorecount = midstorecount.FindAll(x => x.Length != 0 && !string.IsNullOrEmpty(x.StructBarCode) && !string.IsNullOrEmpty(x.Const));
+            var midstore = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.IsOccupied != -1);
+            var p = from i in midstorecount
                     group new MidStorageSpoolsCountEntity { StorageArea = i.StorageArea, StructBarCode = i.StructBarCode, Length = i.Length, BobbinNo = i.BobbinNo, Count = i.Count, CName = i.CName.Trim(), Const = i.Const?.Trim() }
                     by new { i.StorageArea, i.Length, i.Const } into t
                     select t;
@@ -550,7 +557,8 @@ namespace SNTON.BusinessLogic
                         o.ForEach(x => oc += x.Count);
                     }
 
-                    bool iswarning = false;
+                    bool iswarning = false;//配比报警
+                    #region 配比报警
                     if (product != null && product.IsWarning == 1)
                     {
                         if (lc == 0 || rc == 0)
@@ -573,12 +581,15 @@ namespace SNTON.BusinessLogic
                             }
                         }
                     }
-                    if (areaid == 0)
+                    #endregion
+                    if (storeageid == 0)
                     {
+                        obj.TimeOutCount = midstore.FindAll(x => x.Updated != null && x.Updated.Value.AddHours(hours) <= DateTime.Now && x.IsOccupied == 1).Count;
                         obj.data.Add(new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageCountDataUI() { L = lc, R = rc, other = oc, Count = lc + rc + oc, Cname = items.FirstOrDefault().CName, Length = items.FirstOrDefault().Length, StorageArea = items.FirstOrDefault().StorageArea, StructBarCode = items.FirstOrDefault().StructBarCode, Description = $"L:{lc}   R:{rc}  其他:{oc}", Const = Const, IsWarning = iswarning });
                     }
-                    else if (items.Key.StorageArea == areaid)
+                    else if (items.Key.StorageArea == storeageid)
                     {
+                        obj.TimeOutCount = midstore.FindAll(x => x.Updated != null && x.IsOccupied == 1 && (x.Updated.Value.AddHours(hours) <= DateTime.Now) && x.StorageArea == storeageid).Count;
                         obj.data.Add(new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageCountDataUI() { L = lc, R = rc, other = oc, Count = lc + rc + oc, Cname = items.FirstOrDefault().CName, Length = items.FirstOrDefault().Length, StorageArea = items.FirstOrDefault().StorageArea, StructBarCode = items.FirstOrDefault().StructBarCode, Description = $"L:{lc}   R:{rc}  其他:{oc}", Const = Const });
                     }
                     #endregion
@@ -586,7 +597,7 @@ namespace SNTON.BusinessLogic
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorMethod("MidStorageDescription error,areaid is " + areaid, ex);
+                    logger.ErrorMethod("MidStorageDescription error,areaid is " + storeageid, ex);
                 }
 
             }
@@ -602,7 +613,10 @@ namespace SNTON.BusinessLogic
             foreach (var item in list)
             {
                 var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageInfoDataUI() { Id = item.Id };
-                mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
+                if (storagearea == 1 || storagearea == 2)
+                    mid.Id = ConvertLocation12(Convert.ToInt32(item.SeqNo));
+                else
+                    mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
                 mid.Barcodes = item.FdTagNo;
 
                 int Status = 6;
@@ -648,7 +662,7 @@ namespace SNTON.BusinessLogic
         /// <param name="i"></param>
         /// <returns></returns>
         private static int ConvertLocation(int i)
-        {
+        {//11X35
             int row = i % 11;//取余 第二行
             int rows = i / 11;//第几列    
             int v = 0;
@@ -662,7 +676,26 @@ namespace SNTON.BusinessLogic
             }
             return v;
         }
-
+        /// <summary>
+        /// 将1,2号暂存库库位坐标编号转换为前端库位编号
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        private static int ConvertLocation12(int i)
+        {//13X42
+            int row = i % 13;//取余 第二行
+            int rows = i / 13;//第几列    
+            int v = 0;
+            if (row != 0)
+            {
+                v = (row - 1) * 42 + rows + 1;
+            }
+            else
+            {
+                v = 12 * 42 + rows;
+            }
+            return v;
+        }
         public MidStorageDetailResponse GetMidStorageDetailById(int storageid, int OriginalId)
         {
             MidStorageDetailResponse obj = new MidStorageDetailResponse();
@@ -981,16 +1014,13 @@ namespace SNTON.BusinessLogic
 
                 var tmp = armtskunit?.FindAll(x => x.TaskGroupGUID == item.TaskGroupGUID);
                 if (tmp != null)
-                {
-
+                {// 任务状态: 0待抓取;1正在抓取;2抓取完毕;
                     tmp = tmp.OrderBy(x => x.SeqNo).ToList();
-                    foreach (var arm in tmp)
+                    var ddd = (from i in tmp select new { a = i.WhoolBarCode.Trim(), b = i.SpoolStatus, c = i.SpoolSeqNo }).ToList();
+                    tmp.ForEach(x =>
                     {
-                        var tmpspool = spools.FirstOrDefault(x => x.FdTagNo.Trim() == arm.WhoolBarCode.Trim());
-                        if (tmpspool == null)
-                            tmpspool = this.SpoolsProvider.GetSpoolByBarcode(arm.WhoolBarCode.Trim(), null);
-                        t.Spool = (new WebServices.UserInterfaceBackend.Models.RobotArmTask.RobotArmSpoolDataUI() { SpoolSeqNo = arm.SpoolSeqNo, SpoolStatus = arm.SpoolStatus, WhoolBarCode = arm.WhoolBarCode, Length = tmpspool.Length, LR = tmpspool.BobbinNo.ToString() });
-                    }
+                        t.Spools.Add(new WebServices.UserInterfaceBackend.Models.RobotArmTask.RobotArmSpoolDataUI() { SpoolSeqNo = x.SpoolSeqNo, Length = x.Length, LR = x.BobbinNo, SpoolStatus = x.SpoolStatus, WhoolBarCode = x.WhoolBarCode.Trim() });
+                    });
                 }
             }
             return obj;
@@ -1149,11 +1179,6 @@ namespace SNTON.BusinessLogic
         {
             AGVRouteResponse obj = new AGVRouteResponse();
             var tmp = this.AGVRouteProvider.RealTimeAGVRute;
-            //if (tmp != null)
-            //    foreach (var item in tmp)
-            //    {
-            //        obj.data.Add(new AGVRouteDataUI() { agvid = item.Value.AGVId, id = item.Value.Id, x = item.Value.X.Trim(), y = item.Value.Y.Trim(), Status = item.Value.Status, CreateTime = item.Value.Created });
-            //    }
             for (byte i = 1; i <= 30; i++)
             {
                 if (tmp.ContainsKey(i))
@@ -1162,6 +1187,32 @@ namespace SNTON.BusinessLogic
                     obj.data.Add(new AGVRouteDataUI { agvid = i, CreateTime = DateTime.Now, x = "0", y = "0" });
             }
             obj.data = obj.data.OrderBy(x => x.agvid).ToList();
+            return obj;
+        }
+
+        public AGVRouteListResponse RealTimeAGVRouteList()
+        {
+            AGVRouteListResponse obj = new AGVRouteListResponse();
+            var tmp = this.AGVRouteProvider.RealTimeAGVRute2;
+            for (byte i = 1; i <= 30; i++)
+            {
+                if (tmp.ContainsKey(i))
+                {
+                    var route = tmp[i];
+                    var list = new List<AGVRouteDataUI>();
+                    foreach (var item in route)
+                    {
+                        list.Add(new AGVRouteDataUI() { agvid = item.AGVId, id = item.Id, x = item.X.Trim(), y = item.Y.Trim(), Status = item.Status, CreateTime = item.Created });
+                    }
+
+                    obj.data.Add(i, list);
+                }
+                else
+                {
+                    obj.data.Add(i, new List<AGVRouteDataUI>());
+                }
+            }
+            //obj.data = obj.data.OrderBy(x => x.Key).ToList();
             return obj;
         }
 

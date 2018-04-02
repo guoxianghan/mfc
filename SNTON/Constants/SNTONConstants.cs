@@ -23,6 +23,15 @@ namespace SNTON.Constants
             /// </summary>
             public const char IdsListSplitor = ',';
         }
+        public static string ToString(this Array a, char c)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in a)
+            {
+                sb.Append(item.ToString() + c.ToString());
+            }
+            return sb.ToString().Trim(c);
+        }
         /// <summary>
         /// Deleted tag value defination
         /// </summary>

@@ -47,7 +47,7 @@ namespace SNTON.Components.Equipment
         }
         void RealTimeTask()
         {
-            RealTimeEquipTaskStatus = GetEquipTaskViewEntities($"[STATUS] IN (0,1,2,3,4,5,6,10)", null);
+            RealTimeEquipTaskStatus = GetEquipTaskViewEntities($"[STATUS] IN (0,1,2,3,4,5,6,9,10) AND ISCANCEL IN (0,3,4)", null);
         }
         /// <summary>
         /// PLACEHOLDER: Please extend if required.
@@ -184,7 +184,7 @@ namespace SNTON.Components.Equipment
                 EquipTaskEntity tsk = null;
                 foreach (var item in equiptsks)
                 {
-                    tsk = new EquipTaskEntity() { Length = item.Length, Created = item.Created, TaskGuid = item.TaskGuid, Deleted = item.Deleted, EquipContollerId = item.EquipContollerId, Id = item.Id, IsDeleted = item.IsDeleted, PlantNo = item.PlantNo, ProductType = item.ProductType, Source = item.Source, Status = item.Status, TaskLevel = item.TaskLevel, TaskType = item.TaskType, Updated = item.Updated, Supply1 = item.Supply1 };
+                    tsk = new EquipTaskEntity() { Length = item.Length, Created = item.Created, TaskGuid = item.TaskGuid, Deleted = item.Deleted, EquipContollerId = item.EquipContollerId, Id = item.Id, IsDeleted = item.IsDeleted, PlantNo = item.PlantNo, ProductType = item.ProductType, Source = item.Source, Status = item.Status, TaskLevel = item.TaskLevel, TaskType = item.TaskType, Updated = item.Updated, Supply1 = item.Supply1, IsCancel = item.IsCancel, Length2 = item.Length2, PLCNo = item.PLCNo, Supply2 = item.Supply2, SupplyQty1 = item.SupplyQty1, SupplyQty2 = item.SupplyQty2, TitleProdName = item.TitleProdName };
                     list.Add(tsk);
                 }
                 Update(session, list);

@@ -96,11 +96,14 @@ namespace SNTON.Entities.DBTables.AGV
         /// </summary>
         [DataMember]
         public virtual int TaskLevel { get; set; }
+        [DataMember]
+        public virtual int PLCNo { get; set; }
         /// <summary>
         /// PlantNo
         /// </summary>
         [DataMember]
         public virtual byte PlantNo { get; set; }
+
         /// <summary>
         /// 与RobotArmTask关联的GUID
         /// </summary>

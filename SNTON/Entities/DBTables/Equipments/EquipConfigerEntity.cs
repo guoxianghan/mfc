@@ -19,7 +19,7 @@ namespace SNTON.Entities.DBTables.Equipments
         [DataMember]
         public virtual string EquipFlag { get; set; }
         /// <summary>
-        /// 滚筒>WCS请求调度AGV(读)
+        /// 滚筒>WCS请求调度AGV(读) 地面滚筒请求
         /// </summary>
         [DataMember]
         public virtual string LWCS { get; set; }
@@ -29,17 +29,17 @@ namespace SNTON.Entities.DBTables.Equipments
         [DataMember]
         public virtual string LineStatus { get; set; }
         /// <summary>
-        /// 滚筒状态
+        /// 滚筒状态 读取取消请求
         /// </summary>
         [DataMember]
         public virtual string LStatus { get; set; }
         /// <summary>
-        /// 设备状态
+        /// 设备状态 写允许取消 1,2
         /// </summary>
         [DataMember]
         public virtual string Equip1Status { get; set; }
         /// <summary>
-        /// 设备状态地址
+        /// 设备状态地址 
         /// </summary>
         [DataMember]
         public virtual string EStatus1 { get; set; }
@@ -49,7 +49,7 @@ namespace SNTON.Entities.DBTables.Equipments
         [DataMember]
         public virtual string Equip2Status { get; set; }
         /// <summary>
-        /// 设备状态地址
+        /// 写不允许取消 1,2
         /// </summary>
         [DataMember]
         public virtual string EStatus2 { get; set; }
@@ -59,12 +59,18 @@ namespace SNTON.Entities.DBTables.Equipments
         [DataMember]
         public virtual string TaskFlagDispatch { get; set; }
         /// <summary>
-        /// WCS已调度AGV(写)W400
+        /// WCS已调度AGV(写)W500 光电
         /// </summary>
         [DataMember]
         public virtual string WAStatus { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember]
         public virtual string DispatchStatus { get; set; }
+        /// <summary>
+        /// (写 0没料,1,2)
+        /// </summary>
         [DataMember]
         public virtual string AGVDisStatus { get; set; }
         [DataMember]

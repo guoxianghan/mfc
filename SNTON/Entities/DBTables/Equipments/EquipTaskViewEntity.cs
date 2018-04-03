@@ -23,6 +23,11 @@ namespace SNTON.Entities.DBTables.Equipments
         [DataMember]
         public virtual byte AGVId { get; set; }
         /// <summary>
+        /// 是否允许取消 0,忽略,1允许取消,2回复允许取消完成,3不允许取消,4回复不允许取消完成
+        /// </summary>
+        [DataMember]
+        public virtual int IsCancel { get; set; }
+        /// <summary>
         /// AGVStatus
         /// </summary>
         [DataMember]
@@ -32,6 +37,8 @@ namespace SNTON.Entities.DBTables.Equipments
         /// </summary>
         [DataMember]
         public virtual long EquipContollerId { get; set; }
+        [DataMember]
+        public virtual int PLCNo { get; set; }
         /// <summary>
         /// 需要的单丝长度
         /// </summary>
@@ -67,10 +74,6 @@ namespace SNTON.Entities.DBTables.Equipments
         /// PlantNo
         /// </summary> 
         public virtual byte PlantNo { get; set; }
-        /// <summary>
-        /// PLCNo
-        /// </summary> 
-        public virtual byte PLCNo { get; set; }
         /// <summary>
         /// StorageArea
         /// </summary> 

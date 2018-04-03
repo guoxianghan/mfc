@@ -23,5 +23,7 @@
     <property name="TitleProdName" column="TitleProdName" />
     <property name="SupplyQty2" column="SupplyQty2" />
     <property name="Length2" column="Length2" />
+    <property name="PLCNo" column="PLCNo" />
+    <property name="IsCancel" column="IsCancel" />
   </class>
 </hibernate-mapping>

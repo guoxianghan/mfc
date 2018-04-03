@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <MFC.NET>
   <CONTROLSET>
- 
+
     <SEQUENCEHANDLER Type="VI.MFC.Components.Sequencer.Sequencehandler.VLSequencer" Id="PLC$EXT$SequencerInbound" Enabled="true">
       <CONFIG Length="10" Padding="1" PaddingChar="0" MinSequence="1" MaxSequence="9999999999" StartSequence="1"></CONFIG>
     </SEQUENCEHANDLER>
@@ -10,13 +10,14 @@
     </SEQUENCEHANDLER>
 
     <LOGIC Assembly=".\SNTON.DLL" Type="$LOGIC$" Id="$EXT$Logic" Enabled="true">
-      <CONFIG  
+      <CONFIG
               BusinessLogicId="BusinessLogic"
               PlantNo="$PlantNo$" 
+              PLCNo="$PLCNo$"
               TaskNoSequencerId="TaskNoSequencer">
       </CONFIG>
       <WATCHDOG Enabled="false" TimeoutInSecs="60" TelegramId="AliveReq"  RetriesBeforeDisconnection="3" ReplyTelegramId="AliveAck"></WATCHDOG>
     </LOGIC>
-   
+
   </CONTROLSET>
 </MFC.NET>

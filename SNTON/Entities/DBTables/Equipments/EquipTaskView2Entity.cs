@@ -42,8 +42,15 @@ namespace SNTON.Entities.DBTables.Equipments
         public virtual string Source { get; set; }
         [DataMember]
         public virtual int TaskLevel { get; set; }
+        /// <summary>
+        /// 是否允许取消 0,忽略,1允许取消,2回复允许取消完成,3不允许取消,4回复不允许取消完成
+        /// </summary>
+        [DataMember]
+        public virtual int IsCancel { get; set; }
         [DataMember]
         public virtual string ProductType { get; set; }
+        [DataMember]
+        public virtual int PLCNo { get; set; }
         [DataMember]
         public virtual Guid TaskGuid { get; set; }
         [DataMember]

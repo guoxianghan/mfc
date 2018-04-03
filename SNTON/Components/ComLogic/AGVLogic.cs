@@ -338,12 +338,11 @@ namespace SNTON.Components.ComLogic
                         return;
                     }
                     eqtsk?.ForEach(x => x.Status = 5);
-                    logger.InfoMethod($"AGV调度成功,小车id:{agvid},开始执行:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",TaskNo:" + TaskNo);
+                    logger.InfoMethod($"AGV调度成功,{JsonConvert.SerializeObject(agvtsk)}");
                     #region 更新直通口任务状态 
                     if (outstoreagespools != null)
                     {
                         outstoreagespools.ForEach(x => x.Status = 16);
-                        //var save = outstoreagespools.FindAll(x => x.PlantNo == agvtsk.PlantNo && x.StoreageNo == agvtsk.StorageArea);
                         this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.UpdateEntity(null, outstoreagespools.ToArray());
                     }
                     #endregion
@@ -352,9 +351,7 @@ namespace SNTON.Components.ComLogic
                     status = (byte)AGVTaskStatus.Finished;
                     if (agvtsk.Status >= status)
                     {
-                        //logger.InfoMethod($"是哪个sb重发了指令,小车id:{agvid},开始执行:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + status + ",agvtsk.Status:" + agvtsk.Status);
                         this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = $"小车指令重复,小车id:{agvid},任务完成:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status, Source = "AGV指令重复", MsgLevel = 7 });
-                        return;
                     }
                     this.BusinessLogic.AGVRouteProvider.DeleteAGVRoute(agvid, null);
                     eqtsk?.ForEach(x => x.Status = 7);
@@ -365,14 +362,11 @@ namespace SNTON.Components.ComLogic
                         this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.UpdateEntity(null, outstoreagespools.ToArray());
                     }
                     #endregion
-                    logger.InfoMethod($"AGV调度成功,小车id;{agvid},任务完成:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",TaskNo:" + TaskNo);
+                    logger.InfoMethod($"AGV任务完成,{JsonConvert.SerializeObject(agvtsk)}");
                     break;
                 default:
                     logger.WarnMethod("未知的AGV调度指令,AGVCmdExe->Action:" + Action);
                     return;
-                    //It is not correct processing
-                    //By Song@2018.01.14.
-                    //break;
 
             }
 
@@ -385,7 +379,6 @@ namespace SNTON.Components.ComLogic
                 agvtsk.AGVId = Convert.ToInt16(agvid);
                 if (eqtsk != null)
                     BusinessLogic.EquipTaskProvider.UpdateEntity(eqtsk, null);
-                //BusinessLogic.EquipTaskProvider.UpdateStatus(16, null);
                 BusinessLogic.AGVTasksProvider.UpdateEntity(agvtsk, null);
                 re.AddField("Action", "1");
             }

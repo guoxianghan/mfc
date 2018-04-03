@@ -22,5 +22,6 @@
     <property name="TaskLevel" column="TaskLevel" />
     <property name="TaskGuid" column="TaskGuid" />
     <property name="SeqNo" column="SeqNo" />
+    <property name="PLCNo" column="PLCNo" />
   </class>
 </hibernate-mapping>

@@ -24,6 +24,7 @@ using SNTON.Entities.DBTables.AGV;
 using System.Diagnostics;
 using SNTON.Entities.DBTables.PLCAddressCode;
 using SNTON.Entities.DBTables.Message;
+using System.Threading;
 
 namespace SNTON.Components.ComLogic
 {
@@ -521,6 +522,7 @@ namespace SNTON.Components.ComLogic
         void RuningRobotArmTask()
         {
             Stopwatch watch = Stopwatch.StartNew();//创建一个监听器
+            SendWarnnng();
             watch.Start();
             Neutrino ne = new Neutrino();
             ne.TheName = "ReadingRobotArmStatus";
@@ -620,7 +622,7 @@ namespace SNTON.Components.ComLogic
                 //int line = 0;
                 int armcode = 0;
                 //18/34/44
-
+                Thread.Sleep(1000);
                 switch (armtskrunning.CName.Trim())
                 {
                     #region MyRegion
@@ -680,7 +682,20 @@ namespace SNTON.Components.ComLogic
                     logger.InfoMethod("轮询发送龙门指令耗时:" + watch.ElapsedMilliseconds);
             }
         }
-
+        /// <summary>
+        /// 发送龙门线体报警
+        /// </summary>
+        void SendWarnnng()
+        {
+            Neutrino ne = new Neutrino();
+            ne.TheName = "龙门线体报警";
+            if (this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsScanEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsStoreageEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsWarning)
+                ne.AddField("res_Warning3", "1");
+            else
+                ne.AddField("res_Warning3", "0");
+            SendData(ne);
+            //ne = ParserMid(mid);
+        }
         /// <summary>
         /// 根据任务类型,判断龙门的命令
         /// req_COMMAND指令码：1入库 直通线到暂存库，2出库 暂存库到直通线或出库口，3直通线到异常口处理，4暂存库到异常口出库 

@@ -550,8 +550,8 @@ namespace SNTON.Components.ComLogic
                             //不再显示库里单丝不足
                             if (storeno == 2 || storeno == 3)
                             {
-                                equiptsks.ToList().ForEach(x => { x.Status = 10; x.IsCancel = 1; });
-                                this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
+                                //equiptsks.ToList().ForEach(x => { x.Status = 10; x.IsCancel = 1; });
+                                //this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
                             }
                         }
                         #endregion

@@ -59,7 +59,7 @@ namespace SNTON.Entities.DBTables.Equipments
         [DataMember]
         public virtual string TaskFlagDispatch { get; set; }
         /// <summary>
-        /// WCS已调度AGV(写)W500 光电
+        /// WCS已调度AGV(写)W400 光电
         /// </summary>
         [DataMember]
         public virtual string WAStatus { get; set; }

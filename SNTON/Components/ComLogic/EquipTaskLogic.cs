@@ -36,7 +36,7 @@ namespace SNTON.Components.ComLogic
         }
         public EquipTaskLogic()
         {
-            thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 2000);
+            thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 10000);
         }
         /// <summary>
         /// 轮询地面滚筒请求,分车间,暂存库,供料区域,AGV路线创建龙门AGV任务
@@ -78,6 +78,7 @@ namespace SNTON.Components.ComLogic
                 equiptsk[1].TaskGuid = g;
                 equiptsk[1].Updated = dt;
                 agvout.TaskLevel = 6;
+                agvout.PLCNo = equiptsk[0].PLCNo;
                 bool r = this.BusinessLogic.SqlCommandProvider.EmptyAGVTask(equiptsk, agvout);
                 if (r)
                     logger.ErrorMethod("更新拉空轮任务成功:" + JsonConvert.SerializeObject(equiptsk));
@@ -204,6 +205,7 @@ namespace SNTON.Components.ComLogic
             if (agvtsk != null)
             {
                 agvtsk.Status = 2;
+                agvtsk.PLCNo = equiptsks[0].PLCNo;
                 agvtsk.StorageLineNo = 2;
                 agvtsk.EquipIdListActual = equiptsks[0].EquipContollerId.ToString() + ";" + equiptsks[1].EquipContollerId.ToString();
                 //agvtsk.EquipIdListTarget = TaskConfig.AGVStation(storeageno, 2);
@@ -424,6 +426,12 @@ namespace SNTON.Components.ComLogic
             spool.Updated = createtime;
             spool.IsOccupied = 4;
             return armtsk;
+        }
+
+
+        void InitAGVTask()
+        {
+
         }
     }
 }

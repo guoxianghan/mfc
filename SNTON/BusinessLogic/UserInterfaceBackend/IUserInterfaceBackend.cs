@@ -57,6 +57,11 @@ namespace SNTON.BusinessLogic
         AGVRouteResponse RealTimeAGVRoute();
         AGVRouteListResponse RealTimeAGVRouteList();
         AGVTaskResponse RunningAGVTask();
+        /// <summary>
+        /// 收空轮任务
+        /// </summary>
+        /// <returns></returns>
+        AGVTaskResponse RunningAGVRecoveryTask();
         ResponseDataBase SetAGVTaskStatus(long id, int status);
         ProductResponse GetProduct();
         ResponseDataBase SaveProductLRRadio(int id, string lrratio, int seqno, byte IsWarnning);

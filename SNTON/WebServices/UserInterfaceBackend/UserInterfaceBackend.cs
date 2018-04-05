@@ -912,6 +912,22 @@ namespace SNTON.WebServices.UserInterfaceBackend
             }
             return obj;
         }
+        public AGVTaskResponse RunningAGVRecoveryTask()
+        {
+            AGVTaskResponse obj = new AGVTaskResponse();
+
+            try
+            {
+                logger.InfoMethod($"start with RunningAGVRecoveryTask, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                obj = BusinessLogic.RunningAGVRecoveryTask();
+                logger.InfoMethod($"end with RunningAGVRecoveryTask, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<AGVTaskResponse>(ex);
+            }
+            return obj;
+        }
 
         public ResponseDataBase SetAGVTaskStatus(long id, int status)
         {

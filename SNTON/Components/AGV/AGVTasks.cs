@@ -264,6 +264,17 @@ namespace SNTON.Components.AGV
                 var tmp = ReadSqlList<AGVTasksEntity>(session, $"SELECT * FROM [SNTON].[SNTON].AGVTasks where IsDeleted=" + Constants.SNTONConstants.DeletedTag.NotDeleted + sqlwhere + " order by ID desc");
                 if (tmp.Any())
                 {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var item in tmp)
+                    {
+                        sb.Append("'" + item.TaskGuid.ToString() + "',");
+                    }
+                    var equiptsks = ReadSqlList<EquipTaskView2Entity>(session, "SELECT * FROM dbo.EquipTaskView3 WHERE [TaskGuid]IN(" + sb.ToString().Trim(',') + ")");
+                    //Console.WriteLine("EquipTaskView2Entity查询耗时:" + watch.ElapsedMilliseconds);
+                    foreach (var item in tmp)
+                    {
+                        item._EquipTasks2 = equiptsks?.FindAll(x => x.TaskGuid == item.TaskGuid);
+                    }
                     ret = tmp.ToList();
                 }
             }

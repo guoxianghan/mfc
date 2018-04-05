@@ -1290,6 +1290,22 @@ namespace SNTON.BusinessLogic
 
             return obj;
         }
+        /// <summary>
+        /// 收空轮任务
+        /// </summary>
+        /// <returns></returns>
+        public AGVTaskResponse RunningAGVRecoveryTask()
+        {
+            AGVTaskResponse obj = new AGVTaskResponse();
+            var tsks = this.AGVTasksProvider.GetAGVTasks("[StorageLineNo]=0 AND TaskType=1 AND Status<>128", null);
+            foreach (var item in tsks)
+            {
+                var agvtsk = new AGVTaskDataUI() { AGVId = item.AGVId, Created = item.Created, id = item.Id, LineNo = item.StorageLineNo, SeqNo = item.SeqNo, Status = item.Status, Storeageid = item.StorageArea, TaskType = item.TaskType };
+                item._EquipTasks2.ForEach(x => agvtsk.EquipNames.Add(x.EquipName.Trim()));
+                obj.data.Add(agvtsk);
+            }
+            return obj;
+        }
         public ResponseDataBase SetAGVTaskStatus(long id, int status)
         {
             ResponseDataBase obj = new ResponseDataBase();

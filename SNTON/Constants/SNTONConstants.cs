@@ -264,7 +264,7 @@ namespace SNTON.Constants
             /// </summary>
             Finished = 8,
         }
-        public const string FileTmpPath = "/tmp";
+        public const string FileTmpPath = "../MidStoreageCache";
         public class TaskConfig
         {
             /// <summary>

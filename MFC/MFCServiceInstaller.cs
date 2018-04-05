@@ -46,8 +46,12 @@ namespace MFC
 
             // Service properties
             serviceInstaller.StartType = ServiceStartMode.Automatic;
-            serviceInstaller.DisplayName = "VISION.MFC";
-            serviceInstaller.ServiceName = "VISION.MFC";
+            string name = "VISION.MFC1";
+            //name = "VISION.MFC2";
+            //name = "VISION.MFC3";
+            //name = "VISION.MFCEquipLine";
+            serviceInstaller.DisplayName = name;
+            serviceInstaller.ServiceName = name;
             serviceInstaller.Description = "Ni Technology Genuine Material Flow Controller";
 
             Installers.Add(serviceProcessInstaller);

@@ -264,6 +264,14 @@ namespace SNTON.WebServices.UserInterfaceBackend
         ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
         [ServiceKnownType(typeof(AGVTaskResponse))]
         AGVTaskResponse RunningAGVTask();
+        /// <summary>
+        /// 回收空轮任务
+        /// </summary>
+        /// <returns></returns>
+        [WebInvoke(UriTemplate = "AGV/RunningAGVRecoveryTask", Method = "GET",
+        ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
+        [ServiceKnownType(typeof(AGVTaskResponse))]
+        AGVTaskResponse RunningAGVRecoveryTask();
 
         [WebInvoke(UriTemplate = "AGV/SetAGVTaskStatus", Method = "POST",
         ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]

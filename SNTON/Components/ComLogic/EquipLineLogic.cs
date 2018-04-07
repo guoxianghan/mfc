@@ -96,7 +96,7 @@ namespace SNTON.Components.ComLogic
                     int wasagv = readr.Item2.GetIntOrDefault(cmd.WAStatus);
                     if (wasagv != 0)
                     {
-                        task.Status = 6;
+                        task.Status = 4;
                         this.BusinessLogic.EquipTaskViewProvider.Update(null, task);
                         //this.BusinessLogic.EquipTaskViewProvider.Update(null, 6, task.Id);
                         continue;

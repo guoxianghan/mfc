@@ -428,10 +428,29 @@ namespace SNTON.Components.ComLogic
             return armtsk;
         }
 
-
+        /// <summary>
+        /// 根据收到的空轮满轮任务请求,创建AGVtask
+        /// </summary>
         void InitAGVTask()
         {
+            var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Status IN (0,10) AND PlantNo=3", null);
+            //equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Id IN(37029,37020)", null);
+            var agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8)", null);
+            if (agvrunningtsk == null)
+                agvrunningtsk = new List<AGVTasksEntity>();
+            if (equiptsks == null || equiptsks.Count == 0)
+                return;
+            equiptsks = equiptsks.OrderBy(x => x.Id).ToList();
 
+            var groupequiptsks = equiptsks.GroupBy(x => x.AGVRoute.Trim());
+            foreach (var item in groupequiptsks)
+            {
+                DateTime dt = DateTime.Now;
+                Guid guid = Guid.NewGuid();
+                var orderbyequiptsks = item.OrderBy(x => x.AStation);
+
+
+            }
         }
     }
 }

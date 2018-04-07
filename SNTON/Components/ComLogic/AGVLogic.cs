@@ -66,7 +66,7 @@ namespace SNTON.Components.ComLogic
             tmp = tmp.OrderByDescending(x => x.TaskType).ToList();
             foreach (var item in tmp)
             {
-                if (item.Status == (byte)AGVTaskStatus.Ready)
+                if (item.Status == (byte)AGVTaskStatus.Ready || item.Status == 4)
                 {
                     //var eqtsk = BusinessLogic.EquipTaskProvider.GetEquipTaskEntitySqlWhere($"TaskGuid='{item.TaskGuid.ToString()}'", null);
                     if (item.TaskNo == 0)
@@ -257,8 +257,23 @@ namespace SNTON.Components.ComLogic
                 byte status = 0;
                 if (Ack == 1)
                 {
-                    status = (byte)SNTONConstants.AGVTaskStatus.Received;
+                    status = (byte)SNTONConstants.AGVTaskStatus.Received;//收到请求,等待调度AGV
                     BusinessLogic.AGVTasksProvider.SaveAGVTaskStatus(TaskNo, status);
+                    var agvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTaskEntityByTaskNo(TaskNo, null);
+                    var equiptsks = this.BusinessLogic.EquipTaskProvider.GetEquipTaskEntityNotDeleted($"TaskGuid='{agvtsk.TaskGuid.ToString()}'", null);
+                    if (equiptsks != null)
+                    {
+                        foreach (var item in equiptsks)
+                        {
+                            item.Status = 4;
+                            item.Updated = DateTime.Now;
+                        }
+                        this.BusinessLogic.EquipTaskProvider.UpdateEntity(equiptsks, null);
+                    }
+                    /*
+                    等待调度AGV
+                    equiptasks .status=4
+                    */
                 }
             }
             catch (Exception e)
@@ -335,9 +350,9 @@ namespace SNTON.Components.ComLogic
                     {
                         //logger.InfoMethod($"是哪个sb重发了指令,小车id:{agvid},开始执行:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status);
                         this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = $"小车指令重复,小车id:{agvid},开始执行:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status, Source = "AGV指令重复", MsgLevel = 7 });
-                        return;
+                        //return;
                     }
-                    eqtsk?.ForEach(x => x.Status = 5);
+                    eqtsk?.ForEach(x => x.Status = 6);
                     logger.InfoMethod($"AGV调度成功,{JsonConvert.SerializeObject(agvtsk)}");
                     #region 更新直通口任务状态 
                     if (outstoreagespools != null)

@@ -36,7 +36,7 @@ namespace SNTON.Components.ComLogic
         public EquipLineLogic_()
         {
             //threadequiptask = new VIThreadEx(CheckEquipTask, null, "Check AGV task Ready", 1000);
-            thread_ReadEquipLineStatus = new VIThreadEx(ReadEquipLine, null, "Check EquipLine Status", 1000);
+            thread_ReadEquipLineStatus = new VIThreadEx(ReadEquipLine, null, "Check EquipLine Status", 3000);
             thread_SendCreateAGV = new VIThreadEx(SendCreateAGV, null, "thread for SendCreateAGV", 3000);
             thread_heartbeat = new VIThreadEx(heartbeat, null, "heartbeat", 1000);
             //thread_plctest = new VIThreadEx(PLCTest, null, "PLCTest", 4000);
@@ -518,6 +518,10 @@ namespace SNTON.Components.ComLogic
             }
             if (nwrite.Count != 0)
             {
+                SendData(nwrite); //通知PLC已经创建任务
+                Thread.Sleep(1000);
+                SendData(nwrite); //通知PLC已经创建任务
+                Thread.Sleep(1000);
                 SendData(nwrite); //通知PLC已经创建任务
                 //bool r = MXParser.TrySendDataWithResult(nwrite);
             }

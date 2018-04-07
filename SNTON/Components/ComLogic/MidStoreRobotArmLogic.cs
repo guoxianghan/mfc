@@ -522,7 +522,7 @@ namespace SNTON.Components.ComLogic
         void RuningRobotArmTask()
         {
             Stopwatch watch = Stopwatch.StartNew();//创建一个监听器
-            SendWarnnng();
+            SendWarning();
             watch.Start();
             Neutrino ne = new Neutrino();
             ne.TheName = "ReadingRobotArmStatus";
@@ -685,15 +685,22 @@ namespace SNTON.Components.ComLogic
         /// <summary>
         /// 发送龙门线体报警
         /// </summary>
-        void SendWarnnng()
+        void SendWarning()
         {
-            Neutrino ne = new Neutrino();
-            ne.TheName = "龙门线体报警";
-            if (this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsScanEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsStoreageEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsWarning)
-                ne.AddField("res_Warning3", "1");
-            else
-                ne.AddField("res_Warning3", "0");
-            SendData(ne);
+            try
+            {
+                Neutrino ne = new Neutrino();
+                ne.TheName = "龙门线体报警";
+                if (this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsScanEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsStoreageEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsWarning)
+                    ne.AddField("res_Warning3", "1");
+                else
+                    ne.AddField("res_Warning3", "0");
+                SendData(ne);
+            }
+            catch (Exception)
+            {
+                 
+            }
             //ne = ParserMid(mid);
         }
         /// <summary>

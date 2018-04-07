@@ -239,7 +239,7 @@
       </VARIABLES>
     </CONTROLSET>
     <!--B1 区-->
-    <CONTROLSET Name ="PLC_EquipLine1" Enabled ="true" path =".\Controlsets\EquipLineControlset.xml">
+    <CONTROLSET Name ="PLC_EquipLine1" Enabled ="false" path =".\Controlsets\EquipLineControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="EquipLine1"/>
         <VARIABLE Name="$TelegramDescriptionsId$" Value="EquipLine1Descriptions"/>
@@ -261,7 +261,7 @@
         <VARIABLE Name="$HOST$" Value="192.168.120.91"/>
         <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
         <VARIABLE Name="$PORT$" Value="6000"/>
-        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic_"/>
       </VARIABLES>
     </CONTROLSET>
     <CONTROLSET Name ="EquipTaskLogic" Enabled ="`false" path =".\Controlsets\EquipTaskControlset.xml">

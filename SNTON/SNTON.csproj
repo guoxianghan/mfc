@@ -333,7 +333,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="ExternalAssemblies\TIBCO.EMS.dll">
+    <Resource Include="Entities\DBTables\ExternalAssemblies\TIBCO.EMS.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

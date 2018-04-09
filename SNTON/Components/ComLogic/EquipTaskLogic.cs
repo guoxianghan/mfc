@@ -36,7 +36,7 @@ namespace SNTON.Components.ComLogic
         }
         public EquipTaskLogic()
         {
-            thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 10000);
+            thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 1000);
         }
         /// <summary>
         /// 轮询地面滚筒请求,分车间,暂存库,供料区域,AGV路线创建龙门AGV任务
@@ -45,7 +45,12 @@ namespace SNTON.Components.ComLogic
         {
             //int seq = getNextSeqNo();
             //this.BusinessLogic.AGVTasksProvider.CreateAGVTask(new AGVTasksEntity() {  Created=DateTime.Now, ProductType="WS44",SeqNo=seq, PlantNo=3}, null);
-            var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Status IN (0,10) AND PlantNo=3", null);
+            int minutes = 0;
+            var taskouttime = this.BusinessLogic.SystemParametersProvider.GetSystemParamrters(3, null);
+            if (taskouttime != null)
+                minutes = Convert.ToInt32(taskouttime.ParameterValue.Trim());
+            //var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"Status IN (0,10) AND PlantNo=3 AND Created>='{DateTime.Now.AddMinutes(-minutes)}'", null);
+            var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"Status IN (0,10) AND PlantNo=3", null);
             //equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Id IN(37029,37020)", null);
             var agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8)", null);
             if (agvrunningtsk == null)
@@ -71,10 +76,10 @@ namespace SNTON.Components.ComLogic
                 agvout.EquipIdListTarget = "";
                 agvout.StorageArea = StorageArea;
                 agvout.StorageLineNo = 0;
-                equiptsk[0].Status = 1;
+                equiptsk[0].Status = 4;
                 equiptsk[0].TaskGuid = g;
                 equiptsk[0].Updated = dt;
-                equiptsk[1].Status = 1;
+                equiptsk[1].Status = 4;
                 equiptsk[1].TaskGuid = g;
                 equiptsk[1].Updated = dt;
                 agvout.TaskLevel = 6;
@@ -443,14 +448,32 @@ namespace SNTON.Components.ComLogic
             equiptsks = equiptsks.OrderBy(x => x.Id).ToList();
 
             var groupequiptsks = equiptsks.GroupBy(x => x.AGVRoute.Trim());
-            foreach (var item in groupequiptsks)
-            {
+            foreach (var items in groupequiptsks)
+            {//同排 2211,2121 
                 DateTime dt = DateTime.Now;
                 Guid guid = Guid.NewGuid();
-                var orderbyequiptsks = item.OrderBy(x => x.AStation);
-
-
+                var orderbyequiptsks = items.OrderBy(x => x.AStation).ToList();
+                //按照任务类型分段
+                //List<EquipTaskGroup> grouptsks = new List<EquipTaskGroup>();
+                //int tmp = 0;
+                //for (int i = 0; i < orderbyequiptsks.Count() - 1; i++)
+                //{
+                //    if (orderbyequiptsks[i].TaskType != orderbyequiptsks[i + 1].TaskType)
+                //    {
+                //        grouptsks.Add(new EquipTaskGroup() { TaskType = orderbyequiptsks[i].TaskType, Tasks = orderbyequiptsks.Skip(tmp).Take(i + 1 - tmp).ToList() });
+                //        tmp = i + 1;
+                //    }
+                //}
             }
         }
     }
+
+    //class EquipTaskGroup
+    //{
+    //    /// <summary>
+    //    /// 1空轮;2满轮
+    //    /// </summary>
+    //    public int TaskType { get; set; }
+    //    public List<EquipTaskViewEntity> Tasks { get; set; } = new List<EquipTaskViewEntity>();
+    //}
 }

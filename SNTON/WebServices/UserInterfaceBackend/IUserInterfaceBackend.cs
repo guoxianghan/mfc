@@ -275,8 +275,13 @@ namespace SNTON.WebServices.UserInterfaceBackend
 
         [WebInvoke(UriTemplate = "AGV/SetAGVTaskStatus", Method = "POST",
         ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
-        [ServiceKnownType(typeof(AGVTaskResponse))]
+        [ServiceKnownType(typeof(ResponseDataBase))]
         ResponseDataBase SetAGVTaskStatus(long id, int status);
+
+        [WebInvoke(UriTemplate = "Equip/SetEquipTaskStatus", Method = "POST",
+        ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
+        [ServiceKnownType(typeof(ResponseDataBase))]
+        ResponseDataBase SetEquipTaskStatus(long id, int status);
 
         #endregion
         #region MidStorage

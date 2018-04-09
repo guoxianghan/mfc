@@ -43,7 +43,7 @@ namespace SNTON.Components.ComLogic
         {
             base.StartInternal();
             thread_AliveReq.Start();
-            thread_AGVStatusReq.Start();
+            //thread_AGVStatusReq.Start();
             thread_CheckAGVTaskSend.Start();
             //thread_CreateAGVTask.Start(); 
         }
@@ -265,7 +265,7 @@ namespace SNTON.Components.ComLogic
                     {
                         foreach (var item in equiptsks)
                         {
-                            item.Status = 4;
+                            item.Status = 5;//4等待申请,5已申请
                             item.Updated = DateTime.Now;
                         }
                         this.BusinessLogic.EquipTaskProvider.UpdateEntity(equiptsks, null);
@@ -527,7 +527,7 @@ namespace SNTON.Components.ComLogic
         private void SaveAGVRoute(Neutrino neutrino)
         {
             try
-            {
+            {//02 41 47 56 52 6F 75 74 65 20 20 20 20 20 20 20 20 20 20 20 20 30 30 30 30 30 30 30 30 30 31 20 20 20 20 20 20 20 20 20 33 30 30 30 30 30 30 30 30 31 32 30 30 30 30 37 30 37 30 32 30 34 39 39 34 39 30 30 31 31 36 33 34 35 37 38 35 64 38 61 36 30 33 35 03
                 int PlantNo = Convert.ToInt32(neutrino.GetField("PlantNo"));
                 short agvid = Convert.ToInt16(neutrino.GetField("AGVID"));
                 string x = neutrino.GetField("CurrentX").TrimStart('0');

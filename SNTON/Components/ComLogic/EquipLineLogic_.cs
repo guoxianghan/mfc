@@ -18,6 +18,7 @@ using System.Xml;
 using System.Collections;
 using SNTON.Entities.DBTables.MES;
 using System.Threading;
+using System.Diagnostics;
 
 namespace SNTON.Components.ComLogic
 {
@@ -36,7 +37,7 @@ namespace SNTON.Components.ComLogic
         public EquipLineLogic_()
         {
             //threadequiptask = new VIThreadEx(CheckEquipTask, null, "Check AGV task Ready", 1000);
-            thread_ReadEquipLineStatus = new VIThreadEx(ReadEquipLine, null, "Check EquipLine Status", 3000);
+            thread_ReadEquipLineStatus = new VIThreadEx(RunEquipLine, null, "Check EquipLine Status", 3000);
             thread_SendCreateAGV = new VIThreadEx(SendCreateAGV, null, "thread for SendCreateAGV", 3000);
             thread_heartbeat = new VIThreadEx(heartbeat, null, "heartbeat", 1000);
             //thread_plctest = new VIThreadEx(PLCTest, null, "PLCTest", 4000);
@@ -45,7 +46,7 @@ namespace SNTON.Components.ComLogic
         {
             //thread_plctest.Start();
             thread_ReadEquipLineStatus.Start();
-            thread_SendCreateAGV.Start();
+            //thread_SendCreateAGV.Start();
             thread_heartbeat.Start();
             base.StartInternal();
         }
@@ -92,7 +93,7 @@ namespace SNTON.Components.ComLogic
                     sbequipname.Append(cmd.EquipName);
                     readwas.AddField(cmd.WAStatus, "0");
                     var readr = MXParser.ReadData(readwas, true);
-                    Thread.Sleep(1000);
+                    Thread.Sleep(800);
                     if (!readr.Item1)
                     {
                         continue;
@@ -111,7 +112,7 @@ namespace SNTON.Components.ComLogic
                         n.AddField(cmd.WAStatus, item.TaskType.ToString());
                     task.Status = 9;
                     bool r = MXParser.SendData(n, 3);
-                    Thread.Sleep(1000);
+                    Thread.Sleep(600);
                     r = MXParser.SendData(n, 3);
                     if (!r)
                     {
@@ -524,6 +525,41 @@ namespace SNTON.Components.ComLogic
                 Thread.Sleep(1000);
                 SendData(nwrite); //通知PLC已经创建任务
                 //bool r = MXParser.TrySendDataWithResult(nwrite);
+            }
+        }
+
+        /// <summary>
+        /// 读写地面滚筒请求
+        /// </summary>
+        void RunEquipLine()
+        {
+            Random ran = new Random();
+            int i = ran.Next(1, 20);
+            Stopwatch watch = Stopwatch.StartNew();//创建一个监听器
+            watch.Start();
+            try
+            {
+                logger.InfoMethod($"开始读取地面滚筒请求 {this.PLCNo}");
+                ReadEquipLineStatus();
+                logger.InfoMethod($"结束读取地面滚筒请求 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
+                watch.Restart();
+            }
+            catch (Exception ex)
+            {
+                logger.InfoMethod($"结束读取地面滚筒请求 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
+                watch.Restart();
+                logger.ErrorMethod("读取地面滚筒请求失败",ex);
+            }
+            try
+            {
+                logger.InfoMethod($"开始写光电 {this.PLCNo}");
+                SendCreateAGV();
+                logger.InfoMethod($"结束写光电 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
+            }
+            catch (Exception ex)
+            {
+                logger.InfoMethod($"结束写光电 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
+                logger.ErrorMethod("写地面滚筒光电失败", ex);
             }
         }
     }

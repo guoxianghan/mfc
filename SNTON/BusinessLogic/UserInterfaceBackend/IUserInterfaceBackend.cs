@@ -64,6 +64,13 @@ namespace SNTON.BusinessLogic
         AGVTaskResponse RunningAGVRecoveryTask();
         ResponseDataBase SetAGVTaskStatus(long id, int status);
         ProductResponse GetProduct();
+        /// <summary>
+        /// 修改呼叫任务状态 -1,删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        ResponseDataBase SetEquipTaskStatus(long id, int status);
         ResponseDataBase SaveProductLRRadio(int id, string lrratio, int seqno, byte IsWarnning);
         #endregion
 

@@ -1319,8 +1319,8 @@ namespace SNTON.BusinessLogic
                 var agvtsk = this.AGVTasksProvider.GetAGVTaskEntityById(id, null);
                 List<InStoreToOutStoreSpoolEntity> outstore = new List<InStoreToOutStoreSpoolEntity>();
                 outstore = this.InStoreToOutStoreSpoolProvider.GetInStoreToOutStoreSpoolEntity($"GUID='{agvtsk.TaskGuid.ToString()}'", null);
-                outstore.ForEach(x => x.IsDeleted = 1);
-                outstore.ForEach(x => x.Status = -1);
+                outstore?.ForEach(x => x.IsDeleted = 1);
+                outstore?.ForEach(x => x.Status = -1);
                 agvtsk.IsDeleted = 1;
                 agvtsk.Status = 64;
                 var armtsks = this.RobotArmTaskProvider.GetRobotArmTasks("[TaskGroupGUID] in (" + agvtsk.TaskGuid.ToString() + ")", null);
@@ -1354,8 +1354,9 @@ namespace SNTON.BusinessLogic
                 }
                 r = this.SqlCommandProvider.ClearInStoreToOutStoreLine(mids, agvtsk, armtsks, outstore, null);
                 if (r)
-                    obj.data.Add("清除直通线出库任务成功");
-                else obj.data.Add("清除直通线出库任务失败");
+                    obj.data.Add("清除任务成功");
+                else obj.data.Add("清除任务失败");
+                return obj;
                 #endregion
             }
             if (r)
@@ -1392,6 +1393,49 @@ namespace SNTON.BusinessLogic
             if (i == 1)
                 obj.data.Add("保存成功");
             else obj.data.Add("保存失败");
+            return obj;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public ResponseDataBase SetEquipTaskStatus(long id, int status)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+
+            var equiptsk = this.EquipTaskProvider.GetEquipTaskEntityByID(id, null);
+            if (equiptsk == null)
+            {
+                obj.data.Add("错误的ID");
+                return obj;
+            }
+            if (status == -1)
+            {
+                #region MyRegion
+                if (equiptsk.TaskGuid == Guid.Empty)
+                {
+                    var equiptsks = this.EquipTaskProvider.GetEquipTaskEntitySqlWhere($"TaskGuid='{equiptsk.TaskGuid.ToString()}'", null);
+                    equiptsks?.ForEach(x => { x.IsDeleted = 1; x.Updated = DateTime.Now; });
+                    EquipTaskProvider.UpdateEntity(equiptsks, null);
+                    var agvtsk = this.AGVTasksProvider.GetAGVTask($"TaskGuid='{equiptsk.TaskGuid.ToString()}'", null);
+                    if (agvtsk != null)
+                    {
+                        agvtsk.IsDeleted = 1;
+                        agvtsk.Updated = DateTime.Now;
+                        this.AGVTasksProvider.UpdateEntity(agvtsk, null);
+                    }
+                }
+                else
+                {
+                    equiptsk.IsDeleted = 1;
+                    EquipTaskProvider.UpdateEntity(equiptsk, null);
+                }
+                #endregion
+                obj.data.Add("删除成功");
+            }
             return obj;
         }
     }

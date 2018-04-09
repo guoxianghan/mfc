@@ -150,10 +150,10 @@
   <CONTROLSETS>
     <CONTROLSET Name ="TelegramDescriptions" Enabled ="true" path =".\Controlsets\TelDescControlset.xml"/>
     <!--AGV Configuration-->
-    <CONTROLSET Name ="PLC_AGV" Enabled ="false" path =".\Controlsets\AGVControlset.xml">
+    <CONTROLSET Name ="PLC_AGV" Enabled ="true" path =".\Controlsets\AGVControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="AGV"/>
-        <VARIABLE Name="$HOST$" Value="192.168.1.251"/>
+        <VARIABLE Name="$HOST$" Value="192.168.31.242"/>
         <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
         <VARIABLE Name="$PORT$" Value="9000"/>
         <VARIABLE Name="$PlantNo$" Value="003"/>
@@ -264,31 +264,11 @@
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic_"/>
       </VARIABLES>
     </CONTROLSET>
-    <CONTROLSET Name ="EquipTaskLogic" Enabled ="`false" path =".\Controlsets\EquipTaskControlset.xml">
+    
+ 
+    <CONTROLSET Name ="EquipTaskLogic" Enabled ="false" path =".\Controlsets\EquipTaskControlset.xml">
       <VARIABLES>
-        <VARIABLE Name="$EXT$" Value="EquipTask"/>
-        <VARIABLE Name="$PlantNo$" Value="3"/>
-        <VARIABLE Name="$PLCNo$" Value="2"/>
-        <VARIABLE Name="$HOST$" Value="127.0.0.1"/>
-        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
-        <VARIABLE Name="$PORT$" Value="6000"/>
-        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipTaskLogic"/>
-      </VARIABLES>
-    </CONTROLSET>
-    <CONTROLSET Name ="EquipTaskLogic1" Enabled ="false" path =".\Controlsets\EquipTaskControlset.xml">
-      <VARIABLES>
-        <VARIABLE Name="$EXT$" Value="EquipTask"/>
-        <VARIABLE Name="$PlantNo$" Value="3"/>
-        <VARIABLE Name="$PLCNo$" Value="1"/>
-        <VARIABLE Name="$HOST$" Value="192.168.120.90"/>
-        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
-        <VARIABLE Name="$PORT$" Value="6000"/>
-        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipTaskLogic"/>
-      </VARIABLES>
-    </CONTROLSET>
-    <CONTROLSET Name ="EquipTaskLogic2" Enabled ="false" path =".\Controlsets\EquipTaskControlset.xml">
-      <VARIABLES>
-        <VARIABLE Name="$EXT$" Value="EquipTask"/>
+        <VARIABLE Name="$EXT$" Value="EquipTask"/> 
         <VARIABLE Name="$PlantNo$" Value="3"/>
         <VARIABLE Name="$PLCNo$" Value="2"/>
         <VARIABLE Name="$HOST$" Value="192.168.120.91"/>
@@ -297,10 +277,6 @@
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipTaskLogic"/>
       </VARIABLES>
     </CONTROLSET>
-
-
-
-
   </CONTROLSETS>
 
   <LOADABLE_KERNEL_MODULES>
@@ -722,7 +698,7 @@
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </MachineWarnningCodeProvider>
-    <InStoreToOutStoreSpoolProvider Assembly="SNTON.DLL" Type="SNTON.Components.RobotArm.InStoreToOutStoreSpool" Id="InStoreToOutStoreSpoolProvider" Enabled="true">
+    <InStoreToOutStoreSpoolProvider Assembly="SNTON.DLL" Type="SNTON.Components.InStoreToOutStore.InStoreToOutStoreSpool" Id="InStoreToOutStoreSpoolProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>

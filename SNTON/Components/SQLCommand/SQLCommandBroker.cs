@@ -271,17 +271,21 @@ namespace SNTON.Components.SQLCommand
             bool ret = false;
             if (session == null)
             {
-                ret = BrokerDelegate(() => ClearInStoreToOutStoreLine(updatemids, updateagvtsk, updatearmtsks, updateoutspools,session), ref session);
+                ret = BrokerDelegate(() => ClearInStoreToOutStoreLine(updatemids, updateagvtsk, updatearmtsks, updateoutspools, session), ref session);
                 return ret;
             }
             try
             {
                 protData.EnterWriteLock();
-                
-                Update(session, updateagvtsk);
-                Update(session, updateoutspools);
-                Update(session, updatearmtsks);
-                Update(session, updatemids);
+
+                if (updateagvtsk != null)
+                    Update(session, updateagvtsk);
+                if (updateoutspools != null && updateoutspools.Count != 0)
+                    Update(session, updateoutspools);
+                if (updatearmtsks != null && updatearmtsks.Count != 0)
+                    Update(session, updatearmtsks);
+                if (updatemids != null && updatemids.Count != 0)
+                    Update(session, updatemids);
                 ret = true;
             }
             catch (Exception ex)

@@ -975,6 +975,21 @@ namespace SNTON.WebServices.UserInterfaceBackend
             }
             return obj;
         }
+
+        public ResponseDataBase SetEquipTaskStatus(long id, int status)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            try
+            {
+                logger.InfoMethod($"删除设备任务指令SetEquipTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                obj = BusinessLogic.SetEquipTaskStatus(id, status);
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<ResponseDataBase>(ex);
+            }
+            return obj;
+        } 
         #endregion
     }
 }

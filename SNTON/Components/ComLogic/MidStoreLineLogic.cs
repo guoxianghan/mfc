@@ -409,6 +409,9 @@ namespace SNTON.Components.ComLogic
                 }
                 agvtsk.Updated = DateTime.Now;
                 this.BusinessLogic.AGVTasksProvider.UpdateEntity(agvtsk);
+                var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewNotDeleted($"TaskGuid='{agvtsk.TaskGuid.ToString()}'", null);
+                if (equiptsks != null && equiptsks.Count != 0)
+                    this.BusinessLogic.EquipTaskProvider.UpdateStatus(4, null, (from i in equiptsks select i.Id).ToArray());
                 logger.InfoMethod($"{StorageArea}号库{line}线体收到接料请求,将AGV请求状态改为2,guid:" + agvtsk.TaskGuid.ToString());
             }
         }

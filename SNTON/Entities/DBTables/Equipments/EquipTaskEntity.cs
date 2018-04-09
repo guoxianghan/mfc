@@ -38,7 +38,7 @@ namespace SNTON.Entities.DBTables.Equipments
         [DataMember]
         public virtual int IsCancel { get; set; }
         /// <summary>
-        /// 0初始化EquipTask,1创建AGVTask和龙门Task,2正在抓取,3,抓取完毕,4等待调度AGV,5已调度AGV,6AGV运行中(等待送料或拉空轮),7任务完成(拉空论或满轮),8任务失败,9已通知地面滚筒创建任务,10库里单丝不够,11可取消,准备取消, 12已取消,13无法取消,14无法取消,回复取消完毕
+        /// 0初始化EquipTask,1创建AGVTask和龙门Task,2正在抓取,3,抓取完毕,4等待申请调度AGV,5已申请调度小车,6AGV运行中(等待送料或拉空轮),7任务完成(拉空论或满轮),8任务失败,9已通知地面滚筒创建任务,10库里单丝不够,11可取消,准备取消, 12已取消,13无法取消,14无法取消,回复取消完毕
         /// </summary>
         [DataMember]
         public virtual byte Status { get; set; }

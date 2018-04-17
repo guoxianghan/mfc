@@ -57,7 +57,7 @@ namespace SNTON.Components.ComLogic
             //re.AddField("TaskNo", "123");
             //Send(re);
             //return;
-            var tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks($" (Status in (2) and isdeleted=0 ) OR (IsDeleted=0 AND [Status]=4 AND id>=23970 AND Updated<='{DateTime.Now.AddMinutes(-2).ToString("yyyy-MM-dd HH:mm:ss")}')");
+            var tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks($" (Status in (2) and isdeleted=0 ) OR (IsDeleted=0 AND [Status]=4 AND id>=23970 AND Updated<='{DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss")}')");
             //tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks("TaskNo=100000000000001822");
             //HLCallCmd(tmp[0]);
             //return;
@@ -71,15 +71,16 @@ namespace SNTON.Components.ComLogic
                     //var eqtsk = BusinessLogic.EquipTaskProvider.GetEquipTaskEntitySqlWhere($"TaskGuid='{item.TaskGuid.ToString()}'", null);
                     if (item.TaskNo == 0)
                         item.TaskNo = Convert.ToInt64(this.Sequencer.GetNextSequenceNo());
-                    HLCallCmd(item);
                     item.Status = (byte)AGVTaskStatus.Sent;
                     item.Updated = DateTime.Now;
                     bool r = BusinessLogic.AGVTasksProvider.UpdateEntity(item, null);
                     if (r)
+                    {
+                        HLCallCmd(item);
                         logger.InfoMethod("向小车发送Sent指令成功" + Environment.NewLine + JsonConvert.SerializeObject(item));
+                    }
                     else
                         logger.InfoMethod("向小车发送Sent指令失败" + Environment.NewLine + JsonConvert.SerializeObject(item));
-                    break;
                 }
             }
         }
@@ -258,8 +259,12 @@ namespace SNTON.Components.ComLogic
                 if (Ack == 1)
                 {
                     status = (byte)SNTONConstants.AGVTaskStatus.Received;//收到请求,等待调度AGV
-                    BusinessLogic.AGVTasksProvider.SaveAGVTaskStatus(TaskNo, status);
+                    logger.InfoMethod($"AGV中控收到请求,TaskNo:" + TaskNo + ",status:8");
                     var agvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTaskEntityByTaskNo(TaskNo, null);
+                    agvtsk.Status = status;
+                    bool r = BusinessLogic.AGVTasksProvider.UpdateStatus(agvtsk.Id, status);
+                    if (r) { logger.InfoMethod("AGV中控收到请求后修改状态成功,TaskNo:" + TaskNo + ",status:8"); }
+                    else { logger.InfoMethod("AGV中控收到请求后修改状态失败,TaskNo:" + TaskNo + ",status:8"); }
                     var equiptsks = this.BusinessLogic.EquipTaskProvider.GetEquipTaskEntityNotDeleted($"TaskGuid='{agvtsk.TaskGuid.ToString()}'", null);
                     if (equiptsks != null)
                     {
@@ -366,7 +371,7 @@ namespace SNTON.Components.ComLogic
                     status = (byte)AGVTaskStatus.Finished;
                     if (agvtsk.Status >= status)
                     {
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = $"小车指令重复,小车id:{agvid},任务完成:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status, Source = "AGV指令重复", MsgLevel = 7 });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = $"小车指令重复,小车id:{agvid},任务完成:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status, Source = "AGV指令重复", MsgLevel = 7, MidStoreage=agvtsk.StorageArea });
                     }
                     this.BusinessLogic.AGVRouteProvider.DeleteAGVRoute(agvid, null);
                     eqtsk?.ForEach(x => x.Status = 7);
@@ -536,9 +541,16 @@ namespace SNTON.Components.ComLogic
                 y = string.IsNullOrEmpty(y) ? "0" : y;
                 short speed = Convert.ToInt16(neutrino.GetField("Speed"));
                 byte status = 0;
-                status = Convert.ToByte(neutrino.GetField("StatusAGVRoute"));
                 long TaskNo = 0;
-                TaskNo = long.Parse(neutrino.GetField("TaskNoAGVRoute"), System.Globalization.NumberStyles.HexNumber);
+                try
+                {
+                    status = Convert.ToByte(neutrino.GetField("StatusAGVRoute"));
+                    TaskNo = long.Parse(neutrino.GetField("TaskNoAGVRoute"), System.Globalization.NumberStyles.HexNumber);
+                }
+                catch (Exception e)
+                {
+                    logger.ErrorMethod("解析AGVRoute status或TaskNo出错,neutrino is " + JsonConvert.SerializeObject(neutrino), e, "SaveAGVRoute");
+                }
                 var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status };
                 var agvroutelist = this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute2[agvid];
                 if (this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.ContainsKey(agvid))

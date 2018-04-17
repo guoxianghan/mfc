@@ -184,7 +184,7 @@ namespace SNTON.Components.Equipment
             try
             {
                 protData.EnterReadLock();
-                var tmp = ReadSqlList<EquipTaskEntity>(session, $"SELECT * FROM EquipTask where id= '" + id.ToString() + "'and IsDeleted=" + Constants.SNTONConstants.DeletedTag.NotDeleted + " order by ID desc");
+                var tmp = ReadSqlList<EquipTaskEntity>(session, $"SELECT * FROM SNTON.EquipTask where id= '" + id.ToString() + "'and IsDeleted=" + Constants.SNTONConstants.DeletedTag.NotDeleted + " order by ID desc");
                 if (tmp.Any())
                 {
                     ret = tmp.FirstOrDefault();

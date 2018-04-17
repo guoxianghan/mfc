@@ -18,6 +18,11 @@ namespace SNTON.Entities.DBTables.Message
         /// </summary>
         [DataMember]
         public virtual int MsgLevel { get; set; }
+        /// <summary>
+        /// MsgLevel
+        /// </summary>
+        [DataMember]
+        public virtual int MidStoreage { get; set; }
 
         /// <summary>
         /// Source

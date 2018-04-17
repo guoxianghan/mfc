@@ -30,5 +30,9 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models
         public int msgLevel { get; set; }
         public int pageNumber { get; set; }
         public int pageSize { get; set; }
+        /// <summary>
+        /// 几号暂存库
+        /// </summary>
+        public int MidStoreage { get; set; }
     }
 }

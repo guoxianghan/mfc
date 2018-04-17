@@ -12,5 +12,6 @@
     <property name="Updated" column="Updated" />
     <property name="Deleted" column="Deleted" />
     <property name="IsDeleted" column="IsDeleted" />
+    <property name="MidStoreage" column="MidStoreage" />
   </class>
 </hibernate-mapping>

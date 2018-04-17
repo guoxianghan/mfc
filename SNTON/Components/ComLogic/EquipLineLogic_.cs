@@ -81,6 +81,8 @@ namespace SNTON.Components.ComLogic
                     continue;
                 foreach (var task in EquipTask)
                 {
+                    Neutrino nwrite = new Neutrino();
+                    nwrite.TheName = "WriteReceive";
                     sbequipname.Clear();
                     Neutrino n = new Neutrino();
                     n.TheName = "SendCreateAGV";
@@ -89,8 +91,15 @@ namespace SNTON.Components.ComLogic
                     readwas.TheName = "ReadWAStatus";
                     var cmd = _EquipCmdList.FirstOrDefault(x => x.EquipFlag.Trim() == task.EquipFlag.Trim());
                     if (cmd == null)
+                    {
+                        logger.ErrorMethod("找不到对应的地面滚筒编号:" + JsonConvert.SerializeObject(task));
                         continue;
+                    }
+                    nwrite.AddField(cmd.AGVDisStatus.Trim(), item.TaskType.ToString());
+                    bool r = MXParser.SendData(nwrite, 3);
+                    Thread.Sleep(800);
                     sbequipname.Append(cmd.EquipName);
+
                     readwas.AddField(cmd.WAStatus, "0");
                     var readr = MXParser.ReadData(readwas, true);
                     Thread.Sleep(800);
@@ -111,7 +120,7 @@ namespace SNTON.Components.ComLogic
                     if (!n.FieldExists(cmd.WAStatus))
                         n.AddField(cmd.WAStatus, item.TaskType.ToString());
                     task.Status = 9;
-                    bool r = MXParser.SendData(n, 3);
+                    r = MXParser.SendData(n, 3);
                     Thread.Sleep(600);
                     r = MXParser.SendData(n, 3);
                     if (!r)
@@ -369,7 +378,9 @@ namespace SNTON.Components.ComLogic
             if (nwrite.Count != 0)
             {
                 SendData(nwrite); //通知PLC已经创建任务
+                Thread.Sleep(1000);
                 SendData(nwrite);
+                Thread.Sleep(1000);
                 SendData(nwrite);
                 //bool r = MXParser.TrySendDataWithResult(nwrite);
             }
@@ -548,7 +559,7 @@ namespace SNTON.Components.ComLogic
             {
                 logger.InfoMethod($"结束读取地面滚筒请求 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
                 watch.Restart();
-                logger.ErrorMethod("读取地面滚筒请求失败",ex);
+                logger.ErrorMethod("读取地面滚筒请求失败", ex);
             }
             try
             {

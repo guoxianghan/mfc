@@ -140,7 +140,9 @@ namespace SNTON.Components.ComLogic
             {
                 ne.AddField(item.Key.Trim(), "0");
             }
+            ne.AddField("LINE_STATUS", "0");
             var n = this.MXParser.ReadData(ne, true);
+            #region MyRegion
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
             {
                 int i = n.Item2.GetInt(item.Key.Trim());
@@ -153,13 +155,23 @@ namespace SNTON.Components.ComLogic
                     if (binary[c] != '0' && !fi.Value)
                     {
                         fi.Value = true;
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7 });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7 , MidStoreage= this.StorageArea });
 
                     }
                     else
                         fi.Value = false;
                 }
             }
+
+            #endregion
+
+            if (_WarnningCode.Exists(x => x.Value))
+                IsWarning = true;
+            else IsWarning = false;
+            int r = n.Item2.GetInt("LINE_STATUS");
+            if (r != 1)
+                IsWarning = true;
+            else IsWarning = false;
         }
 
 
@@ -453,7 +465,7 @@ namespace SNTON.Components.ComLogic
                 if (!IsScanEnough)
                 {
                     IsScanEnough = true;
-                    this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "暂存库扫码异常口满", Source = this.StorageArea + "暂存库扫码异常口满", MsgLevel = 7 });
+                    this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "暂存库扫码异常口满", Source = this.StorageArea + "暂存库扫码异常口满", MsgLevel = 7 ,MidStoreage = this.StorageArea });
                 }
                 return;
             }
@@ -486,7 +498,7 @@ namespace SNTON.Components.ComLogic
                         if (!IsStoreageEnough)
                         {
                             IsStoreageEnough = true;
-                            this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号暂存库已满", Source = this.StorageArea + "号暂存库已满", MsgLevel = 6 });
+                            this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号暂存库已满", Source = this.StorageArea + "号暂存库报警", MsgLevel = 6, MidStoreage = this.StorageArea });
                         }
                         return;
                     }
@@ -579,7 +591,7 @@ namespace SNTON.Components.ComLogic
                     }
                     else if (re == -1)
                     {
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "错误的LR面信息:" + lr.ToString() + "," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 6 });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "错误的LR面信息:" + lr.ToString() + "," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 6, MidStoreage = this.StorageArea });
                         logger.WarnMethod("错误的LR面信息," + barcode + "," + lr.ToString());
                         toExceptionFlow = true;
                         barcodeReadingInfo = barcodeReadingInfo + "(Reason: Wrong L/R) => Exception route";
@@ -587,14 +599,14 @@ namespace SNTON.Components.ComLogic
                     else if (re == 0)
                     {
                         logger.WarnMethod("MES系统不存在此二维码," + barcode);
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "MES系统不存在此二维码," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 6 });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "MES系统不存在此二维码," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 6, MidStoreage = this.StorageArea });
                         toExceptionFlow = true;
                         barcodeReadingInfo = barcodeReadingInfo + "(Reason: No MES info) => Exception route";
                     }
                     else
                     {
                         logger.WarnMethod("添加到SNTON失败," + barcode);
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "添加到SNTON失败," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 5 });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "添加到SNTON失败," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 5, MidStoreage = this.StorageArea });
                         //By Song@2018.01.25
                         //neclear.AddField("ExceptionTag", "2");
                         //By Song@2018.01.25
@@ -609,7 +621,7 @@ namespace SNTON.Components.ComLogic
                 {
                     if (barcode.Trim() == "999999")
                     {
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "扫码失败," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 6 });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "扫码失败," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 6, MidStoreage = this.StorageArea });
                         logger.WarnMethod("扫码失败," + barcode);
                     }
                     else
@@ -628,7 +640,7 @@ namespace SNTON.Components.ComLogic
             }
             catch (Exception ex)
             {
-                this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "添加到SNTON失败," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 5 });
+                this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "添加到SNTON失败," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 5, MidStoreage = this.StorageArea });
                 //By Song@2018.01.25
                 //neclear.AddField("ExceptionTag", "2");
                 //By Song@2018.01.25

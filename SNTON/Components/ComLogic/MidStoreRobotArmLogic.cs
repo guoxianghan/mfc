@@ -44,6 +44,7 @@ namespace SNTON.Components.ComLogic
             return mxParser;
         }
         List<MachineWarnningCodeEntity> _WarnningCode = new List<MachineWarnningCodeEntity>();
+        List<string> _warningMessageList = new List<string>();
         public override void Init(XmlNode configNode)
         {
             base.Init(configNode);
@@ -92,6 +93,8 @@ namespace SNTON.Components.ComLogic
         }
         void ReadWarningInfo()
         {
+            IsAuto();
+            SendWarning();
             _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 1);
             if (_WarnningCode == null)
                 return;
@@ -114,7 +117,7 @@ namespace SNTON.Components.ComLogic
                     if (!bit.Value)
                     {
                         bit.Value = true;
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号龙门" + bit.Description.Trim(), Source = this.StorageArea + "号龙门报警", MsgLevel = 7 });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号龙门" + bit.Description.Trim(), Source = this.StorageArea + "号龙门报警", MsgLevel = 7, MidStoreage = this.StorageArea });
                     }
                     _WarnningCode.FindAll(x => x.AddressName.Trim() == item.Key && x.BIT != plcvalue).ForEach(x => x.Value = false);
                 }
@@ -187,21 +190,33 @@ namespace SNTON.Components.ComLogic
             var n = this.MXParser.ReadData(ne);
             if (n.Item1)
             {
+                IsWarning = false;
+                if (n.Item2.GetInt("res_LONGMEN_STATE") == 0)
+                {
+                    IsWarning = false;
+                }
+                else
+                {
+                    IsWarning = true;
+                }
                 return n.Item2.GetInt("res_LONGMEN_STATE");
             }
             else
             {
+                IsWarning = true;
                 return 2;
             }
 
         }
         public override void ReadDervice()
         {
-            //Int32 isauto = IsAuto();
-            //if (isauto != 0)
-            //{
-
-            //}
+            Int32 isauto = IsAuto();
+            if (isauto != 0)
+            {
+                IsWarning = true;
+                return;
+            }
+            IsWarning = false;
             Random ran = new Random();
             int i = ran.Next(1, 20);
             Stopwatch watch = Stopwatch.StartNew();//创建一个监听器
@@ -255,7 +270,7 @@ namespace SNTON.Components.ComLogic
             {
                 IsWarning = true;
                 logger.WarnMethod($"{StorageArea}号龙门退出自动或故障");
-                this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = $"{StorageArea}号龙门故障", Source = "龙门故障", MsgLevel = 7 });
+                this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = $"{StorageArea}号龙门故障", Source = "龙门故障", MsgLevel = 7, MidStoreage = this.StorageArea });
             }
 
             if (i == 2)
@@ -307,7 +322,7 @@ namespace SNTON.Components.ComLogic
                 {
                     IsWarning = true;
                     logger.WarnMethod($"{StorageArea}号龙门退出自动或故障");
-                    this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = $"{StorageArea}号龙门故障", Source = "龙门故障", MsgLevel = 7 });
+                    this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = $"{StorageArea}号龙门故障", Source = "龙门故障", MsgLevel = 7, MidStoreage = this.StorageArea });
                 }
                 return;
             }
@@ -541,7 +556,7 @@ namespace SNTON.Components.ComLogic
                 {
                     IsWarning = true;
                     logger.WarnMethod(this.StorageArea + "号龙门退出自动或故障");
-                    this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = this.RobotArmID + "号龙门退出自动或故障", Source = this.RobotArmID + "号龙门报警", MsgLevel = 7 });
+                    this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = this.RobotArmID + "号龙门退出自动或故障", Source = this.RobotArmID + "号龙门报警", MsgLevel = 7, MidStoreage = this.StorageArea });
                 }
                 return;
             }
@@ -598,7 +613,14 @@ namespace SNTON.Components.ComLogic
                     }
                     else if (ONLINE_INSTORE_RobotArmSeqNo != armtskrunning.SpoolSeqNo && armtskrunning.TaskType != 1)
                     {
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = $"{this.StorageArea}号龙门库直通线流水号:{ONLINE_INSTORE_RobotArmSeqNo},龙门任务流水号:{armtskrunning.SpoolSeqNo},单丝二维码:{armtskrunning.WhoolBarCode.Trim()}", MsgLevel = 7, Source = $"{this.StorageArea}号龙门库直通线流水号错误" });
+                        string msg = $"{this.StorageArea}号龙门库直通线流水号:{ONLINE_INSTORE_RobotArmSeqNo},龙门任务流水号:{armtskrunning.SpoolSeqNo},单丝二维码:{armtskrunning.WhoolBarCode.Trim()}";
+                        if (_warningMessageList.FindAll(x => x == msg).Count <= 10)
+                            _warningMessageList.Add(msg);
+                        else
+                        {
+                            this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = msg, MsgLevel = 7, Source = $"{this.StorageArea}号龙门库直通线流水号错误", MidStoreage = this.StorageArea });
+                            _warningMessageList.RemoveAll(x => x == msg);
+                        }
                         return;
                     }
                 }
@@ -643,7 +665,7 @@ namespace SNTON.Components.ComLogic
                         break;
                     default:
                         logger.WarnMethod("未知的单丝类型:armtskrunning.CName:" + armtskrunning.CName);
-                        BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = "未知的单丝类型:" + armtskrunning.CName.Trim(), Source = "未知的单丝类型", MsgLevel = 6 });
+                        BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = "未知的单丝类型:" + armtskrunning.CName.Trim(), Source = "未知的单丝类型", MsgLevel = 6, MidStoreage = this.StorageArea });
                         break;
                         #endregion
                 }
@@ -691,15 +713,17 @@ namespace SNTON.Components.ComLogic
             {
                 Neutrino ne = new Neutrino();
                 ne.TheName = "龙门线体报警";
-                if (this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsScanEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsStoreageEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsWarning)
-                    ne.AddField("res_Warning3", "1");
-                else
-                    ne.AddField("res_Warning3", "0");
+                int alarm = 0;
+                if (this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea) != null && (this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsScanEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsStoreageEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsWarning))
+                    alarm = 1;
+                if (this.IsWarning)
+                    alarm = 1;
+                ne.AddField("res_Warning3", alarm.ToString());
                 SendData(ne);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                 
+                logger.ErrorMethod("发送龙门线体报警信息出错", ex);
             }
             //ne = ParserMid(mid);
         }

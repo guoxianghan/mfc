@@ -169,7 +169,7 @@ namespace SNTON.Components.AGV
             }
             try
             {
-                var tmp = ReadList<AGVTasksEntity>(session, $"FROM AGVTasksEntity where  taskno = {taskno} AND IsDeleted=" + Constants.SNTONConstants.DeletedTag.NotDeleted + " order by ID desc");
+                var tmp = ReadList<AGVTasksEntity>(session, $"FROM AGVTasksEntity where  taskno ='{taskno}' AND IsDeleted=" + Constants.SNTONConstants.DeletedTag.NotDeleted + " order by ID desc");
                 if (tmp.Any())
                 {
                     ret = tmp.FirstOrDefault();
@@ -189,34 +189,36 @@ namespace SNTON.Components.AGV
             return ret;
         }
 
-        public void SaveAGVTaskStatus(long taskno, byte status, IStatelessSession session = null)
+        public bool SaveAGVTaskStatus(long taskno, byte status, IStatelessSession session = null)
         {
             AGVTasksEntity ret = null;
-
+            bool r = false;
             if (session == null)
             {
-                BrokerDelegate(() => SaveAGVTaskStatus(taskno, status, session), ref session);
-                return;
+                r = BrokerDelegate(() => SaveAGVTaskStatus(taskno, status, session), ref session);
+                return r;
             }
             try
             {
-                var tmp = ReadList<AGVTasksEntity>(session, $"FROM AGVTasksEntity where  taskno = {taskno} AND IsDeleted=" + Constants.SNTONConstants.DeletedTag.NotDeleted + " order by ID desc");
+                var tmp = ReadList<AGVTasksEntity>(session, $"FROM AGVTasksEntity where  taskno ='{taskno}'  order by ID desc");
                 if (tmp.Any())
                 {
                     ret = tmp.FirstOrDefault();
                     ret.Status = status;
                     Update(session, ret);
+                    r = true;
                 }
                 else
                 {
-                    throw new ArgumentNullException("没有找到实体");
+                    logger.ErrorMethod("没有找到AGVTask实体,TaskNo=" + taskno);
                 }
             }
             catch (Exception e)
             {
+                r = false;
                 logger.ErrorMethod("Failed to save status,taskno is " + taskno, e);
             }
-            return;
+            return r;
         }
 
         public bool UpdateEntity(AGVTasksEntity entity, IStatelessSession session = null)

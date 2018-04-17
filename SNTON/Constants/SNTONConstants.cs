@@ -32,6 +32,27 @@ namespace SNTON.Constants
             }
             return sb.ToString().Trim(c);
         }
+        public static long ToSum(this long[] a)
+        {
+            long sum = 0;
+            foreach (var item in a)
+            {
+                sum += item;
+            }
+            return sum;
+        }
+        public static long ToAverage(this long[] a)
+        {
+            if (a == null || a.Length == 0)
+                return 0;
+            long sum = 0;
+            foreach (var item in a)
+            {
+                sum += item;
+            }
+            long su = sum / a.Length;
+            return su;
+        }
         /// <summary>
         /// Deleted tag value defination
         /// </summary>

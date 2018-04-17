@@ -44,5 +44,14 @@ namespace SNTON.Components.SQLCommand
 
         bool ExceptionRobotArmTask(List<RobotArmTaskEntity> armtsks, List<MidStorageEntity> mids, IStatelessSession session = null);
         bool ClearInStoreToOutStoreLine(List<MidStorageEntity> updatemids, AGVTasksEntity updateagvtsk, List<RobotArmTaskEntity> updatearmtsks, List<InStoreToOutStoreSpoolEntity> updateoutspools, IStatelessSession session = null);
+
+        /// <summary>
+        /// 创建直通口出库任务,并关联相应的机台
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <param name="agvtsk"></param>
+        /// <param name="updateequiptsks"></param>
+        /// <returns></returns>
+        bool InStoreToOutStoreLine(List<InStoreToOutStoreSpoolViewEntity> instoreoutstore, AGVTasksEntity agvtsk, List<EquipTaskViewEntity> updateequiptsks, IStatelessSession session = null);
     }
 }

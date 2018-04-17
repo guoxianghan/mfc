@@ -299,5 +299,40 @@ namespace SNTON.Components.SQLCommand
             }
             return ret;
         }
+
+        public bool InStoreToOutStoreLine(List<InStoreToOutStoreSpoolViewEntity> instoreoutstore, AGVTasksEntity agvtsk, List<EquipTaskViewEntity> updateequiptsks, IStatelessSession session = null)
+        {
+            bool ret = false;
+            if (session == null)
+            {
+                ret = BrokerDelegate(() => InStoreToOutStoreLine(instoreoutstore, agvtsk, updateequiptsks, session), ref session);
+                return ret;
+            }
+            try
+            {
+                protData.EnterWriteLock();
+                var equiptsklist = new List<EquipTaskEntity>();
+                EquipTaskEntity tsk = null;
+                foreach (var item in updateequiptsks)
+                {
+                    tsk = new EquipTaskEntity() { Length = item.Length, Created = item.Created, TaskGuid = item.TaskGuid, Deleted = item.Deleted, EquipContollerId = item.EquipContollerId, Id = item.Id, IsDeleted = item.IsDeleted, PlantNo = item.PlantNo, ProductType = item.ProductType, Source = item.Source, Status = item.Status, TaskLevel = item.TaskLevel, TaskType = item.TaskType, Updated = item.Updated, Supply1 = item.Supply1 };
+                    equiptsklist.Add(tsk);
+                }
+                Update(session, instoreoutstore);
+                Update(session, agvtsk);
+                Update(session, equiptsklist);
+                ret = true;
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+                logger.ErrorMethod("创建直通口出库任务失败", ex);
+            }
+            finally
+            {
+                protData.ExitWriteLock();
+            }
+            return ret;
+        }
     }
 }

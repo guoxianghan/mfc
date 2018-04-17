@@ -1154,18 +1154,18 @@ namespace SNTON.BusinessLogic
                 if (this.GetMidStoreLineLogic(i) != null)
                 {
                     if (this.GetMidStoreLineLogic(i).IsScanEnough)
-                        sb.Append(i + "号暂存库扫码口满; ");
+                        sb.Append(i + "号库扫码口满; ");
                     if (this.GetMidStoreLineLogic(i).IsWarning)
-                        sb.Append(i + "号暂存库线体报警; ");
+                        sb.Append(i + "号库线体报警; ");
                     if (this.GetMidStoreLineLogic(i).IsStoreageEnough)
-                        sb.Append(i + "号暂存库已满; ");
+                        sb.Append(i + "号库已满; ");
                 }
                 if (GetMidStoreRobotArmLogic(i) != null)
                 {
                     if (GetMidStoreRobotArmLogic(i).IsWarning)
                         sb.Append(i + "号龙门退出自动或故障; ");
-                    if (!GetMidStoreRobotArmLogic(i).IsCanSend)
-                        sb.Append(i + "号龙门库不允许下发指令; ");
+                    //if (!GetMidStoreRobotArmLogic(i).IsCanSend)
+                    //    sb.Append(i + "号龙门库不允许下发指令; ");
                 }
             }
             if (sb.Length == 0)

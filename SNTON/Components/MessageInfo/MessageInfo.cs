@@ -215,6 +215,8 @@ namespace SNTON.Components.MessageInfo
                 //    sb.Append(" AND " + nameof(m.MsgLevel) + "=" + searchRequest.msgLevel);
                 if (!string.IsNullOrEmpty(searchRequest.Key))
                     sb.Append(" AND Message" + " LIKE '%" + searchRequest.Key + "%'");
+                if (searchRequest.MidStoreage != 0)
+                    sb.Append(" AND MidStoreage =" + searchRequest.MidStoreage);
 
                 string sql = "SELECT * FROM [SNTON].[SNTON].[Message]  WHERE ID IN(SELECT MAX(ID) FROM[SNTON].[SNTON].[Message]  GROUP BY [Source],[MsgContent]) AND  ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted + sb?.ToString() + " ORDER BY ID DESC";
                 //sql = "SELECT  ROW_NUMBER() OVER (ORDER BY ID desc) AS RowNumber, * FROM [SNTON].[SNTON].[Message]  WHERE ID IN (SELECT MAX(ID) FROM[SNTON].[SNTON].[Message] GROUP BY [Source],[MsgContent]) AND  ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted + sb?.ToString() + $"AND RowNumber>={searchRequest.pageSize * searchRequest.pageNumber-1} AND RowNumber<={searchRequest.pageSize * searchRequest.pageNumber} ORDER BY ID DESC";

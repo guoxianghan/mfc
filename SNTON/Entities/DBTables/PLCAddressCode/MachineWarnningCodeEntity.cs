@@ -46,6 +46,9 @@ namespace SNTON.Entities.DBTables.PLCAddressCode
         /// </summary>
         [DataMember]
         public virtual string Description { get; set; }
+        /// <summary>
+        /// 是否触发报警
+        /// </summary>
         public virtual bool Value { get; set; }
 
     }

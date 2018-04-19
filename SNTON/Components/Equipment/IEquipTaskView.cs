@@ -12,7 +12,7 @@ namespace SNTON.Components.Equipment
     {
         List<EquipTaskViewEntity> GetEquipTaskViewEntities(string sql, IStatelessSession session);
         int Update(IStatelessSession session, params EquipTaskViewEntity[] equiptsks);
-        int UpdateStatus(IStatelessSession session, byte status, long[] ids);
+        int UpdateStatus(IStatelessSession session, byte status,params long[] ids);
         List<EquipTaskViewEntity> GetEquipTaskViewNotDeleted(string sql, IStatelessSession session = null);
         List<EquipTaskViewEntity> RealTimeEquipTaskStatus { get; set; }
 

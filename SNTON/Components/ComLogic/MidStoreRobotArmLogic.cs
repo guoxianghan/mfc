@@ -43,7 +43,7 @@ namespace SNTON.Components.ComLogic
             mxParser.Init(configNode);
             return mxParser;
         }
-        List<MachineWarnningCodeEntity> _WarnningCode = new List<MachineWarnningCodeEntity>();
+        public List<MachineWarnningCodeEntity> _WarnningCode = new List<MachineWarnningCodeEntity>();
         List<string> _warningMessageList = new List<string>();
         public override void Init(XmlNode configNode)
         {

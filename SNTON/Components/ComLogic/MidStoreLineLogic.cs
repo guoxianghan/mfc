@@ -41,7 +41,7 @@ namespace SNTON.Components.ComLogic
             //qrcode = $"./StorageArea{StorageArea}QrCode.json";
         }
         //Dictionary<string, bool> _DicWarnning = new Dictionary<string, bool>();
-        List<MachineWarnningCodeEntity> _WarnningCode = new List<MachineWarnningCodeEntity>();
+        public List<MachineWarnningCodeEntity> _WarnningCode = new List<MachineWarnningCodeEntity>();
         public new static MidStoreLineLogic Create(XmlNode node)
         {
             MidStoreLineLogic m = new MidStoreLineLogic();
@@ -155,7 +155,7 @@ namespace SNTON.Components.ComLogic
                     if (binary[c] != '0' && !fi.Value)
                     {
                         fi.Value = true;
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7 , MidStoreage= this.StorageArea });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7, MidStoreage = this.StorageArea });
 
                     }
                     else
@@ -465,7 +465,7 @@ namespace SNTON.Components.ComLogic
                 if (!IsScanEnough)
                 {
                     IsScanEnough = true;
-                    this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "暂存库扫码异常口满", Source = this.StorageArea + "暂存库扫码异常口满", MsgLevel = 7 ,MidStoreage = this.StorageArea });
+                    this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "暂存库扫码异常口满", Source = this.StorageArea + "暂存库扫码异常口满", MsgLevel = 7, MidStoreage = this.StorageArea });
                 }
                 return;
             }

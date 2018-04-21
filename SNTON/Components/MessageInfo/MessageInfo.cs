@@ -49,29 +49,17 @@ namespace SNTON.Components.MessageInfo
             }
             try
             {
-                string queryString = @"select * from 
-                                (select row_number() over (order by Id) as rownum, t.* from {0} t 
-                                 where created <= :created 
-                                 and created is not null
-                                 and IsDeleted = :deletedtag)
-                                 where rownum <= :deletedRows";
-                var dataList = ReadSqlList<MessageEntity>(theSession, string.Format(queryString, DatabaseDbTable),
-                                                     new
-                                                     {
-                                                         created = olderThan,
-                                                         deletedTag = SNTONConstants.DeletedTag.NotDeleted,
-                                                         deletedRows = threadDeleteMaxRecords
-                                                     });
-                if (dataList.Any())
-                {
-                    dataList.ForEach(r => r.IsDeleted = SNTONConstants.DeletedTag.Deleted);
-                    Update(theSession, dataList);
-                }
+                protData.EnterWriteLock();
+                string sql = $"UPDATE {DatabaseDbTable} SET ISDELETED=1 WHERE CREATED<='{olderThan.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss")}'  AND  ISDELETED=0";
+                int result = RunSqlStatement(theSession, sql);
             }
             catch (Exception e)
             {
-                logger.ErrorMethod("Failed to mark data for the deletion", e);
-                throw;
+                logger.ErrorMethod("Failed to mark data for the deletion " + DatabaseDbTable, e);
+            }
+            finally
+            {
+                protData.ExitWriteLock();
             }
         }
         #region Interface inplementation
@@ -242,7 +230,30 @@ namespace SNTON.Components.MessageInfo
         #region
 
         #endregion
-
+        protected override int DeleteDataMarkedDeleted(IStatelessSession theSession = null)
+        {
+            int resut = 0;
+            if (theSession == null)
+            {
+                resut = BrokerDelegate(() => DeleteDataMarkedDeleted(theSession), ref theSession);
+                return resut;
+            }
+            try
+            {
+                protData.EnterWriteLock();
+                string sql = $"DELETE {DatabaseDbTable} WHERE ISDELETED=1";
+                resut = RunSqlStatement(theSession, sql);
+            }
+            catch (Exception e)
+            {
+                logger.ErrorMethod("Failed to delete data for the deletion " + DatabaseDbTable, e);
+            }
+            finally
+            {
+                protData.ExitWriteLock();
+            }
+            return resut;
+        }
 
         public int Add(IStatelessSession session, params MessageEntity[] messages)
         {

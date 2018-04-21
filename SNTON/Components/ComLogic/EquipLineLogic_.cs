@@ -81,28 +81,29 @@ namespace SNTON.Components.ComLogic
                     continue;
                 foreach (var task in EquipTask)
                 {
-                    Neutrino nwrite = new Neutrino();
-                    nwrite.TheName = "WriteReceive";
+                    Neutrino nwrite_receive = new Neutrino();
+                    nwrite_receive.TheName = "WriteReceive";
                     sbequipname.Clear();
-                    Neutrino n = new Neutrino();
-                    n.TheName = "SendCreateAGV";
+                    Neutrino nagv = new Neutrino();
+                    nagv.TheName = "SendCreateAGV";
                     #region 通知地面滚筒准备接收
                     Neutrino readwas = new Neutrino();
                     readwas.TheName = "ReadWAStatus";
                     var cmd = _EquipCmdList.FirstOrDefault(x => x.EquipFlag.Trim() == task.EquipFlag.Trim());
                     if (cmd == null)
                     {
-                        logger.ErrorMethod("找不到对应的地面滚筒编号:" + JsonConvert.SerializeObject(task));
+                        //logger.ErrorMethod("找不到对应的地面滚筒编号:" + JsonConvert.SerializeObject(task));
                         continue;
                     }
-                    nwrite.AddField(cmd.AGVDisStatus.Trim(), item.TaskType.ToString());
-                    bool r = MXParser.SendData(nwrite, 3);
+                    nwrite_receive.AddField(cmd.AGVDisStatus.Trim(), item.TaskType.ToString());
+                    bool r = MXParser.SendData(nwrite_receive, 3);
                     Thread.Sleep(800);
                     sbequipname.Append(cmd.EquipName);
 
                     readwas.AddField(cmd.WAStatus, "0");
                     var readr = MXParser.ReadData(readwas, true);
                     Thread.Sleep(800);
+                    r = MXParser.SendData(nwrite_receive, 3);
                     if (!readr.Item1)
                     {
                         continue;
@@ -112,17 +113,20 @@ namespace SNTON.Components.ComLogic
                     int wasagv = readr.Item2.GetIntOrDefault(cmd.WAStatus);
                     if (wasagv != 0)
                     {
-                        task.Status = 6;
-                        this.BusinessLogic.EquipTaskViewProvider.Update(null, task);
-                        //this.BusinessLogic.EquipTaskViewProvider.Update(null, 6, task.Id);
-                        continue;
+                        //task.Status = 6;
+                        //this.BusinessLogic.EquipTaskViewProvider.UpdateStatus(null, 6, task.Id);
+                        //continue;
                     }
-                    if (!n.FieldExists(cmd.WAStatus))
-                        n.AddField(cmd.WAStatus, item.TaskType.ToString());
+                    if (!nagv.FieldExists(cmd.WAStatus))
+                        nagv.AddField(cmd.WAStatus, item.TaskType.ToString());
                     task.Status = 9;
-                    r = MXParser.SendData(n, 3);
+                    r = MXParser.SendData(nagv, 3);
                     Thread.Sleep(600);
-                    r = MXParser.SendData(n, 3);
+                    r = MXParser.SendData(nagv, 3);
+                    Thread.Sleep(600);
+                    r = MXParser.SendData(nagv, 3);
+                    Thread.Sleep(600);
+                    r = MXParser.SendData(nagv, 3);
                     if (!r)
                     {
                         logger.WarnMethod("通知地面滚筒准备接收失败,EquipTask:" + JsonConvert.SerializeObject(task));
@@ -132,7 +136,7 @@ namespace SNTON.Components.ComLogic
                     {
                         logger.WarnMethod("通知地面滚筒准备接收,EquipTask:" + JsonConvert.SerializeObject(task));
                     }
-                    var light = MXParser.ReadData(n, true);
+                    var light = MXParser.ReadData(nagv, true);
                     Thread.Sleep(1000);
                     #region 重新读取刚刚写入的光电,验证有没有写入成功
                     if (!light.Item1)
@@ -142,7 +146,7 @@ namespace SNTON.Components.ComLogic
                     }
                     else
                     {
-                        int kv = n.GetIntOrDefault(cmd.WAStatus);
+                        int kv = light.Item2.GetIntOrDefault(cmd.WAStatus);
                         if (kv == 0)
                         {//光电写入失败 
                             logger.WarnMethod("光电写入失败:" + cmd.ControlID + "," + sbequipname);
@@ -429,6 +433,8 @@ namespace SNTON.Components.ComLogic
 
                 foreach (var item in items)
                 {
+                    //if (!item.EquipName.Contains("ST-3A-04-11"))
+                    //    continue;
                     #region MyRegion
                     ne.AddField(item.LWCS.Trim(), "0");// 1出拉空轮; 2入拉满轮 W00
                     ne.AddField(item.WAStatus.Trim(), "0");//是否已调度AGV 1，已接收滚筒出料请求；2，已接收入料至滚筒请求 光电 W400
@@ -509,7 +515,15 @@ namespace SNTON.Components.ComLogic
                     }
                     else
                     {
-                        logger.InfoMethod("已创建该设备的任务,Created:" + equiptsk.FirstOrDefault().Created + ",EquipTaskID:" + equiptsk.FirstOrDefault().Id + ",EquipContollerId:" + equiptsk.FirstOrDefault().EquipContollerId);
+                        if (equiptsk.Exists(x => x.TaskType == inOrout))//|| equiptsk.Exists(x => x.TaskType == agvrunning)
+                        {
+                            r = true;
+                            logger.InfoMethod("已创建该设备的任务,Created:" + equiptsk.FirstOrDefault().Created + ",EquipTaskID:" + equiptsk.FirstOrDefault().Id + ",EquipContollerId:" + equiptsk.FirstOrDefault().EquipContollerId);
+                        }
+                        else
+                        {
+                            logger.InfoMethod("已经创建该设备的任务,但任务类型不匹配,"+JsonConvert.SerializeObject(equiptsk.FirstOrDefault()));
+                        }
                     }
                     if (equiptsk != null && equiptsk.FindAll(x => x.TaskType != inOrout).Count != 0)
                     {
@@ -535,6 +549,8 @@ namespace SNTON.Components.ComLogic
                 SendData(nwrite); //通知PLC已经创建任务
                 Thread.Sleep(1000);
                 SendData(nwrite); //通知PLC已经创建任务
+                Thread.Sleep(1000);
+                SendData(nwrite); //通知PLC已经创建任务
                 //bool r = MXParser.TrySendDataWithResult(nwrite);
             }
         }
@@ -544,14 +560,13 @@ namespace SNTON.Components.ComLogic
         /// </summary>
         void RunEquipLine()
         {
-            Random ran = new Random();
-            int i = ran.Next(1, 20);
             Stopwatch watch = Stopwatch.StartNew();//创建一个监听器
             watch.Start();
             try
             {
                 logger.InfoMethod($"开始读取地面滚筒请求 {this.PLCNo}");
-                ReadEquipLineStatus();
+                //ReadEquipLineStatus();
+                ReadEquipLine();
                 logger.InfoMethod($"结束读取地面滚筒请求 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
                 watch.Restart();
             }
@@ -564,7 +579,7 @@ namespace SNTON.Components.ComLogic
             try
             {
                 logger.InfoMethod($"开始写光电 {this.PLCNo}");
-                SendCreateAGV();
+                //SendCreateAGV();
                 logger.InfoMethod($"结束写光电 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
             }
             catch (Exception ex)

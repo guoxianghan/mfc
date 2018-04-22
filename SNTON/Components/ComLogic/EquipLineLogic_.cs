@@ -154,10 +154,12 @@ namespace SNTON.Components.ComLogic
                         }
                         else
                         {
-                            task.Status = 4;
+                            if (item.AGVId == 0)
+                                task.Status = 4;
+                            else
+                                task.Status = 6;
+                            //4等待调度AGV,6AGV运行中
                             int cout = this.BusinessLogic.EquipTaskViewProvider.Update(null, task);
-                            //if (cout == 0)
-                            //    continue;
                             logger.WarnMethod("光电写入成功:" + cmd.ControlID + "," + sbequipname);
                         }
 
@@ -167,9 +169,7 @@ namespace SNTON.Components.ComLogic
                     logger.InfoMethod("已通知地面滚筒准备接收:" + cmd.WAStatus + "," + item.TaskType.ToString() + $",TaskGuid:{item.TaskGuid.ToString()}");
                     #endregion
                 }
-                //if (!EquipTask.Exists(x => x.Status == 6))
-                //    continue;
-                if (EquipTask.Exists(x => x.Status != 4))
+                if (EquipTask.Exists(x => x.Status != 4 && x.Status != 6))
                     continue;
                 //判断2个是否都写成功  
                 if (item.Status == 16)

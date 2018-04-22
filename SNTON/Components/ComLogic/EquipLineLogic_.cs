@@ -154,7 +154,7 @@ namespace SNTON.Components.ComLogic
                         }
                         else
                         {
-                            task.Status = 6;
+                            task.Status = 4;
                             int cout = this.BusinessLogic.EquipTaskViewProvider.Update(null, task);
                             //if (cout == 0)
                             //    continue;
@@ -169,7 +169,7 @@ namespace SNTON.Components.ComLogic
                 }
                 //if (!EquipTask.Exists(x => x.Status == 6))
                 //    continue;
-                if (EquipTask.Exists(x => x.Status != 6))
+                if (EquipTask.Exists(x => x.Status != 4))
                     continue;
                 //判断2个是否都写成功  
                 if (item.Status == 16)
@@ -497,8 +497,8 @@ namespace SNTON.Components.ComLogic
                     }
                     #endregion
                     var equiptsk = this.BusinessLogic.EquipTaskProvider.GetEquipTaskEntitySqlWhere($"[EquipContollerId]='{item.ControlID}' and Status IN(0,1,2,3,4,5,6,9,10)");
-
-                    if (equiptsk == null || equiptsk.Count == 0)
+                    if (equiptsk == null) equiptsk = new List<EquipTaskEntity>();
+                    if (equiptsk.Count == 0)
                     {
                         #region MyRegion
                         if (inOrout == 1)
@@ -522,7 +522,7 @@ namespace SNTON.Components.ComLogic
                         }
                         else
                         {
-                            logger.InfoMethod("已经创建该设备的任务,但任务类型不匹配,"+JsonConvert.SerializeObject(equiptsk.FirstOrDefault()));
+                            logger.InfoMethod("已经创建该设备的任务,但任务类型不匹配," + JsonConvert.SerializeObject(equiptsk.FirstOrDefault()));
                         }
                     }
                     if (equiptsk != null && equiptsk.FindAll(x => x.TaskType != inOrout).Count != 0)
@@ -579,7 +579,7 @@ namespace SNTON.Components.ComLogic
             try
             {
                 logger.InfoMethod($"开始写光电 {this.PLCNo}");
-                //SendCreateAGV();
+                SendCreateAGV();
                 logger.InfoMethod($"结束写光电 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
             }
             catch (Exception ex)

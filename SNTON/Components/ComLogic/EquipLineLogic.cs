@@ -96,7 +96,7 @@ namespace SNTON.Components.ComLogic
                     int wasagv = readr.Item2.GetIntOrDefault(cmd.WAStatus);
                     if (wasagv != 0)
                     {
-                        task.Status = 4;
+                        //task.Status = 4;
                         this.BusinessLogic.EquipTaskViewProvider.Update(null, task);
                         //this.BusinessLogic.EquipTaskViewProvider.Update(null, 6, task.Id);
                         continue;
@@ -133,7 +133,7 @@ namespace SNTON.Components.ComLogic
                         }
                         else
                         {
-                            task.Status = 6;
+                            task.Status = 4;
                             int cout = this.BusinessLogic.EquipTaskViewProvider.Update(null, task);
                             //if (cout == 0)
                             //    continue;
@@ -148,7 +148,7 @@ namespace SNTON.Components.ComLogic
                 }
                 //if (!EquipTask.Exists(x => x.Status == 6))
                 //    continue;
-                if (EquipTask.Exists(x => x.Status != 6))
+                if (EquipTask.Exists(x => x.Status != 4))
                     continue;
                 //判断2个是否都写成功  
                 if (item.Status == 16)

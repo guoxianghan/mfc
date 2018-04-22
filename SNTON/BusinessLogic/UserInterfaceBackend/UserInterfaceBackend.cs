@@ -857,46 +857,46 @@ namespace SNTON.BusinessLogic
                     if (equiptsks == null)
                         continue;
                     var equptsk = equiptsks.FirstOrDefault(x => x.EquipContollerId == item.EquipControllerId);
-                    if (equptsk != null)
-                    {
-                        if (equptsk.TaskType == 1)
-                        {
-                            da.Status = 5;
-                        }
-                        else
-                        {
-                            da.Status = 2;
-                        }
-                        switch (equptsk.Status)
-                        {//0初始化EquipTask,1创建AGVTask和龙门Task,2正在抓取,3,抓取完毕,4等待调度AGV,5已调度AGV,6AGV运行中,7任务完成(拉空论或满轮),8任务失败,9已通知地面滚筒创建好任务,10库里单丝不够
-                            #region MyRegion
-                            case 0:
-                                break;
-                            case 1:
-                                break;
-                            case 2:
-                                da.Status = 6;
-                                break;
-                            case 3:
-                            case 4:
-                                break;
-                            case 5:
-                            case 6:
-                                da.Status = 4;
-                                break;
-                            case 7:
-                                break;
-                            case 8:
-                                break;
-                            case 9:
-                                break;
-                            case 10:
-                                da.Status = 3;
-                                break;
-                            default:
-                                break;
-                                #endregion
-                        }
+                    if (equptsk == null)
+                        continue;
+
+                    //if (equptsk.TaskType == 1)
+                    //{
+                    //    da.Status = 5;
+                    //}
+                    //else
+                    //{
+                    //    da.Status = 2;
+                    //}
+                    switch (equptsk.Status)
+                    {//0初始化EquipTask,1创建AGVTask和龙门Task,2正在抓取,3,抓取完毕,4等待调度AGV,5已调度AGV,6AGV运行中,7任务完成(拉空论或满轮),8任务失败,9已通知地面滚筒创建好任务,10库里单丝不够
+                        #region MyRegion
+                        case 0:
+                            break;
+                        case 1:
+                            break;
+                        case 2:
+                            da.Status = 6;
+                            break;
+                        case 3:
+                        case 4:
+                            break;
+                        case 5:
+                        case 6:
+                            da.Status = 4;
+                            break;
+                        case 7:
+                            break;
+                        case 8:
+                            break;
+                        case 9:
+                            break;
+                        case 10:
+                            da.Status = 3;
+                            break;
+                        default:
+                            break;
+                            #endregion
                     }
                 }
             return obj;
@@ -1147,31 +1147,44 @@ namespace SNTON.BusinessLogic
         public ResponseDataBase StoreageStatus()
         {
             ResponseDataBase obj = new ResponseDataBase();
-            obj.data = new List<string>(1);
-            StringBuilder sb = new StringBuilder();
+            obj.data = new List<string>();
             for (int i = 1; i <= 3; i++)
             {
                 if (this.GetMidStoreLineLogic(i) != null)
                 {
                     if (this.GetMidStoreLineLogic(i).IsScanEnough)
-                        sb.Append(i + "号库扫码口满; ");
+                        obj.data.Add(i + "号库扫码口满; ");
                     if (this.GetMidStoreLineLogic(i).IsWarning)
-                        sb.Append(i + "号库线体报警; ");
+                        obj.data.Add(i + "号库线体报警; ");
                     if (this.GetMidStoreLineLogic(i).IsStoreageEnough)
-                        sb.Append(i + "号库已满; ");
+                        obj.data.Add(i + "号库已满; ");
+                    var warnning = this.GetMidStoreLineLogic(i)._WarnningCode?.FindAll(x => x.Value);
+                    if (warnning != null && warnning.Count != 0)
+                    {
+                        warnning.ForEach(x =>
+                        {
+                            obj.data.Add(i + "号线体" + x.Description);
+                        });
+                    }
                 }
                 if (GetMidStoreRobotArmLogic(i) != null)
                 {
                     if (GetMidStoreRobotArmLogic(i).IsWarning)
-                        sb.Append(i + "号龙门退出自动或故障; ");
+                        obj.data.Add(i + "号龙门退出自动或故障; ");
                     //if (!GetMidStoreRobotArmLogic(i).IsCanSend)
-                    //    sb.Append(i + "号龙门库不允许下发指令; ");
+                    //    sb.Append(i + "号龙门库不允许下发指令; "); 
+                    var warnning = this.GetMidStoreRobotArmLogic(i)._WarnningCode?.FindAll(x => x.Value);
+                    if (warnning != null && warnning.Count != 0)
+                    {
+                        warnning.ForEach(x =>
+                        {
+                            obj.data.Add(i + "号龙门" + x.Description);
+                        });
+                    }
                 }
             }
-            if (sb.Length == 0)
-                obj.data.Add("龙门库运行正常");
-            else
-                obj.data.Add(sb.ToString());
+            //if (obj.data.Count == 0)
+            //    obj.data.Add("龙门库运行正常");
             return obj;
         }
 
@@ -1265,7 +1278,7 @@ namespace SNTON.BusinessLogic
             var s2l2 = this.AGVTasksProvider.GetAGVTasks(5, "StorageArea=2 AND StorageLineNo=2", null);
             var s3l1 = this.AGVTasksProvider.GetAGVTasks(5, "StorageArea=3 AND StorageLineNo=1", null);
             var s3l2 = this.AGVTasksProvider.GetAGVTasks(5, "StorageArea=3 AND StorageLineNo=2", null);
-            var kong = this.AGVTasksProvider.GetAGVTasks(5, "StorageLineNo=0", null);
+            var kong = this.AGVTasksProvider.GetAGVTasks(20, "TaskType=1 AND IsDeleted=0 AND [Status] <=20", null);
             List<AGVTasksEntity> d = new List<AGVTasksEntity>();
             if (s1l1 != null)
                 d.AddRange(s1l1);

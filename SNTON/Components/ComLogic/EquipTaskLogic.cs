@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
+using SNTON.Constants;
 using SNTON.Entities.DBTables.AGV;
 using SNTON.Entities.DBTables.Equipments;
+using SNTON.Entities.DBTables.InStoreToOutStore;
 using SNTON.Entities.DBTables.MES;
 using SNTON.Entities.DBTables.Message;
 using SNTON.Entities.DBTables.MidStorage;
@@ -36,7 +38,29 @@ namespace SNTON.Components.ComLogic
         }
         public EquipTaskLogic()
         {
-            thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 1000);
+             //thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 3000);
+           thread_ReadDervice = new VIThreadEx(RunCreateTask, null, "thread for InitRobotAGVTask", 1000);
+        }
+
+        void RunCreateTask()
+        {
+            try
+            {
+                //InitAGVUnionTask();
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("执行InitAGVUnionTask出错", ex);
+            }
+            try
+            {
+                InitRobotAGVTask();
+            }
+            catch (Exception ex)
+            {
+
+                logger.ErrorMethod("执行InitRobotAGVTask出错", ex);
+            }
         }
         /// <summary>
         /// 轮询地面滚筒请求,分车间,暂存库,供料区域,AGV路线创建龙门AGV任务
@@ -76,10 +100,10 @@ namespace SNTON.Components.ComLogic
                 agvout.EquipIdListTarget = "";
                 agvout.StorageArea = StorageArea;
                 agvout.StorageLineNo = 0;
-                equiptsk[0].Status = 4;
+                equiptsk[0].Status = 1;
                 equiptsk[0].TaskGuid = g;
                 equiptsk[0].Updated = dt;
-                equiptsk[1].Status = 4;
+                equiptsk[1].Status = 1;
                 equiptsk[1].TaskGuid = g;
                 equiptsk[1].Updated = dt;
                 agvout.TaskLevel = 6;
@@ -108,7 +132,6 @@ namespace SNTON.Components.ComLogic
             var armtsks = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskStatus in(0,1,2,3)");//找到正在执行的ArmTask
             if (armtsks == null)
                 armtsks = new List<RobotArmTaskEntity>();
-            var group = list.GroupBy(x => x.AGVRoute.Trim());
             var routeStructcode = from i in list
                                   group new EquipTaskViewEntity() { Supply1 = i.Supply1.Trim(), AGVId = i.AGVId, AGVRoute = i.AGVRoute.Trim(), AGVStatus = i.AGVStatus, AStation = i.AStation, BStation = i.BStation, Created = i.Created, Deleted = i.Deleted, EquipContollerId = i.EquipContollerId, EquipFlag = i.EquipFlag, Id = i.Id, IsDeleted = i.IsDeleted, Length = i.Length, Length2 = i.Length2, PlantNo = i.PlantNo, PLCNo = i.PLCNo, ProductType = i.ProductType, Source = i.Source, Status = i.Status, StorageArea = i.StorageArea, Supply2 = i.Supply2, SupplyQty1 = i.SupplyQty1, SupplyQty2 = i.SupplyQty2, TaskGuid = i.TaskGuid, TaskLevel = i.TaskLevel, TaskType = i.TaskType, TitleProdName = i.TitleProdName, Updated = i.Updated }
                                   by new { i.AGVRoute, i.Supply1 }
@@ -162,8 +185,8 @@ namespace SNTON.Components.ComLogic
                         {
                             if (storeno == 2 || storeno == 3)
                             {
-                                equiptsks.ToList().ForEach(x => x.Status = 10);
-                                this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
+                                //equiptsks.ToList().ForEach(x => x.Status = 10);
+                                //this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
                             }
                         }
                         #endregion
@@ -221,6 +244,39 @@ namespace SNTON.Components.ComLogic
                 return r;
             }
             else return false;
+        }
+        /// <summary>
+        /// 直通口是否有准备好待接收的单丝
+        /// </summary>
+        /// <param name="equiptsk"></param>
+        /// <param name="storeageno"></param>
+        /// <returns></returns>
+        Tuple<AGVTasksEntity, List<InStoreToOutStoreSpoolViewEntity>> InStoreHasSpools(EquipTaskViewEntity equiptsk, int storeageno)
+        {
+            //equiptsks = equiptsks.OrderBy(x => x.AStation).ToList();
+            //var equiptsk = equiptsks[0];
+            var list = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpool(storeageno, this.PlantNo, null);
+            if (list == null || list.Count == 0)
+                return null;
+            //var outstore = list.FirstOrDefault(x => x.Status == 3);
+            //if (outstore == null)
+            //    return false;
+            var equip = this.BusinessLogic.EquipConfigerProvider.EquipConfigers.FirstOrDefault(x => x.ControlID == equiptsk.EquipContollerId);
+            var machstructcode = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, equip.MachCode.Trim());
+            if (machstructcode == null || machstructcode.Count == 0)
+                return null;
+            tblProdCodeStructMachEntity prod = machstructcode[0];
+            if (prod.ProdCodeStructMark4 == null)
+            {
+                return null;
+            }
+            var instore = list.FindAll(x => x.Status == 3 && x.StructBarCode.Trim() == prod.ProdCodeStructMark4.StructBarCode.Trim());
+            if (instore == null)
+                return null;
+            var agvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTask($"TaskGuid in ('{instore[0].Guid.ToString()}')");
+            if (agvtsk != null)
+                return new Tuple<AGVTasksEntity, List<InStoreToOutStoreSpoolViewEntity>>(agvtsk, instore);
+            else return null;
         }
         /*
         正常出库逻辑
@@ -331,10 +387,18 @@ namespace SNTON.Components.ComLogic
                 */
                 return -1;
             }
-            //暂存库单丝轮数量足够创建一车任务并且需要该类型单丝轮的设备也满一车
-            //创建龙门Task和AGVTask
-            //更新EquipTask状态
-            //更新库位状态
+            bool result = CreateOutStoreageTask(storageno, lineno, seq, exequiptsk, tskconfig, creaequptsk, needlspools, needrspools);
+            if (result)
+                return 1;//一次只执行一个龙门Task  
+            else return 0;
+        }
+
+        //暂存库单丝轮数量足够创建一车任务并且需要该类型单丝轮的设备也满一车
+        //创建龙门Task和AGVTask
+        //更新EquipTask状态
+        //更新库位状态
+        private bool CreateOutStoreageTask(short storageno, int lineno, int seq, EquipTaskViewEntity exequiptsk, Tuple<int, int, int, int, int> tskconfig, List<EquipTaskViewEntity> creaequptsk, List<MidStorageSpoolsEntity> needlspools, List<MidStorageSpoolsEntity> needrspools)
+        {
             var guid = Guid.NewGuid();
             //通过GUID标记一个龙门任务单元
             DateTime createtime = DateTime.Now;
@@ -342,7 +406,6 @@ namespace SNTON.Components.ComLogic
             List<RobotArmTaskEntity> listarmtsk = new List<RobotArmTaskEntity>();
             var agvtsk = new AGVTasksEntity() { Created = createtime, SeqNo = seq, TaskGuid = guid, PlantNo = PlantNo, ProductType = exequiptsk.ProductType, Status = 0, TaskLevel = 5 };
             int seqno = 0;
-            string ctrlid = creaequptsk[0].EquipContollerId + ";" + creaequptsk[1].EquipContollerId;
             foreach (var item in needlspools)
             {
                 item.IsOccupied = 4;
@@ -363,21 +426,24 @@ namespace SNTON.Components.ComLogic
             }
 
 
-            List<string> sqlcmds = new List<string>();
-            StringBuilder equiptsksql = new StringBuilder($"UPDATE SNTON.EquipTask SET [Status]=1,TaskGuid='{guid}',Updated='{createtime.ToString("yyyy-MM-dd HH:mm:ss")}' WHERE ID IN(");
             foreach (var equtsk in creaequptsk)
             {
                 equtsk.Status = 1;
                 equtsk.TaskGuid = guid;
                 equtsk.Updated = createtime;
-                equiptsksql.Append(equtsk.Id.ToString() + ",");
                 agvtsk.EquipIdListActual = agvtsk.EquipIdListActual + ";" + equtsk.EquipContollerId.ToString();
             }
-            sqlcmds.Add(equiptsksql.ToString().Trim(',') + ")");
-
+            agvtsk.EquipIdListActual = (from i in creaequptsk select i.EquipContollerId).ToArray().ToString(';');
+            var ser = (from i in creaequptsk select i.TaskType).ToArray().ToString(' ').Replace(" ", "");
             agvtsk.TaskType = 2;
-            if (needstoeageno == 0)
-                agvtsk.Status = 2;
+            if (ser == "2121")
+            {
+                agvtsk.TaskType = 3;
+            }
+            else if (ser == "2211")
+            {
+                agvtsk.TaskType = 4;
+            }
             #region 更新EquipTask 更新暂存库位置状态 创建AGVTask 创建龙门Task
             agvtsk.StorageArea = storageno;
             agvtsk.StorageLineNo = lineno;
@@ -400,9 +466,7 @@ namespace SNTON.Components.ComLogic
             //logger.InfoMethod(JsonConvert.SerializeObject(sqlcmds));
             logger.InfoMethod("############################################################################################################");
             #endregion
-            if (result)
-                return 1;//一次只执行一个龙门Task  
-            else return 0;
+            return result;
         }
 
         private RobotArmTaskEntity CreateOutStoreArmTask(short storageno, int lineno, Tuple<int, int, int, int, int> tskconfig, Guid guid, DateTime createtime, MidStorageSpoolsEntity spool, int seq)
@@ -436,7 +500,7 @@ namespace SNTON.Components.ComLogic
         /// <summary>
         /// 根据收到的空轮满轮任务请求,创建AGVtask
         /// </summary>
-        void InitAGVTask()
+        void InitAGVUnionTask()
         {
             var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Status IN (0,10) AND PlantNo=3", null);
             //equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Id IN(37029,37020)", null);
@@ -446,34 +510,172 @@ namespace SNTON.Components.ComLogic
             if (equiptsks == null || equiptsks.Count == 0)
                 return;
             equiptsks = equiptsks.OrderBy(x => x.Id).ToList();
+            var routeStructcode = from i in equiptsks.FindAll(x => x.TaskType == 2)
+                                  group new EquipTaskViewEntity() { Supply1 = i.Supply1.Trim(), AGVId = i.AGVId, AGVRoute = i.AGVRoute.Trim(), AGVStatus = i.AGVStatus, AStation = i.AStation, BStation = i.BStation, Created = i.Created, Deleted = i.Deleted, EquipContollerId = i.EquipContollerId, EquipFlag = i.EquipFlag, Id = i.Id, IsDeleted = i.IsDeleted, Length = i.Length, Length2 = i.Length2, PlantNo = i.PlantNo, PLCNo = i.PLCNo, ProductType = i.ProductType, Source = i.Source, Status = i.Status, StorageArea = i.StorageArea, Supply2 = i.Supply2, SupplyQty1 = i.SupplyQty1, SupplyQty2 = i.SupplyQty2, TaskGuid = i.TaskGuid, TaskLevel = i.TaskLevel, TaskType = i.TaskType, TitleProdName = i.TitleProdName, Updated = i.Updated }
+                                  by new { i.AGVRoute, i.Supply1 }
+                               into t
+                                  select t; 
+            foreach (var items in routeStructcode)
+            {//满
+                if (items.Count() < 2)
+                    continue;
+                var kong = equiptsks.FindAll(x => x.AGVRoute.Trim() == items.Key.AGVRoute.Trim() && x.TaskType == 1);
+                if (kong.Count < 2)
+                    continue;
+                var tsks = items.ToList();
+                tsks.AddRange(kong);
+                tsks = tsks.OrderBy(x => x.AStation).ToList();
+                //同排 2211,2121  
+                DateTime dt = DateTime.Now; 
 
-            var groupequiptsks = equiptsks.GroupBy(x => x.AGVRoute.Trim());
-            foreach (var items in groupequiptsks)
-            {//同排 2211,2121 
-                DateTime dt = DateTime.Now;
-                Guid guid = Guid.NewGuid();
-                var orderbyequiptsks = items.OrderBy(x => x.AStation).ToList();
-                //按照任务类型分段
-                //List<EquipTaskGroup> grouptsks = new List<EquipTaskGroup>();
-                //int tmp = 0;
-                //for (int i = 0; i < orderbyequiptsks.Count() - 1; i++)
-                //{
-                //    if (orderbyequiptsks[i].TaskType != orderbyequiptsks[i + 1].TaskType)
-                //    {
-                //        grouptsks.Add(new EquipTaskGroup() { TaskType = orderbyequiptsks[i].TaskType, Tasks = orderbyequiptsks.Skip(tmp).Take(i + 1 - tmp).ToList() });
-                //        tmp = i + 1;
-                //    }
-                //}
+                var resultcom = PermutationAndCombination<EquipTaskViewEntity>.GetCombination(tsks.ToArray(), 4);
+                List<EquipTaskViewEntity[]> list = new List<EquipTaskViewEntity[]>();
+                foreach (var item in resultcom)
+                {
+                    var ser = (from i in item select i.TaskType).ToArray().ToString(' ').Replace(" ", "");
+                    if (ser == "2121" || ser == "2211")
+                        list.Add(item);
+                }
+                if (list.Count == 0)
+                    continue;
+                #region 找到时间最早的
+                float time = float.MaxValue;
+                int id = -1;
+                for (int i = 0; i <= list.Count - 1; i++)
+                {//找到时间最早的
+                    var ids = SNTONConstants.ToAverage((from ci in list[i] select ci.Id).ToArray());
+                    if (ids <= time)
+                    {
+                        time = ids;
+                        id = i;
+                    }
+                } 
+                #endregion
+                var finallytask = list[id].ToList();
+
+                //*创建任务
+
+                var mantsk = finallytask.FindAll(x => x.TaskType == 2);
+                bool iscreated = false;
+                int result = 0;
+                for (short i = 1; i <= 3; i++)
+                {
+                    #region 直通口
+                    ///直通口检测是否可以创建送满轮任务
+                    var tuple = InStoreHasSpools(mantsk[0], i);
+                    if (tuple != null)
+                    {
+                        var agvtsk = tuple.Item1;
+                        agvtsk.Status = 2;
+                        var ser = (from ic in finallytask select ic.TaskType).ToArray().ToString(' ').Replace(" ", "");
+                        if (ser == "2121")
+                            agvtsk.TaskType = 3;
+                        else if (ser == "2211")
+                            agvtsk.TaskType = 4;
+                        else
+                        {
+                            logger.ErrorMethod("AGV复合运动 TaskType格式不对;TaskType:" + ser + ";" + JsonConvert.SerializeObject(finallytask));
+                            break;
+                        }
+                        agvtsk.PLCNo = mantsk[0].PLCNo;
+                        agvtsk.Status = 2;
+                        agvtsk.StorageLineNo = 2;
+                        agvtsk.EquipIdListActual = (from ic in finallytask select ic.EquipContollerId).ToArray().ToString(';');
+                        //agvtsk.EquipIdListTarget = TaskConfig.AGVStation(storeageno, 2);
+                        agvtsk.Updated = dt;
+                        finallytask.ForEach(x =>
+                        {
+                            x.TaskGuid = agvtsk.TaskGuid;
+                            x.Status = 4;
+                            x.Updated = dt;
+                        });
+                        var instore = tuple.Item2;
+                        instore.ForEach(x => x.Status = 8);//等待申请调度AGV 
+                        bool r = this.BusinessLogic.SqlCommandProvider.InStoreToOutStoreLine(instore, agvtsk, finallytask, null);
+                        if (r)
+                        {
+                            iscreated = true;
+                            logger.InfoMethod("创建AGV复合运动成功,guid:" + agvtsk.TaskGuid.ToString());
+                            break;
+                        }
+                        else
+                        {
+                            logger.InfoMethod("创建AGV复合运动失败,guid:" + agvtsk.TaskGuid.ToString());
+                        }
+                    }
+                    #endregion
+                }
+                if (!iscreated)
+                {
+                    #region 从暂存库获取
+                    for (short storeno = 1; storeno <= 3; storeno++)
+                    {
+                        var armtsks = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskStatus in(0,1,2,3)");//找到正在执行的ArmTask
+                        agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8,9)", null);
+                        #region MyRegion
+                        if (armtsks.FindAll(x => x.StorageArea == storeno).Count >= 3)
+                            continue;//有正在执行的龙门任务
+                        if (agvrunningtsk.FindAll(x => x.StorageArea == storeno && x.StorageLineNo == 1).Count >= 3)
+                            continue;//出库线体满
+                                     ///从暂存库创建出库任务
+                        var tskconfig = TaskConfig.GetEnoughAGVEquipCount(mantsk[0].ProductType.Trim());//8 / 12
+                        result = IsEnoughToOutStoreageTask(storeno, finallytask, 1, tskconfig);
+                        if (result == 1)
+                        {//创建 成功
+                            iscreated = true;
+                            break;
+                        }
+                        else
+                        {
+                            if (storeno == 2 || storeno == 3)
+                            {
+                            }
+                        }
+                        #endregion
+                    } 
+                    #endregion
+                }
             }
+        }
+
+        /// <summary>
+        /// 检测是否有能够创建AGV任务的EquipTask
+        /// 1创建任务;0没有创建任务,-1库里单丝不够
+        /// </summary>
+        /// <param name="storageno"></param>
+        /// <param name="supply1">按照单丝标准书分组的单组设备任务</param>
+        /// <returns>1创建任务;0没有创建任务</returns>
+        private int IsEnoughToOutStoreageTask(short storageno, List<EquipTaskViewEntity> creaequptsk, int lineno, Tuple<int, int, int, int, int> tskconfig)
+        {
+            int seq = getNextSeqNo();
+            var exequiptsk = creaequptsk.FirstOrDefault(x => x.TaskType == 2);
+            //判断lr
+            //var tskconfig = TaskConfig.GetEnoughAGVEquipCount(exequiptsk.ProductType.Trim());//8 / 12
+            if (tskconfig.Item1 == 0)
+            {
+                this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "未知的单丝型号," + exequiptsk.ProductType.Trim(), MsgLevel = 6, Source = "未知的单丝型号" });
+                return 0;
+            }
+
+            int needstoeageno = tskconfig.Item1;
+            var mids = this.BusinessLogic.MidStorageSpoolsProvider.GetMidStorages($"IsOccupied=1 AND StructBarCode='{exequiptsk.Supply1.Trim()}' AND  StorageArea={storageno}", null);
+            if (mids == null || mids.Count == 0)
+            {
+                //logger.WarnMethod("没有该长度的单丝");
+                return -1;
+            }
+            var needlspools = mids.OrderBy(x => x.Updated).ToList().FindAll(x => x.BobbinNo == 'L').Take(tskconfig.Item4).ToList();
+            var needrspools = mids.OrderBy(x => x.Updated).ToList().FindAll(x => x.BobbinNo == 'R').Take(tskconfig.Item5).ToList();
+            if (tskconfig.Item4 > needlspools.Count() || tskconfig.Item5 > needrspools.Count() || needstoeageno > mids.Count)
+            {
+                //更新设备任务状态10,料不够                
+                return -1;
+            }
+            bool result = CreateOutStoreageTask(storageno, lineno, seq, exequiptsk, tskconfig, creaequptsk, needlspools, needrspools);
+            if (result)
+                return 1;//一次只执行一个龙门Task  
+            else return 0;
         }
     }
 
-    //class EquipTaskGroup
-    //{
-    //    /// <summary>
-    //    /// 1空轮;2满轮
-    //    /// </summary>
-    //    public int TaskType { get; set; }
-    //    public List<EquipTaskViewEntity> Tasks { get; set; } = new List<EquipTaskViewEntity>();
-    //}
 }

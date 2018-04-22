@@ -176,10 +176,19 @@ LEFT JOIN [tblProdCode] P ON B.ProdCode=P.ProdCode where C.GroupID='{1}' AND B.S
                     StringBuilder sb = new StringBuilder();
                     foreach (var item in list)
                     {
-                        if (!sb.ToString().Trim(',').Contains(item.Supply1.Trim()))
-                            sb.Append("'" + item.Supply1.Trim() + "',");
-                        if (!string.IsNullOrWhiteSpace(item.Supply2) && !sb.ToString().Trim(',').Contains(item.Supply2.Trim()))
-                            sb.Append("'" + item.Supply2.Trim() + "',");
+                        try
+                        {
+                            if (string.IsNullOrEmpty(item.Supply1))
+                                continue;
+                            if (!sb.ToString().Trim(',').Contains(item.Supply1.Trim()))
+                                sb.Append("'" + item.Supply1.Trim() + "',");
+                            if (!string.IsNullOrWhiteSpace(item.Supply2) && !sb.ToString().Trim(',').Contains(item.Supply2.Trim()))
+                                sb.Append("'" + item.Supply2.Trim() + "',");
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.ErrorMethod("单丝作业标准书未绑定", ex);
+                        }
                     }
                     var list4 = ReadSqlList<tblProdCodeStructMarkEntity>(null, string.Format(QUERYSQL_StructMark, sb.ToString().TrimEnd(','), "C26"));
                     foreach (var item in ret)
@@ -187,7 +196,17 @@ LEFT JOIN [tblProdCode] P ON B.ProdCode=P.ProdCode where C.GroupID='{1}' AND B.S
                         item.ProdCodeStructMark3 = list.FirstOrDefault(x => x.StructBarCode.Trim() == item.StructBarCode.Trim());
                         if (item.ProdCodeStructMark3 != null)
                         {
-                            item.ProdCodeStructMark4 = list4?.FirstOrDefault(x => x.StructBarCode.Trim() == item.ProdCodeStructMark3.Supply1.Trim());
+                            try
+                            {
+                                if (item.ProdCodeStructMark3.Supply1 == null)
+                                    continue;
+                                item.ProdCodeStructMark4 = list4?.FirstOrDefault(x => x.StructBarCode.Trim() == item.ProdCodeStructMark3.Supply1.Trim());
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.ErrorMethod("单丝作业标准书未绑定", ex);
+                                continue;
+                            }
                             if (item.ProdCodeStructMark4 != null)
                             {
                                 item.ProdCodeStructMark4.Count = item.ProdCodeStructMark3.SupplyQty1;

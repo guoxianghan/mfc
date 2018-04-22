@@ -29,6 +29,8 @@ namespace SNTON.Com
         protected string HostAddress { get; set; }
         [ConfigBoundProperty("Port")]
         protected int Port { get; set; }
+        [ConfigBoundProperty("WritePort")]
+        protected int WritePort { get; set; }
 
         [ConfigBoundProperty("ProtocolType")]
         protected int ProtocolType { get; set; }

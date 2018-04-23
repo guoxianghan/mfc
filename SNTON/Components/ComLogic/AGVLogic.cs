@@ -58,7 +58,7 @@ namespace SNTON.Components.ComLogic
             //Send(re);
             //return;
             var tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks($" (Status in (2) and isdeleted=0 ) OR (IsDeleted=0 AND [Status]=4 AND id>=23970 AND Updated<='{DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss")}')");
-            //tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks("TaskNo=100000000000001822");
+            //tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks("ID=32814");
             //HLCallCmd(tmp[0]);
             //return;
             if (tmp == null)
@@ -259,12 +259,12 @@ namespace SNTON.Components.ComLogic
                 if (Ack == 1)
                 {
                     status = (byte)SNTONConstants.AGVTaskStatus.Received;//收到请求,等待调度AGV
-                    logger.InfoMethod($"AGV中控收到请求,TaskNo:" + TaskNo + ",status:8");
+                    logger.InfoMethod($"AGV中控收到请求,TaskNo:" + TaskNo + ",status:" + status);
                     var agvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTaskEntityByTaskNo(TaskNo, null);
                     agvtsk.Status = status;
                     bool r = BusinessLogic.AGVTasksProvider.UpdateStatus(agvtsk.Id, status);
-                    if (r) { logger.InfoMethod("AGV中控收到请求后修改状态成功,TaskNo:" + TaskNo + ",status:8"); }
-                    else { logger.InfoMethod("AGV中控收到请求后修改状态失败,TaskNo:" + TaskNo + ",status:8"); }
+                    if (r) { logger.InfoMethod("AGV中控收到请求后修改状态成功,TaskNo:" + TaskNo + ",status:" + status); }
+                    else { logger.InfoMethod("AGV中控收到请求后修改状态失败,TaskNo:" + TaskNo + ",status:" + status); }
                     var equiptsks = this.BusinessLogic.EquipTaskProvider.GetEquipTaskEntityNotDeleted($"TaskGuid='{agvtsk.TaskGuid.ToString()}'", null);
                     if (equiptsks != null)
                     {
@@ -371,7 +371,7 @@ namespace SNTON.Components.ComLogic
                     status = (byte)AGVTaskStatus.Finished;
                     if (agvtsk.Status >= status)
                     {
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = $"小车指令重复,小车id:{agvid},任务完成:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status, Source = "AGV指令重复", MsgLevel = 7, MidStoreage=agvtsk.StorageArea });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = $"小车指令重复,小车id:{agvid},任务完成:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status, Source = "AGV指令重复", MsgLevel = 7, MidStoreage = agvtsk.StorageArea });
                     }
                     this.BusinessLogic.AGVRouteProvider.DeleteAGVRoute(agvid, null);
                     eqtsk?.ForEach(x => x.Status = 7);
@@ -399,12 +399,19 @@ namespace SNTON.Components.ComLogic
                 agvtsk.AGVId = Convert.ToInt16(agvid);
                 if (eqtsk != null)
                     BusinessLogic.EquipTaskProvider.UpdateEntity(eqtsk, null);
-                BusinessLogic.AGVTasksProvider.UpdateEntity(agvtsk, null);
+                bool r = BusinessLogic.AGVTasksProvider.UpdateStatus(agvtsk.Id, status, null);
+                if (!r) r = BusinessLogic.AGVTasksProvider.UpdateStatus(agvtsk.Id, status, null);
+                if (r)
+                {
+                    logger.InfoMethod("更新AGV任务状态成功" + JsonConvert.SerializeObject(agvtsk) + ",status:" + status);
+                }
+                else
+                { logger.InfoMethod("更新AGV任务状态失败" + JsonConvert.SerializeObject(agvtsk) + ",status:" + status); }
                 re.AddField("Action", "1");
             }
             catch (Exception e)
             {
-                logger.ErrorMethod("Failed to update agvtask status,taskno is " + TaskNo, e);
+                logger.ErrorMethod("更新AGV任务状态失败,taskno is " + TaskNo + ",status:" + status, e);
                 re.AddField("Action", "0");
             }
             Send(re);

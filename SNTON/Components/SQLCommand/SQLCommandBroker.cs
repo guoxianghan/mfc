@@ -311,6 +311,7 @@ namespace SNTON.Components.SQLCommand
             try
             {
                 protData.EnterWriteLock();
+                var intoout = new List<InStoreToOutStoreSpoolEntity>();
                 var equiptsklist = new List<EquipTaskEntity>();
                 EquipTaskEntity tsk = null;
                 foreach (var item in updateequiptsks)
@@ -318,7 +319,11 @@ namespace SNTON.Components.SQLCommand
                     tsk = new EquipTaskEntity() { Length = item.Length, Created = item.Created, TaskGuid = item.TaskGuid, Deleted = item.Deleted, EquipContollerId = item.EquipContollerId, Id = item.Id, IsDeleted = item.IsDeleted, PlantNo = item.PlantNo, ProductType = item.ProductType, Source = item.Source, Status = item.Status, TaskLevel = item.TaskLevel, TaskType = item.TaskType, Updated = item.Updated, Supply1 = item.Supply1 };
                     equiptsklist.Add(tsk);
                 }
-                Update(session, instoreoutstore);
+                foreach (var item in instoreoutstore)
+                {
+                    intoout.Add(new InStoreToOutStoreSpoolEntity() { AGVSeqNo = item.AGVSeqNo, Created = item.Created, Deleted = item.Deleted, Guid = item.Guid, Id = item.Id, InLineNo = item.InLineNo, IsDeleted = item.IsDeleted, PlantNo = item.PlantNo, SpoolId = item.SpoolId, Status = item.Status, StoreageNo = item.StoreageNo, Updated = item.Updated });
+                }
+                Update(session, intoout);
                 Update(session, agvtsk);
                 Update(session, equiptsklist);
                 ret = true;

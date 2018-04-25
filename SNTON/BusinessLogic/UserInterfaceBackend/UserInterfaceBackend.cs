@@ -1183,8 +1183,8 @@ namespace SNTON.BusinessLogic
                     }
                 }
             }
-            //if (obj.data.Count == 0)
-            //    obj.data.Add("龙门库运行正常");
+            if (obj.data.Count == 0)
+                obj.data.Add("龙门库运行正常");
             return obj;
         }
 
@@ -1297,7 +1297,13 @@ namespace SNTON.BusinessLogic
             foreach (var item in d)
             {
                 var agvtsk = new AGVTaskDataUI() { AGVId = item.AGVId, Created = item.Created, id = item.Id, LineNo = item.StorageLineNo, SeqNo = item.SeqNo, Status = item.Status, Storeageid = item.StorageArea, TaskType = item.TaskType };
-                item._EquipTasks2.ForEach(x => agvtsk.EquipNames.Add(x.EquipName.Trim()));
+                //item._EquipTasks2.OrderBy(X => X.AStation).ForEach(x => agvtsk.EquipNames.Add(x.EquipName.Trim() + "(" + x.AStation + "," + x.BStation + ")"));
+                var group = item._EquipTasks2.OrderBy(x => x.AStation).GroupBy(x => x.EquipControllerId);
+                foreach (var it in group)
+                {
+                    it.ForEach(x => agvtsk.EquipNames.Add(x.EquipName.Trim()));
+                    agvtsk.EquipNames.Add("(" + it.FirstOrDefault()?.AStation + "," + it.FirstOrDefault()?.BStation + ")");
+                }
                 obj.data.Add(agvtsk);
             }
 

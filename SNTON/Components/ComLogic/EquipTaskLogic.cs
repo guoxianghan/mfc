@@ -38,8 +38,8 @@ namespace SNTON.Components.ComLogic
         }
         public EquipTaskLogic()
         {
-             //thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 3000);
-           thread_ReadDervice = new VIThreadEx(RunCreateTask, null, "thread for InitRobotAGVTask", 1000);
+            //thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 3000);
+            thread_ReadDervice = new VIThreadEx(RunCreateTask, null, "thread for InitRobotAGVTask", 8000);
         }
 
         void RunCreateTask()
@@ -69,12 +69,12 @@ namespace SNTON.Components.ComLogic
         {
             //int seq = getNextSeqNo();
             //this.BusinessLogic.AGVTasksProvider.CreateAGVTask(new AGVTasksEntity() {  Created=DateTime.Now, ProductType="WS44",SeqNo=seq, PlantNo=3}, null);
-            int minutes = 0;
+            int minutes = 20;
             var taskouttime = this.BusinessLogic.SystemParametersProvider.GetSystemParamrters(3, null);
             if (taskouttime != null)
                 minutes = Convert.ToInt32(taskouttime.ParameterValue.Trim());
-            //var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"Status IN (0,10) AND PlantNo=3 AND Created>='{DateTime.Now.AddMinutes(-minutes)}'", null);
-            var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"Status IN (0,10) AND PlantNo=3", null);
+            var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"Status IN (0,10) AND PlantNo=3 AND Created<='{DateTime.Now.AddMinutes(-minutes)}'", null);
+            //var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"Status IN (0,10) AND PlantNo=3", null);
             //equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Id IN(37029,37020)", null);
             var agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8)", null);
             if (agvrunningtsk == null)
@@ -253,14 +253,9 @@ namespace SNTON.Components.ComLogic
         /// <returns></returns>
         Tuple<AGVTasksEntity, List<InStoreToOutStoreSpoolViewEntity>> InStoreHasSpools(EquipTaskViewEntity equiptsk, int storeageno)
         {
-            //equiptsks = equiptsks.OrderBy(x => x.AStation).ToList();
-            //var equiptsk = equiptsks[0];
             var list = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpool(storeageno, this.PlantNo, null);
             if (list == null || list.Count == 0)
                 return null;
-            //var outstore = list.FirstOrDefault(x => x.Status == 3);
-            //if (outstore == null)
-            //    return false;
             var equip = this.BusinessLogic.EquipConfigerProvider.EquipConfigers.FirstOrDefault(x => x.ControlID == equiptsk.EquipContollerId);
             var machstructcode = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, equip.MachCode.Trim());
             if (machstructcode == null || machstructcode.Count == 0)
@@ -271,7 +266,7 @@ namespace SNTON.Components.ComLogic
                 return null;
             }
             var instore = list.FindAll(x => x.Status == 3 && x.StructBarCode.Trim() == prod.ProdCodeStructMark4.StructBarCode.Trim());
-            if (instore == null)
+            if (instore == null || instore.Count == 0)
                 return null;
             var agvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTask($"TaskGuid in ('{instore[0].Guid.ToString()}')");
             if (agvtsk != null)
@@ -514,7 +509,7 @@ namespace SNTON.Components.ComLogic
                                   group new EquipTaskViewEntity() { Supply1 = i.Supply1.Trim(), AGVId = i.AGVId, AGVRoute = i.AGVRoute.Trim(), AGVStatus = i.AGVStatus, AStation = i.AStation, BStation = i.BStation, Created = i.Created, Deleted = i.Deleted, EquipContollerId = i.EquipContollerId, EquipFlag = i.EquipFlag, Id = i.Id, IsDeleted = i.IsDeleted, Length = i.Length, Length2 = i.Length2, PlantNo = i.PlantNo, PLCNo = i.PLCNo, ProductType = i.ProductType, Source = i.Source, Status = i.Status, StorageArea = i.StorageArea, Supply2 = i.Supply2, SupplyQty1 = i.SupplyQty1, SupplyQty2 = i.SupplyQty2, TaskGuid = i.TaskGuid, TaskLevel = i.TaskLevel, TaskType = i.TaskType, TitleProdName = i.TitleProdName, Updated = i.Updated }
                                   by new { i.AGVRoute, i.Supply1 }
                                into t
-                                  select t; 
+                                  select t;
             foreach (var items in routeStructcode)
             {//满
                 if (items.Count() < 2)
@@ -526,7 +521,7 @@ namespace SNTON.Components.ComLogic
                 tsks.AddRange(kong);
                 tsks = tsks.OrderBy(x => x.AStation).ToList();
                 //同排 2211,2121  
-                DateTime dt = DateTime.Now; 
+                DateTime dt = DateTime.Now;
 
                 var resultcom = PermutationAndCombination<EquipTaskViewEntity>.GetCombination(tsks.ToArray(), 4);
                 List<EquipTaskViewEntity[]> list = new List<EquipTaskViewEntity[]>();
@@ -549,7 +544,7 @@ namespace SNTON.Components.ComLogic
                         time = ids;
                         id = i;
                     }
-                } 
+                }
                 #endregion
                 var finallytask = list[id].ToList();
 
@@ -632,7 +627,7 @@ namespace SNTON.Components.ComLogic
                             }
                         }
                         #endregion
-                    } 
+                    }
                     #endregion
                 }
             }

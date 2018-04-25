@@ -67,7 +67,8 @@ namespace SNTON.Components.ComLogic
                 _EquipCmdList = this.BusinessLogic.EquipConfigerProvider.EquipConfigers.FindAll(x => x.PLCNo == PLCNo);
             //var equiptsk = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"[STATUS]=1 AND PlantNo={PlantNo} AND PLCNo={PLCNo}", null);
             //16收到中控系统的调车指令,小车分配成功
-            var agvtsks = this.BusinessLogic.AGVTasksProvider.GetAGVTasks($"[STATUS] IN(8,16,19) AND [PlantNo]={PlantNo} and id>=15008 ", null);//AND PLCNo={PLCNo}
+            var agvtsks = this.BusinessLogic.AGVTasksProvider.GetAGVTasks($"[STATUS] IN(8,16,19) AND [PlantNo]={PlantNo} and id>=15008 ", null);//AND PLCNo={PLCNo}36745
+            //agvtsks = this.BusinessLogic.AGVTasksProvider.GetAGVTasks($"id =36745 ", null);//AND PLCNo={PLCNo}36745
             if (agvtsks == null || agvtsks.Count == 0)
                 return;
 
@@ -95,7 +96,7 @@ namespace SNTON.Components.ComLogic
                         //logger.ErrorMethod("找不到对应的地面滚筒编号:" + JsonConvert.SerializeObject(task));
                         continue;
                     }
-                    nwrite_receive.AddField(cmd.AGVDisStatus.Trim(), item.TaskType.ToString());
+                    nwrite_receive.AddField(cmd.AGVDisStatus.Trim(), task.TaskType.ToString());
                     bool r = MXParser.SendData(nwrite_receive, 3);
                     Thread.Sleep(800);
                     sbequipname.Append(cmd.EquipName);
@@ -118,7 +119,7 @@ namespace SNTON.Components.ComLogic
                         //continue;
                     }
                     if (!nagv.FieldExists(cmd.WAStatus))
-                        nagv.AddField(cmd.WAStatus, item.TaskType.ToString());
+                        nagv.AddField(cmd.WAStatus, task.TaskType.ToString());
                     task.Status = 9;
                     r = MXParser.SendData(nagv, 3);
                     Thread.Sleep(600);
@@ -460,17 +461,19 @@ namespace SNTON.Components.ComLogic
         }
         void ParserNe(List<EquipConfigerEntity> list, Neutrino plcNeutrino)
         {
-            int inOrout = 0; int agvrunning = 0; int recive = 0; //int cancel = 0; int iscancel = 0;
+            byte inOrout = 0; int agvrunning = 0; byte recive = 0; //int cancel = 0; int iscancel = 0;
             Neutrino nwrite = new Neutrino();
             nwrite.TheName = "WriteEquipLineStatus";
             foreach (var item in list)
             {//LStatus1
-                inOrout = plcNeutrino.GetInt(item.LWCS.Trim());// 1出拉空轮; 2入拉满轮
+                inOrout = Convert.ToByte(plcNeutrino.GetInt(item.LWCS.Trim()));// 1出拉空轮; 2入拉满轮
                 agvrunning = plcNeutrino.GetInt(item.WAStatus.Trim());//是否已调度AGV 1，已接收滚筒出料请求；2，已接收入料至滚筒请求 光电
-                recive = plcNeutrino.GetInt(item.AGVDisStatus.Trim());//地面滚筒请求 AGVDisStatus
+                recive = Convert.ToByte(plcNeutrino.GetInt(item.AGVDisStatus.Trim()));//地面滚筒请求 AGVDisStatus
                 #region 创建equiptsk
-                if (agvrunning == 0 && inOrout != 0 && recive == 0)
+                if (inOrout != 0 || recive != 0)
                 {//未调度
+                    if (recive != 0)
+                        inOrout = recive;
                     bool r = false;
                     #region MyRegion
                     if (item.MachStructCode == null)
@@ -501,15 +504,16 @@ namespace SNTON.Components.ComLogic
                     if (equiptsk.Count == 0)
                     {
                         #region MyRegion
-                        if (inOrout == 1)
+                        r = this.BusinessLogic.EquipTaskProvider.CreateEquipTask(new EquipTaskEntity() { Length = item.MachStructCode.ProdCodeStructMark4.ProdLength, Created = DateTime.Now, EquipContollerId = item.ControlID, ProductType = item.MachStructCode.ProdCodeStructMark4?.CName, Status = 0, TaskType = inOrout, TaskLevel = 6, PlantNo = PlantNo, Supply1 = item.MachStructCode.ProdCodeStructMark3.Supply1 });//创建出任务
+
+                        if (r)
                         {//创建拉空轮任务
-                            r = this.BusinessLogic.EquipTaskProvider.CreateEquipTask(new EquipTaskEntity() { Length = item.MachStructCode.ProdCodeStructMark4.ProdLength, Created = DateTime.Now, EquipContollerId = item.ControlID, ProductType = item.MachStructCode.ProdCodeStructMark4?.CName, Status = 0, TaskType = 1, TaskLevel = 6, PlantNo = PlantNo, Supply1 = item.MachStructCode.ProdCodeStructMark3.Supply1, PLCNo = PLCNo });//创建出任务
-                            logger.InfoMethod("创建拉空轮任务, item.ControlID" + item.ControlID.ToString() + "result:" + r);
+                            logger.InfoMethod("创建叫料任务成功, EquipName:" + item.EquipName.ToString() + ",TaskType:" + inOrout);
                         }
-                        else if (inOrout == 2)//创建拉满轮任务
+                        else //创建拉满轮任务
                         {
-                            r = this.BusinessLogic.EquipTaskProvider.CreateEquipTask(new EquipTaskEntity() { Length = item.MachStructCode.ProdCodeStructMark4.ProdLength, Created = DateTime.Now, EquipContollerId = item.ControlID, ProductType = item.MachStructCode.ProdCodeStructMark4?.CName, Status = 0, TaskType = 2, TaskLevel = 5, PlantNo = PlantNo, Supply1 = item.MachStructCode.ProdCodeStructMark3.Supply1, PLCNo = PLCNo });//创建入任务
-                            logger.InfoMethod("创建拉满轮任务, item.ControlID" + item.ControlID.ToString() + "result:" + r);
+                            logger.InfoMethod("创建叫料任务失败, EquipName:" + item.EquipName.ToString() + ",TaskType:" + inOrout);
+                            continue;
                         }
                         #endregion
                     }
@@ -518,13 +522,15 @@ namespace SNTON.Components.ComLogic
                         if (equiptsk.Exists(x => x.TaskType == inOrout))//|| equiptsk.Exists(x => x.TaskType == agvrunning)
                         {
                             r = true;
-                            logger.InfoMethod("已创建该设备的任务,Created:" + equiptsk.FirstOrDefault().Created + ",EquipTaskID:" + equiptsk.FirstOrDefault().Id + ",EquipContollerId:" + equiptsk.FirstOrDefault().EquipContollerId);
+                            if (recive == 0)
+                                logger.InfoMethod("已创建该设备的任务,Created:" + equiptsk.FirstOrDefault().Created + ",EquipTaskID:" + equiptsk.FirstOrDefault().Id + ",EquipName:" + item.EquipName);
                         }
                         else
                         {
                             logger.InfoMethod("已经创建该设备的任务,但任务类型不匹配," + JsonConvert.SerializeObject(equiptsk.FirstOrDefault()));
                         }
                     }
+                    #region 把之前的任务删除掉
                     if (equiptsk != null && equiptsk.FindAll(x => x.TaskType != inOrout).Count != 0)
                     {
                         var updatedelete = equiptsk.FindAll(x => x.TaskType != inOrout);
@@ -534,8 +540,10 @@ namespace SNTON.Components.ComLogic
                             this.BusinessLogic.EquipTaskProvider.UpdateEntity(updatedelete, null);
                         }
                     }
+                    #endregion
                     if (r)
                     {
+                        if (recive != 0) continue;
                         logger.InfoMethod("通知地面滚筒收到任务请求:" + item.AGVDisStatus.Trim() + "," + inOrout.ToString());
                         nwrite.AddField(item.AGVDisStatus.Trim(), inOrout.ToString());
                     }

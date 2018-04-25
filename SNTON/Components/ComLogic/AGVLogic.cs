@@ -58,7 +58,7 @@ namespace SNTON.Components.ComLogic
             //Send(re);
             //return;
             var tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks($" (Status in (2) and isdeleted=0 ) OR (IsDeleted=0 AND [Status]=4 AND id>=23970 AND Updated<='{DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss")}')");
-            //tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks("ID=32814");
+            //tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks("ID=32813");
             //HLCallCmd(tmp[0]);
             //return;
             if (tmp == null)
@@ -358,6 +358,7 @@ namespace SNTON.Components.ComLogic
                         //return;
                     }
                     eqtsk?.ForEach(x => x.Status = 6);
+                    agvtsk.AGVId = Convert.ToInt16(agvid);
                     logger.InfoMethod($"AGV调度成功,{JsonConvert.SerializeObject(agvtsk)}");
                     #region 更新直通口任务状态 
                     if (outstoreagespools != null)
@@ -399,8 +400,8 @@ namespace SNTON.Components.ComLogic
                 agvtsk.AGVId = Convert.ToInt16(agvid);
                 if (eqtsk != null)
                     BusinessLogic.EquipTaskProvider.UpdateEntity(eqtsk, null);
-                bool r = BusinessLogic.AGVTasksProvider.UpdateStatus(agvtsk.Id, status, null);
-                if (!r) r = BusinessLogic.AGVTasksProvider.UpdateStatus(agvtsk.Id, status, null);
+                bool r = BusinessLogic.AGVTasksProvider.UpdateEntity(agvtsk, null);
+                if (!r) r = BusinessLogic.AGVTasksProvider.UpdateEntity(agvtsk, null);
                 if (r)
                 {
                     logger.InfoMethod("更新AGV任务状态成功" + JsonConvert.SerializeObject(agvtsk) + ",status:" + status);

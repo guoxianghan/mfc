@@ -340,14 +340,20 @@ namespace SNTON.Components.AGV
             try
             {
                 protData.EnterWriteLock();
-                AGVTasksEntity agv = GetAGVTaskEntityById(id, session);
-                if (agv != null)
-                {
-                    agv.Status = status;
-                    UpdateEntity(agv, session);
-                    return true;
-                }
-                else return false;
+                //AGVTasksEntity agv = GetAGVTaskEntityById(id, session);
+                string sql = $"UPDATE {DatabaseDbTable} SET Status={status},Updated='{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}' where id ={id}";
+                int rr = RunSqlStatement(session, sql);
+                if (rr == 0)
+                    ret = false;
+                else ret = true;
+                //if (agv != null)
+                //{
+                //    agv.Status = status;
+                //    agv.Updated = DateTime.Now;
+                //    UpdateEntity(agv, session);
+                //    return true;
+                //}
+                //else return false;
             }
             catch (Exception e)
             {

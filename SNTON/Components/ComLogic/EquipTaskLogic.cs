@@ -46,7 +46,7 @@ namespace SNTON.Components.ComLogic
         {
             try
             {
-                //InitAGVUnionTask();
+                InitAGVUnionTask();
             }
             catch (Exception ex)
             {
@@ -74,7 +74,7 @@ namespace SNTON.Components.ComLogic
             if (taskouttime != null)
                 minutes = Convert.ToInt32(taskouttime.ParameterValue.Trim());
             var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"Status IN (0,10) AND PlantNo=3 AND Created<='{DateTime.Now.AddMinutes(-minutes)}'", null);
-            //var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"Status IN (0,10) AND PlantNo=3", null);
+            //equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"TASKGUID='D178EFE4-3AE5-4BC6-9C39-33D32A1AB81E'", null);
             //equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Id IN(37029,37020)", null);
             var agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8)", null);
             if (agvrunningtsk == null)
@@ -149,16 +149,19 @@ namespace SNTON.Components.ComLogic
                 for (short i = 1; i <= 3; i++)
                 {
                     ///直通口检测是否可以创建送满轮任务
-                    //agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8)", null);
-                    //if (agvrunningtsk.FindAll(x => x.StorageArea == i && x.StorageLineNo == 2).Count >= 2)
-                    //    continue;//直通线缓存满
-                    iscreated = InStoreHasSpools(equiptsks.ToList(), i);
-                    if (iscreated)
+                    var tuple = InStoreHasSpools(equiptsks[0], i);
+                    if (tuple != null)
                     {
-                        equiptsks.ToList().ForEach(x => x.Status = 4);
-                        int count = this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
-                        if (count != 0)
-                            break;
+                        var agvtsk = tuple.Item1;
+                        var instore = tuple.Item2;
+                        iscreated = this.BusinessLogic.SqlCommandProvider.InStoreToOutStoreLine(instore, agvtsk, equiptsks, null);
+                        if (iscreated)
+                        {
+                            //equiptsks.ToList().ForEach(x => x.Status = 4);
+                            //int count = this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
+                            //if (count != 0)
+                                break;
+                        }
                     }
                 }
                 if (!iscreated)
@@ -203,11 +206,12 @@ namespace SNTON.Components.ComLogic
         /// <param name="equiptsk"></param>
         /// <param name="storeageno"></param>
         /// <returns></returns>
+        [Obsolete("弃用的方法,此方法未封装事务,用另一个重载方法代替,")]
         bool InStoreHasSpools(List<EquipTaskViewEntity> equiptsks, int storeageno)
         {
             equiptsks = equiptsks.OrderBy(x => x.AStation).ToList();
             var equiptsk = equiptsks[0];
-            var list = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpool(storeageno, this.PlantNo, null);
+            var list = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpoolEntity($"StoreageNo={storeageno} AND PlantNo={PlantNo} AND Status=3", null);
             if (list == null || list.Count == 0)
                 return false;
             //var outstore = list.FirstOrDefault(x => x.Status == 3);
@@ -223,12 +227,10 @@ namespace SNTON.Components.ComLogic
                 return false;
             }
             var instore = list.FindAll(x => x.Status == 3 && x.StructBarCode.Trim() == prod.ProdCodeStructMark4.StructBarCode.Trim());
-            if (instore == null)
+            if (instore == null || instore.Count == 0)
                 return false;
             instore.ForEach(x => x.Status = 8);//等待申请调度AGV
             int count = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.UpdateEntity(null, instore.ToArray());
-            if (count == 0)
-                return false;
             var agvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTask($"TaskGuid in ('{instore[0].Guid.ToString()}')");
             if (agvtsk != null)
             {
@@ -561,41 +563,18 @@ namespace SNTON.Components.ComLogic
                     if (tuple != null)
                     {
                         var agvtsk = tuple.Item1;
-                        agvtsk.Status = 2;
-                        var ser = (from ic in finallytask select ic.TaskType).ToArray().ToString(' ').Replace(" ", "");
-                        if (ser == "2121")
-                            agvtsk.TaskType = 3;
-                        else if (ser == "2211")
-                            agvtsk.TaskType = 4;
-                        else
-                        {
-                            logger.ErrorMethod("AGV复合运动 TaskType格式不对;TaskType:" + ser + ";" + JsonConvert.SerializeObject(finallytask));
-                            break;
-                        }
-                        agvtsk.PLCNo = mantsk[0].PLCNo;
-                        agvtsk.Status = 2;
-                        agvtsk.StorageLineNo = 2;
-                        agvtsk.EquipIdListActual = (from ic in finallytask select ic.EquipContollerId).ToArray().ToString(';');
-                        //agvtsk.EquipIdListTarget = TaskConfig.AGVStation(storeageno, 2);
-                        agvtsk.Updated = dt;
-                        finallytask.ForEach(x =>
-                        {
-                            x.TaskGuid = agvtsk.TaskGuid;
-                            x.Status = 4;
-                            x.Updated = dt;
-                        });
                         var instore = tuple.Item2;
-                        instore.ForEach(x => x.Status = 8);//等待申请调度AGV 
-                        bool r = this.BusinessLogic.SqlCommandProvider.InStoreToOutStoreLine(instore, agvtsk, finallytask, null);
-                        if (r)
+                        //
+                        iscreated = this.BusinessLogic.SqlCommandProvider.InStoreToOutStoreLine(instore, agvtsk, finallytask, null);
+                        if (iscreated)
                         {
                             iscreated = true;
-                            logger.InfoMethod("创建AGV复合运动成功,guid:" + agvtsk.TaskGuid.ToString());
+                            logger.InfoMethod("创建直通口运动成功,guid:" + agvtsk.TaskGuid.ToString());
                             break;
                         }
                         else
                         {
-                            logger.InfoMethod("创建AGV复合运动失败,guid:" + agvtsk.TaskGuid.ToString());
+                            logger.InfoMethod("创建直通口出库任务失败,guid:" + agvtsk.TaskGuid.ToString());
                         }
                     }
                     #endregion

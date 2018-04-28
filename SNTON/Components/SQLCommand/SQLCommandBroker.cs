@@ -14,6 +14,7 @@ using SNTON.Entities.DBTables.MidStorage;
 using SNTON.Entities.DBTables.AGV;
 using SNTON.Entities.DBTables.RobotArmTask;
 using SNTON.Entities.DBTables.InStoreToOutStore;
+using SNTON.Constants;
 
 namespace SNTON.Components.SQLCommand
 {
@@ -300,21 +301,40 @@ namespace SNTON.Components.SQLCommand
             return ret;
         }
 
-        public bool InStoreToOutStoreLine(List<InStoreToOutStoreSpoolViewEntity> instoreoutstore, AGVTasksEntity agvtsk, List<EquipTaskViewEntity> updateequiptsks, IStatelessSession session = null)
+        public bool InStoreToOutStoreLine(List<InStoreToOutStoreSpoolViewEntity> instoreoutstore, AGVTasksEntity agvtsk, List<EquipTaskViewEntity> equiptsks, IStatelessSession session = null)
         {
             bool ret = false;
             if (session == null)
             {
-                ret = BrokerDelegate(() => InStoreToOutStoreLine(instoreoutstore, agvtsk, updateequiptsks, session), ref session);
+                ret = BrokerDelegate(() => InStoreToOutStoreLine(instoreoutstore, agvtsk, equiptsks, session), ref session);
                 return ret;
             }
             try
             {
                 protData.EnterWriteLock();
+                DateTime dt = DateTime.Now;
+                agvtsk.Status = 2;
+                var ser = (from ic in equiptsks select ic.TaskType).ToArray().ToString(' ').Replace(" ", "");
+                if (ser == "2121")
+                    agvtsk.TaskType = 3;
+                else if (ser == "2211")
+                    agvtsk.TaskType = 4;
+                agvtsk.PLCNo = equiptsks[0].PLCNo;
+                agvtsk.StorageLineNo = 2;
+                agvtsk.EquipIdListActual = (from ic in equiptsks.OrderBy(x => x.AStation) select ic.EquipContollerId).ToArray().ToString(';');
+                //agvtsk.EquipIdListTarget = TaskConfig.AGVStation(storeageno, 2);
+                agvtsk.Updated = dt;
+                equiptsks.ForEach(x =>
+                {
+                    x.TaskGuid = agvtsk.TaskGuid;
+                    x.Status = 4;
+                    x.Updated = dt;
+                });
+                instoreoutstore.ForEach(x => x.Status = 8);//等待申请调度AGV 
                 var intoout = new List<InStoreToOutStoreSpoolEntity>();
                 var equiptsklist = new List<EquipTaskEntity>();
                 EquipTaskEntity tsk = null;
-                foreach (var item in updateequiptsks)
+                foreach (var item in equiptsks)
                 {
                     tsk = new EquipTaskEntity() { Length = item.Length, Created = item.Created, TaskGuid = item.TaskGuid, Deleted = item.Deleted, EquipContollerId = item.EquipContollerId, Id = item.Id, IsDeleted = item.IsDeleted, PlantNo = item.PlantNo, ProductType = item.ProductType, Source = item.Source, Status = item.Status, TaskLevel = item.TaskLevel, TaskType = item.TaskType, Updated = item.Updated, Supply1 = item.Supply1 };
                     equiptsklist.Add(tsk);

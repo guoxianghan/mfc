@@ -756,7 +756,30 @@ namespace SNTON.BusinessLogic
             set { sqlcommandProvider = value; }
         }
         #endregion
+        #region Agv_three_config
+#pragma warning disable 649
+        [ConfigBoundProperty("Agv_three_configProviderId")]
+        private string agv_three_configProviderId;
+#pragma warning restore 649
 
+        private IAgv_three_config agv_three_configProvider;
+        /* brokerNode
+
+		*/
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public IAgv_three_config Agv_three_configProvider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref agv_three_configProvider, agv_three_configProviderId, this);
+
+                return agv_three_configProvider;
+            }
+            set { agv_three_configProvider = value; }
+        }
+        #endregion
         [ConfigBoundProperty("RobotArmTaskProviderid")]
 #pragma warning disable 649
         private string robotArmTaskProviderid;

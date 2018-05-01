@@ -160,7 +160,7 @@ namespace SNTON.Components.ComLogic
                             //equiptsks.ToList().ForEach(x => x.Status = 4);
                             //int count = this.BusinessLogic.EquipTaskViewProvider.Update(null, equiptsks.ToArray());
                             //if (count != 0)
-                                break;
+                            break;
                         }
                     }
                 }
@@ -454,13 +454,7 @@ namespace SNTON.Components.ComLogic
             creaequptsk.ForEach(x => x.Status = 1);
             logger.InfoMethod("############################################################################################################");
             bool result = this.BusinessLogic.SqlCommandProvider.OutStoreageTask(creaequptsk, updamid, agvtsk, listarmtsk, null);
-            logger.InfoMethod("###创建龙门出库任务:" + result + "," + guid.ToString());
-            //this.BusinessLogic.EquipTaskViewProvider.Update(null, creaequptsk.ToArray());
-            //this.BusinessLogic.MidStorageSpoolsProvider.UpdateMidStore(null, needlspools.ToArray());
-            //this.BusinessLogic.MidStorageSpoolsProvider.UpdateMidStore(null, needrspools.ToArray());
-            //this.BusinessLogic.AGVTasksProvider.CreateAGVTask(agvtsk, null); //同时创建AGVTask   
-            //this.BusinessLogic.RobotArmTaskProvider.InsertArmTask(listarmtsk, null);
-            //logger.InfoMethod(JsonConvert.SerializeObject(sqlcmds));
+            logger.InfoMethod("###创建龙门出库任务:" + result + "," + JsonConvert.SerializeObject(agvtsk));
             logger.InfoMethod("############################################################################################################");
             #endregion
             return result;

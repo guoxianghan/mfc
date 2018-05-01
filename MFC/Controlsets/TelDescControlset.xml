@@ -80,8 +80,8 @@
 
         <FIELD Name="Speed" Type="Alphanumeric" Pos="51" Length="3" Leadchar=" "></FIELD>
         <FIELD Name="CurrentX" Type="Custom" Pos="54" Length="6" Leadchar=" " Custom="^[-]{0,1}[-0123456789]*$"></FIELD>
-        <FIELD Name="CurrentY" Type="Custom" Pos="61" Length="6" Leadchar=" " Custom="^[-]{0,1}[-0123456789]*$"></FIELD>
-        <FIELD Name="StatusAGVRoute" Type="Alphanumeric" Pos="67" Length="2" Leadchar=" "></FIELD>
+        <FIELD Name="CurrentY" Type="Custom" Pos="60" Length="6" Leadchar=" " Custom="^[-]{0,1}[-0123456789]*$"></FIELD>
+        <FIELD Name="StatusAGVRoute" Type="Alphanumeric" Pos="66" Length="2" Leadchar=" "></FIELD>
         <FIELD Name="TaskNoAGVRoute" Type="Custom" Pos="69" Length="15" Custom="[a-zA-Z0-9]*" Leadchar=" "></FIELD>
 
 <!--Custom="^[0-9]*\s+" -->

@@ -539,14 +539,36 @@ namespace SNTON.Components.ComLogic
         }
         private void SaveAGVRoute(Neutrino neutrino)
         {
+            //float l_x = 2000;
+            //float l_y = 2000;
             try
             {//02 41 47 56 52 6F 75 74 65 20 20 20 20 20 20 20 20 20 20 20 20 30 30 30 30 30 30 30 30 30 31 20 20 20 20 20 20 20 20 20 33 30 30 30 30 30 30 30 30 31 32 30 30 30 30 37 30 37 30 32 30 34 39 39 34 39 30 30 31 31 36 33 34 35 37 38 35 64 38 61 36 30 33 35 03
+                long SEQUENCE = neutrino.GetLongOrDefault("SEQUENCE");
                 int PlantNo = Convert.ToInt32(neutrino.GetField("PlantNo"));
                 short agvid = Convert.ToInt16(neutrino.GetField("AGVID"));
-                string x = neutrino.GetField("CurrentX").TrimStart('0');
-                string y = neutrino.GetField("CurrentY").TrimStart('0');
-                x = string.IsNullOrEmpty(x) ? "0" : x;
-                y = string.IsNullOrEmpty(y) ? "0" : y;
+                float x = 0;
+                float y = 0;
+                if (neutrino.GetField("CurrentX").TrimStart('0') != "")
+                    x = Convert.ToSingle(neutrino.GetField("CurrentX").TrimStart('0'));
+                if (neutrino.GetField("CurrentY").TrimStart('0') != "")
+                    y = Convert.ToSingle(neutrino.GetField("CurrentY").TrimStart('0'));
+                agv_three_configEntity act = null;
+                if (x != 0 || y != 0)
+                {
+
+                    var weblocation = new List<agv_three_configEntity>();
+                    weblocation = this.BusinessLogic.Agv_three_configProvider._AllAgv_three_config;
+                    //weblocation = this.BusinessLogic.Agv_three_configProvider._AllAgv_three_config.FindAll(t => Math.Abs(x - t.fac_X) <= l_x && Math.Abs(y - t.fac_Y) <= l_y);
+                    weblocation.ForEach(c =>
+                    {
+                        c.Dev_x = Math.Abs(x - c.fac_X);
+                        c.Dev_y = Math.Abs(y - c.fac_Y);
+                    });
+                    var weblocationx = weblocation.OrderBy(c => c.StDev).ToList().Take(20);
+                    act = weblocationx.FirstOrDefault();
+                }
+                else
+                    act = this.BusinessLogic.Agv_three_configProvider._originLocation;
                 short speed = Convert.ToInt16(neutrino.GetField("Speed"));
                 byte status = 0;
                 long TaskNo = 0;
@@ -557,10 +579,12 @@ namespace SNTON.Components.ComLogic
                 }
                 catch (Exception e)
                 {
-                    logger.ErrorMethod("解析AGVRoute status或TaskNo出错,neutrino is " + JsonConvert.SerializeObject(neutrino), e, "SaveAGVRoute");
+                    logger.ErrorMethod($"解析AGVRoute status或TaskNo出错,SEQUENCE:{SEQUENCE},neutrino is " + JsonConvert.SerializeObject(neutrino), e, "SaveAGVRoute");
                 }
-                var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status };
+                var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = act.fac_x, Y = act.fac_y, Status = status, agv_id = act.agv_id };
                 var agvroutelist = this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute2[agvid];
+
+
                 if (this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.ContainsKey(agvid))
                 {
                     this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute[agvid] = tmp;

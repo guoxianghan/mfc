@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.AGV.agv_three_configEntity" schema="SNTON" table="SNTON.agv_three_config" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="agv_id">
+      <column name="agv_id" not-null="true" />
+      <generator class="identity" />
+    </id>
+    <property name="agv_id" column="agv_id" />
+    <property name="sys_x" column="sys_x" />
+    <property name="sys_y" column="sys_y" />
+    <property name="fac_x" column="fac_x" />
+    <property name="fac_y" column="fac_y" />
+    <property name="x_min" column="x_min" />
+    <property name="y_min" column="y_min" />
+    <property name="x_max" column="x_max" />
+    <property name="y_max" column="y_max" />
+    <property name="RouteNo" column="RouteNo" />
+  </class>
+</hibernate-mapping>

@@ -18,8 +18,8 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.AGV
         /// <summary>
         /// 实时坐标,毫米
         /// </summary>
-        public string x;
-        public string y;
+        public float x;
+        public float y;
         /// <summary>
         /// 1拉空轮;2拉满轮
         /// </summary>
@@ -31,5 +31,6 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.AGV
         public long id;
         public DateTime CreateTime;
         public byte Status { get; set; }
+        public int agv_id { get;  set; }
     }
 }

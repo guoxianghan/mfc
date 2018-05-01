@@ -29,12 +29,12 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.AGV
         /// <summary>
         ///  
         /// </summary> 
-        public string X { get; set; }
+        public float X { get; set; }
 
         /// <summary>
         ///  
         /// </summary> 
-        public string Y { get; set; }
+        public float Y { get; set; }
         public string Status { get; set; }
         public bool IsHasSpools { get; set; }        
     }

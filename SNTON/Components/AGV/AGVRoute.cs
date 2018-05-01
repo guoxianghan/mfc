@@ -86,7 +86,7 @@ namespace SNTON.Components.AGV
         {
             for (byte i = 1; i <= 30; i++)
             {
-                RealTimeAGVRute.Add(i, new AGVRouteEntity { AGVId = i, Created = DateTime.Now, X = "0", Y = "0" });
+                RealTimeAGVRute.Add(i, new AGVRouteEntity { AGVId = i, Created = DateTime.Now, X = 0, Y = 0 });
                 RealTimeAGVRute2.Add(i, new List<AGVRouteEntity>());
             }
         }

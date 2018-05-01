@@ -1195,9 +1195,9 @@ namespace SNTON.BusinessLogic
             for (byte i = 1; i <= 30; i++)
             {
                 if (tmp.ContainsKey(i))
-                    obj.data.Add(new AGVRouteDataUI() { agvid = tmp[i].AGVId, id = tmp[i].Id, x = tmp[i].X.Trim(), y = tmp[i].Y.Trim(), Status = tmp[i].Status, CreateTime = tmp[i].Created });
+                    obj.data.Add(new AGVRouteDataUI() { agvid = tmp[i].AGVId, id = tmp[i].Id, x = tmp[i].X, y = tmp[i].Y, Status = tmp[i].Status, CreateTime = tmp[i].Created, agv_id = tmp[i].agv_id });
                 else
-                    obj.data.Add(new AGVRouteDataUI { agvid = i, CreateTime = DateTime.Now, x = "0", y = "0" });
+                    obj.data.Add(new AGVRouteDataUI { agvid = i, CreateTime = DateTime.Now, x = 0, y = 0 });
             }
             obj.data = obj.data.OrderBy(x => x.agvid).ToList();
             return obj;
@@ -1215,7 +1215,7 @@ namespace SNTON.BusinessLogic
                     var list = new List<AGVRouteDataUI>();
                     foreach (var item in route)
                     {
-                        list.Add(new AGVRouteDataUI() { agvid = item.AGVId, id = item.Id, x = item.X.Trim(), y = item.Y.Trim(), Status = item.Status, CreateTime = item.Created });
+                        list.Add(new AGVRouteDataUI() { agvid = item.AGVId, id = item.Id, x = item.X, y = item.Y, Status = item.Status, CreateTime = item.Created, agv_id = item.agv_id });
                     }
 
                     obj.data.Add(i, list);

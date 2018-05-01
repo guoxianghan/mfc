@@ -19,11 +19,13 @@ namespace SNTON.Entities.DBTables.AGV
         [DataMember]
         public virtual short AGVId { get; set; }
 
+
+        public virtual int agv_id { get; set; }
         /// <summary>
         /// X
         /// </summary>
         [DataMember]
-        public virtual string X { get; set; }
+        public virtual float X { get; set; }
         /// <summary>
         /// 小车状态
         /// 每一位对应一个小车的通讯状态值
@@ -40,7 +42,7 @@ namespace SNTON.Entities.DBTables.AGV
         /// Y
         /// </summary>
         [DataMember]
-        public virtual string Y { get; set; }
+        public virtual float Y { get; set; }
 
         /// <summary>
         /// Speed

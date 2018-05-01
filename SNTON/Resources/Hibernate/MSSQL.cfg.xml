@@ -26,8 +26,9 @@ for your own use before compile tests in VisualStudio.
     <mapping resource="VI.Resources.Hibernate.Mappings.ConfigParam.hbm.xml" assembly="MFCLib"/>
     <mapping resource="VI.Resources.Hibernate.Mappings.InfoMessage.hbm.xml" assembly="MFCLib"/>
      -->
-    
-    
+
+
+    <mapping resource="SNTON.Resources.Hibernate.Mappings.agv_three_config.hbm.xml" assembly="SNTON"/>
 
     <mapping resource="SNTON.Resources.Hibernate.Mappings.AGVConfig.hbm.xml" assembly="SNTON"/>
 

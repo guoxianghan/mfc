@@ -31,6 +31,15 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.AGV
         public long id;
         public DateTime CreateTime;
         public byte Status { get; set; }
-        public int agv_id { get;  set; }
+        public int agv_id { get; set; }
+
+        ///<summary> 
+        /// fac_x
+        /// </summary> 
+        public float fac_x { get; set; }
+        ///<summary>
+        /// fac_y
+        /// </summary> 
+        public float fac_y { get; set; }
     }
 }

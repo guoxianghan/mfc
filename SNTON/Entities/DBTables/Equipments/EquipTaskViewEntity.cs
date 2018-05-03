@@ -106,7 +106,7 @@ namespace SNTON.Entities.DBTables.Equipments
         [DataMember]
         public virtual int BStation { get; set; }
         /// <summary>
-        /// 单丝作业标准书编号
+        /// 单丝作业标准书数量
         /// </summary>
         [DataMember]
         public virtual byte SupplyQty1 { get; set; }
@@ -121,7 +121,7 @@ namespace SNTON.Entities.DBTables.Equipments
         [DataMember]
         public virtual string TitleProdName { get; set; }
         /// <summary>
-        /// 单丝作业标准书编号
+        /// 单丝作业标准书数量
         /// </summary>
         [DataMember]
         public virtual byte SupplyQty2 { get; set; }

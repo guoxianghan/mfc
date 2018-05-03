@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping  xmlns="urn:nhibernate-mapping-2.2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.Equipments.EquipTask5Entity" schema="SNTON" table="SNTON.EquipTask" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="Id">
+      <column name="ID" not-null="true" />
+      <generator class="identity" />
+    </id>
+    <property name="DeviceID" column="DeviceID" />
+    <property name="ConveyorId" column="ConveyorId" />
+    <property name="Status" column="Status" />
+    <property name="issuetime" column="issuetime" />
+    <property name="time_0" column="time_0" />
+    <property name="time_1" column="time_1" />
+    <property name="time_2" column="time_2" />
+    <property name="time_3" column="time_3" />
+    <property name="time_4" column="time_4" />
+    <property name="time_5" column="time_5" />
+    <property name="time_6" column="time_6" />
+    <property name="time_7" column="time_7" />
+    <property name="time_8" column="time_8" />
+    <property name="Created" column="Created" />
+    <property name="Updated" column="Updated" />
+    <property name="Deleted" column="Deleted" />
+    <property name="IsDeleted" column="IsDeleted" />
+    <property name="PlatNo" column="PlatNo" />
+    <property name="StorageArea" column="StorageArea" />
+    <property name="SeqNo" column="SeqNo" />
+    <property name="TaskGuid" column="TaskGuid" />
+  </class>
+</hibernate-mapping>

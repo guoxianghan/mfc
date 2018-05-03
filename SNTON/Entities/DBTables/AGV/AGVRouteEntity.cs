@@ -21,8 +21,18 @@ namespace SNTON.Entities.DBTables.AGV
 
 
         public virtual int agv_id { get; set; }
+        ///<summary> 
+        /// fac_x
+        /// </summary>
+        [DataMember]
+        public virtual float fac_x { get; set; }
+        ///<summary>
+        /// fac_y
+        /// </summary>
+        [DataMember]
+        public virtual float fac_y { get; set; }
         /// <summary>
-        /// X
+        /// 实时坐标 毫米
         /// </summary>
         [DataMember]
         public virtual float X { get; set; }
@@ -39,7 +49,7 @@ namespace SNTON.Entities.DBTables.AGV
         public virtual byte Status { get; set; }
 
         /// <summary>
-        /// Y
+        /// 实时坐标 毫米
         /// </summary>
         [DataMember]
         public virtual float Y { get; set; }

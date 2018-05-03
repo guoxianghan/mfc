@@ -67,6 +67,31 @@ namespace SNTON.BusinessLogic
         //}
         //}
         #region Dependencies
+        #region EquipTask5
+#pragma warning disable 649
+        [ConfigBoundProperty("EquipTask5ProviderId")]
+        private string equipTask5ProviderId;
+#pragma warning restore 649
+
+        private IEquipTask5 equipTask5Provider;
+        /* brokerNode
+
+		*/
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public IEquipTask5 EquipTask5Provider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref equipTask5Provider, equipTask5ProviderId, this);
+
+                return equipTask5Provider;
+            }
+            set { equipTask5Provider = value; }
+        }
+        #endregion
+
 
         /// <summary>
         /// The Hibernate Session Pool of the VI database to use as specified within the .XML configuration

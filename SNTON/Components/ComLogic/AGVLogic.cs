@@ -581,7 +581,7 @@ namespace SNTON.Components.ComLogic
                 {
                     logger.ErrorMethod($"解析AGVRoute status或TaskNo出错,SEQUENCE:{SEQUENCE},neutrino is " + JsonConvert.SerializeObject(neutrino), e, "SaveAGVRoute");
                 }
-                var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = act.fac_x, Y = act.fac_y, Status = status, agv_id = act.agv_id };
+                var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status, agv_id = act.agv_id , fac_x=act.fac_x, fac_y=act.fac_y};
                 var agvroutelist = this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute2[agvid];
 
 
@@ -598,11 +598,6 @@ namespace SNTON.Components.ComLogic
                     agvroutelist.RemoveAt(0);
                 }
                 agvroutelist.Add(tmp);
-
-                //AGVRouteEntity a = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status };
-                //AGVRouteArchiveEntity en = new AGVRouteArchiveEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y };
-                //this.BusinessLogic.AGVRouteProvider.AddAGVRoute(null, a);
-                //this.BusinessLogic.AGVRouteArchiveProvider.AddAGVRoute(null, en);
             }
             catch (Exception e)
             {

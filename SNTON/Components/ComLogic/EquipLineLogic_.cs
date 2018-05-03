@@ -82,14 +82,14 @@ namespace SNTON.Components.ComLogic
                     continue;
                 foreach (var task in EquipTask)
                 {
+                    sbequipname.Clear();
                     Neutrino nwrite_receive = new Neutrino();
                     nwrite_receive.TheName = "WriteReceive";
-                    sbequipname.Clear();
-                    Neutrino nagv = new Neutrino();
-                    nagv.TheName = "SendCreateAGV";
+                    Neutrino nwrite_light = new Neutrino();
+                    nwrite_light.TheName = "SendLight";
                     #region 通知地面滚筒准备接收
-                    Neutrino readwas = new Neutrino();
-                    readwas.TheName = "ReadWAStatus";
+                    Neutrino nread_light = new Neutrino();
+                    nread_light.TheName = "ReadLight";
                     var cmd = _EquipCmdList.FirstOrDefault(x => x.EquipFlag.Trim() == task.EquipFlag.Trim());
                     if (cmd == null)
                     {
@@ -97,37 +97,31 @@ namespace SNTON.Components.ComLogic
                         continue;
                     }
                     nwrite_receive.AddField(cmd.AGVDisStatus.Trim(), task.TaskType.ToString());
-                    bool r = MXParser.SendData(nwrite_receive, 3);
+                    nread_light.AddField(cmd.WAStatus.Trim(), "0");//读光电对象
+                    nwrite_light.AddField(cmd.WAStatus.Trim(), task.TaskType.ToString());//写光电对象
+                    bool r = MXParser.SendData(nwrite_receive, 3);//写500 回复收到请求
                     Thread.Sleep(800);
                     sbequipname.Append(cmd.EquipName);
 
-                    readwas.AddField(cmd.WAStatus, "0");
-                    var readr = MXParser.ReadData(readwas, true);
-                    Thread.Sleep(800);
-                    r = MXParser.SendData(nwrite_receive, 3);
-                    if (!readr.Item1)
-                    {
+                    var nread_light_result = MXParser.ReadData(nread_light, true);//读取400光电 看是否已写入成功
+                    if (!nread_light_result.Item1)
+                    {//读取失败跳出循环
                         continue;
                     }
-                    //By Song@2018.01.20
-                    //int wasagv = readr.GetIntOrDefault(cmd.WAStatus);
-                    int wasagv = readr.Item2.GetIntOrDefault(cmd.WAStatus);
-                    if (wasagv != 0)
+                    int wasagv = nread_light_result.Item2.GetIntOrDefault(cmd.WAStatus);//读取光电
+                    if (wasagv == 0)
                     {
-                        //task.Status = 6;
-                        //this.BusinessLogic.EquipTaskViewProvider.UpdateStatus(null, 6, task.Id);
-                        //continue;
+                        r = MXParser.SendData(nwrite_receive, 3);//写500 回复收到请求
                     }
-                    if (!nagv.FieldExists(cmd.WAStatus))
-                        nagv.AddField(cmd.WAStatus, task.TaskType.ToString());
+                    Thread.Sleep(800);
                     task.Status = 9;
-                    r = MXParser.SendData(nagv, 3);
+                    r = MXParser.SendData(nwrite_light, 3);//写400 光电
                     Thread.Sleep(600);
-                    r = MXParser.SendData(nagv, 3);
+                    r = MXParser.SendData(nwrite_light, 3);//写400 光电
                     Thread.Sleep(600);
-                    r = MXParser.SendData(nagv, 3);
+                    r = MXParser.SendData(nwrite_light, 3);//写400 光电
                     Thread.Sleep(600);
-                    r = MXParser.SendData(nagv, 3);
+                    r = MXParser.SendData(nwrite_light, 3);//写400 光电
                     if (!r)
                     {
                         logger.WarnMethod("通知地面滚筒准备接收失败,EquipTask:" + JsonConvert.SerializeObject(task));
@@ -137,7 +131,7 @@ namespace SNTON.Components.ComLogic
                     {
                         logger.WarnMethod("通知地面滚筒准备接收,EquipTask:" + JsonConvert.SerializeObject(task));
                     }
-                    var light = MXParser.ReadData(nagv, true);
+                    var light = MXParser.ReadData(nread_light, true);//读400 光电值
                     Thread.Sleep(1000);
                     #region 重新读取刚刚写入的光电,验证有没有写入成功
                     if (!light.Item1)
@@ -147,7 +141,7 @@ namespace SNTON.Components.ComLogic
                     }
                     else
                     {
-                        int kv = light.Item2.GetIntOrDefault(cmd.WAStatus);
+                        int kv = light.Item2.GetIntOrDefault(cmd.WAStatus);//校验光电是否写成功
                         if (kv == 0)
                         {//光电写入失败 
                             logger.WarnMethod("光电写入失败:" + cmd.ControlID + "," + sbequipname);

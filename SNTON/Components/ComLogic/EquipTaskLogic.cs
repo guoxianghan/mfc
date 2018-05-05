@@ -644,6 +644,110 @@ namespace SNTON.Components.ComLogic
                 return 1;//一次只执行一个龙门Task  
             else return 0;
         }
+
+        void InitEquipTask5()
+        {
+            /*
+            轮询EquipTask5
+            判断库存
+            创建出库任务
+            */
+            List<EquipTask5Entity> tasks = this.BusinessLogic.EquipTask5Provider.GetEquipTask5("ISDELETE=1 AND Plat=5 AND STATUS IN (0,5)", null);
+            if (tasks == null || tasks.Count == 0)
+                return;
+            var machcodes = from i in tasks select i.DeviceID;
+            List<tblProdCodeStructMachEntity> machstructcode = null;
+            machstructcode = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, machcodes.ToArray());
+            if (machstructcode == null || machstructcode.Count == 0)
+            {
+                logger.ErrorMethod("绑定作业标准书失败");
+                return;
+            }
+            List<MidStorageSpoolsEntity> midstoreages = this.BusinessLogic.MidStorageSpoolsProvider.GetMidStorages($"StorageArea =4 AND IsOccupied IN (1)", null);
+            var test = GetEnumerable(tasks);
+            foreach (var item in test)
+            {
+                DateTime dt = DateTime.Now;
+                Guid guid = Guid.NewGuid();
+                item.tblProdCodeStructMach = machstructcode.FirstOrDefault(x => x.MachCode == item.DeviceID.Trim());
+                if (item.tblProdCodeStructMach == null)
+                {
+                    logger.WarnMethod("该设备未绑定作业标准书, " + item.DeviceID);
+                    continue;
+                }
+                List<MidStorageSpoolsEntity> mids = new List<MidStorageSpoolsEntity>();
+                #region 判断库存
+                foreach (var p in item.tblProdCodeStructMach.ProdCodeStructMarks)
+                {
+                    var mid = midstoreages.FindAll(x => x.Length == p.ProdLength).OrderByDescending(x => x.Updated).Take(p.Count);
+                    if (p.Count < mid.Count())
+                    {
+                        item.outOfStock = 1;//库存不足
+                        this.BusinessLogic.EquipTask5Provider.UpdateEquipTask5(null, item);
+                        continue;
+                    }
+                    mids.AddRange(mid);
+                }
+                if (item.outOfStock == 1)
+                    continue; 
+                #endregion
+                /*
+                创建出库任务
+                创建龙门任务
+                更改设备任务状态
+                */
+                item.Status = 1;
+                item.time_1 = dt;
+                item.Updated = item.time_1;
+                string id = Convert.ToString(item.Id, 2);
+                if (id.Length > 5)
+                    id = id.Substring(id.Length - 5);
+                int seq = Convert.ToInt32(id, 2);
+                List<RobotArmTaskEntity> robottsks = CreateRobotTask(mids, 1, seq, dt, guid);
+                bool r = this.BusinessLogic.SqlCommandProvider.CreateEquipTask5(item, robottsks, mids);
+                if (r)
+                {
+                    logger.InfoMethod("创建出库任务成功," + JsonConvert.SerializeObject(item));
+                    break;
+                }
+                else
+                {
+                    logger.WarnMethod("创建出库任务失败");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="list">暂存库单丝</param>
+        /// <param name="ConveyorId">对接线体</param>
+        /// <param name="seq">线体对接流水号</param>
+        /// <param name="dt">创建时间</param>
+        /// <param name="guid">任务guid</param>
+        /// <returns></returns>
+        List<RobotArmTaskEntity> CreateRobotTask(List<MidStorageSpoolsEntity> list, int ConveyorId, int seq, DateTime dt, Guid guid)
+        {
+            List<RobotArmTaskEntity> tsks = new List<RobotArmTaskEntity>();
+            RobotArmTaskEntity obj = null;
+            foreach (var item in list)
+            {
+                var tskconfig = TaskConfig.GetEnoughAGVEquipCount(item.CName.Trim());//8 / 12
+                item.IsOccupied = 4;
+                item.Updated = dt;
+                obj = new RobotArmTaskEntity() { AGVSeqNo = seq, CName = item.CName.Trim(), FromWhere = item.SeqNo, PlantNo = 5, ProductType = tskconfig.Item3.ToString(), SeqNo = 0, RobotArmID = "4", StorageArea = 4, TaskType = 0, ToWhere = 1, Created = dt, TaskGroupGUID = guid, WhoolBarCode = item.FdTagNo.Trim() };
+                tsks.Add(obj);
+            }
+            return tsks;
+        }
+
+        IEnumerable<EquipTask5Entity> GetEnumerable(List<EquipTask5Entity> tasks)
+        {
+            foreach (var item in tasks)
+            {
+                yield return item;
+            }
+        }
     }
 
 }

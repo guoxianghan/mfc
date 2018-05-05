@@ -63,6 +63,8 @@ namespace SNTON.Components.ComLogic
 
         void SendCreateAGV()
         {
+            Stopwatch watch = Stopwatch.StartNew();//创建一个监听器
+            watch.Start();
             if (_EquipCmdList == null)
                 _EquipCmdList = this.BusinessLogic.EquipConfigerProvider.EquipConfigers.FindAll(x => x.PLCNo == PLCNo);
             //var equiptsk = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"[STATUS]=1 AND PlantNo={PlantNo} AND PLCNo={PLCNo}", null);
@@ -73,7 +75,6 @@ namespace SNTON.Components.ComLogic
                 return;
 
             List<long> idequiptsks = new List<long>();
-            StringBuilder sbequipname = new StringBuilder();
             foreach (var item in agvtsks)
             {
                 #region 处理每一个AGV任务
@@ -82,46 +83,43 @@ namespace SNTON.Components.ComLogic
                     continue;
                 foreach (var task in EquipTask)
                 {
-                    sbequipname.Clear();
-                    Neutrino nwrite_receive = new Neutrino();
-                    nwrite_receive.TheName = "WriteReceive";
-                    Neutrino nwrite_light = new Neutrino();
-                    nwrite_light.TheName = "SendLight";
                     #region 通知地面滚筒准备接收
-                    Neutrino nread_light = new Neutrino();
-                    nread_light.TheName = "ReadLight";
                     var cmd = _EquipCmdList.FirstOrDefault(x => x.EquipFlag.Trim() == task.EquipFlag.Trim());
                     if (cmd == null)
                     {
                         //logger.ErrorMethod("找不到对应的地面滚筒编号:" + JsonConvert.SerializeObject(task));
                         continue;
                     }
-                    nwrite_receive.AddField(cmd.AGVDisStatus.Trim(), task.TaskType.ToString());
-                    nread_light.AddField(cmd.WAStatus.Trim(), "0");//读光电对象
-                    nwrite_light.AddField(cmd.WAStatus.Trim(), task.TaskType.ToString());//写光电对象
-                    bool r = MXParser.SendData(nwrite_receive, 3);//写500 回复收到请求
-                    Thread.Sleep(800);
-                    sbequipname.Append(cmd.EquipName);
-
-                    var nread_light_result = MXParser.ReadData(nread_light, true);//读取400光电 看是否已写入成功
-                    if (!nread_light_result.Item1)
-                    {//读取失败跳出循环
+                    watch.Start();
+                    var light = MXParser.ReadData(cmd.WAStatus.Trim(), "Read_Light", true);//先读一次400 光电值
+                    //logger.InfoMethod($"读取 {cmd.EquipName} 光电耗时 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
+                    //校验光电是否写成功
+                    if (light.Item2 != 0)
+                    {//光电写入成功
+                        if (item.AGVId == 0)
+                            task.Status = 4;
+                        else
+                            task.Status = 6;
+                        //4等待调度AGV,6AGV运行中
+                        task.Updated = DateTime.Now;
+                        int cout = this.BusinessLogic.EquipTaskViewProvider.Update(null, task);
+                        logger.WarnMethod("光电已经写入成功:" + cmd.ControlID + "," + cmd.EquipName);
                         continue;
                     }
-                    int wasagv = nread_light_result.Item2.GetIntOrDefault(cmd.WAStatus);//读取光电
-                    if (wasagv == 0)
-                    {
-                        r = MXParser.SendData(nwrite_receive, 3);//写500 回复收到请求
-                    }
-                    Thread.Sleep(800);
+                    else
+                        logger.WarnMethod("光电待写入:" + cmd.ControlID + "," + cmd.EquipName);
+                    bool r = MXParser.SendData(cmd.AGVDisStatus.Trim(), task.TaskType, "Write_Receive", 3);//写500 回复收到请求
+                    Thread.Sleep(200);
+                    r = MXParser.SendData(cmd.AGVDisStatus.Trim(), task.TaskType, "Write_Receive", 3);//写500 回复收到请求
+                    Thread.Sleep(200);
                     task.Status = 9;
-                    r = MXParser.SendData(nwrite_light, 3);//写400 光电
-                    Thread.Sleep(600);
-                    r = MXParser.SendData(nwrite_light, 3);//写400 光电
-                    Thread.Sleep(600);
-                    r = MXParser.SendData(nwrite_light, 3);//写400 光电
-                    Thread.Sleep(600);
-                    r = MXParser.SendData(nwrite_light, 3);//写400 光电
+                    r = MXParser.SendData(cmd.WAStatus.Trim(), task.TaskType, "Write_Light", 3);//写400 光电
+                    Thread.Sleep(200);
+                    r = MXParser.SendData(cmd.WAStatus.Trim(), task.TaskType, "Write_Light", 3);//写400 光电
+                    Thread.Sleep(200);
+                    r = MXParser.SendData(cmd.WAStatus.Trim(), task.TaskType, "Write_Light", 3);//写400 光电
+                    Thread.Sleep(200);
+                    r = MXParser.SendData(cmd.WAStatus.Trim(), task.TaskType, "Write_Light", 3);//写400 光电
                     if (!r)
                     {
                         logger.WarnMethod("通知地面滚筒准备接收失败,EquipTask:" + JsonConvert.SerializeObject(task));
@@ -131,20 +129,20 @@ namespace SNTON.Components.ComLogic
                     {
                         logger.WarnMethod("通知地面滚筒准备接收,EquipTask:" + JsonConvert.SerializeObject(task));
                     }
-                    var light = MXParser.ReadData(nread_light, true);//读400 光电值
-                    Thread.Sleep(1000);
+                    light = MXParser.ReadData(cmd.WAStatus.Trim(), "Read_Light", true);//读400 光电值
+                    Thread.Sleep(300);
                     #region 重新读取刚刚写入的光电,验证有没有写入成功
                     if (!light.Item1)
                     {
-                        logger.WarnMethod("读取光电值失败,设备Id:" + sbequipname.ToString().Trim(','));
+                        logger.WarnMethod("读取光电值失败,设备Id:" + cmd.EquipName);
                         continue;
                     }
                     else
                     {
-                        int kv = light.Item2.GetIntOrDefault(cmd.WAStatus);//校验光电是否写成功
-                        if (kv == 0)
+                        //校验光电是否写成功
+                        if (light.Item2 == 0)
                         {//光电写入失败 
-                            logger.WarnMethod("光电写入失败:" + cmd.ControlID + "," + sbequipname);
+                            logger.WarnMethod("光电写入失败:" + cmd.ControlID + "," + cmd.EquipName);
                             continue;
                         }
                         else
@@ -155,7 +153,7 @@ namespace SNTON.Components.ComLogic
                                 task.Status = 6;
                             //4等待调度AGV,6AGV运行中
                             int cout = this.BusinessLogic.EquipTaskViewProvider.Update(null, task);
-                            logger.WarnMethod("光电写入成功:" + cmd.ControlID + "," + sbequipname);
+                            logger.WarnMethod("光电写入成功:" + cmd.ControlID + "," + cmd.EquipName);
                         }
 
                     }

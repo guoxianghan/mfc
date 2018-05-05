@@ -548,10 +548,18 @@ namespace SNTON.Components.ComLogic
                 short agvid = Convert.ToInt16(neutrino.GetField("AGVID"));
                 float x = 0;
                 float y = 0;
+
                 if (neutrino.GetField("CurrentX").TrimStart('0') != "")
                     x = Convert.ToSingle(neutrino.GetField("CurrentX").TrimStart('0'));
                 if (neutrino.GetField("CurrentY").TrimStart('0') != "")
                     y = Convert.ToSingle(neutrino.GetField("CurrentY").TrimStart('0'));
+
+                var agvsystem = this.BusinessLogic.AGVBYSStatusProvider._AGVBYSStatusCache.FirstOrDefault(c => c.AGVID == agvid);
+                if (agvsystem != null)
+                {
+                    x = agvsystem.LocationX;
+                    y = agvsystem.LocationY;
+                }
                 agv_three_configEntity act = null;
                 if (x != 0 || y != 0)
                 {
@@ -581,7 +589,7 @@ namespace SNTON.Components.ComLogic
                 {
                     logger.ErrorMethod($"解析AGVRoute status或TaskNo出错,SEQUENCE:{SEQUENCE},neutrino is " + JsonConvert.SerializeObject(neutrino), e, "SaveAGVRoute");
                 }
-                var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status, agv_id = act.agv_id , fac_x=act.fac_x, fac_y=act.fac_y};
+                var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status, agv_id = act.agv_id, fac_x = act.fac_x, fac_y = act.fac_y };
                 var agvroutelist = this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute2[agvid];
 
 

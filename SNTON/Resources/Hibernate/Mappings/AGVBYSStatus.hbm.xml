@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.AGV.AGVBYSStatusEntity" schema="SNTON" table="SNTON.AGVBYSStatusEntity" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="AGVID">
+      <column name="AGVID" not-null="true" />
+      <generator class="identity" />
+    </id>
+    <!--<property name="AGVID" column="AGVID" />-->
+    <property name="SystemID" column="SystemID" />
+    <property name="Description" column="Description" />
+    <property name="LastStatus" column="LastStatus" />
+    <property name="Status" column="Status" />
+    <property name="LastLandMark" column="LastLandMark" />
+    <property name="LandMark" column="LandMark" />
+    <property name="LocationX" column="LocationX" />
+    <property name="LocationY" column="LocationY" />
+    <property name="Connected" column="Connected" />
+    <property name="Velocity" column="Velocity" />
+    <property name="PowerLow" column="PowerLow" />
+    <property name="Extend1" column="Extend1" />
+    <property name="Extend2" column="Extend2" />
+    <property name="Extend3" column="Extend3" />
+    <property name="Extend4" column="Extend4" />
+    <property name="LastStation" column="LastStation" />
+    <property name="Station" column="Station" />
+    <property name="BatteryPower" column="BatteryPower" />
+    <property name="ConnectionLevel" column="ConnectionLevel" />
+    <property name="Time" column="Time" />
+  </class>
+</hibernate-mapping>

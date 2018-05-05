@@ -124,6 +124,31 @@ namespace SNTON.BusinessLogic
             }
             set { sequencer = value; }
         }
+        #region AGVBYSStatus
+#pragma warning disable 649
+        [ConfigBoundProperty("AGVBYSStatusProviderId")]
+        private string aGVBYSStatusProviderId;
+#pragma warning restore 649
+
+        private IAGVBYSStatus aGVBYSStatusProvider;
+        /* brokerNode
+
+		*/
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public IAGVBYSStatus AGVBYSStatusProvider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref aGVBYSStatusProvider, aGVBYSStatusProviderId, this);
+
+                return aGVBYSStatusProvider;
+            }
+            set { aGVBYSStatusProvider = value; }
+        }
+        #endregion
+
 
 #pragma warning disable 649
         [ConfigBoundProperty("ConfigValueProviderId")]

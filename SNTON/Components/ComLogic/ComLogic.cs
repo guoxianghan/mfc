@@ -189,7 +189,7 @@ namespace SNTON.Components.ComLogic
                         int.TryParse(ne.GetField(item.Name), out i);
                         item.SetValue(obj, i);
                     }
-                    else if (item.PropertyType.Name == "Shortk")
+                    else if (item.PropertyType.Name == "Short")
                     {
                         short.TryParse(ne.GetField(item.Name), out s);
                         item.SetValue(obj, s);

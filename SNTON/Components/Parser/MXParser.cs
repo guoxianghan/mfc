@@ -308,7 +308,7 @@ namespace SNTON.Components.Parser
             return n;
         }
 
-        public Tuple<bool, int> ReadData(string dbname,string thename = "", bool withReadResultSign = true, short maxReadCount = 1)
+        public Tuple<bool, int> ReadData(string dbname, string thename = "", bool withReadResultSign = true, short maxReadCount = 1)
         {
             Neutrino neu2Read = new Neutrino();
             if (string.IsNullOrEmpty(thename))
@@ -325,6 +325,21 @@ namespace SNTON.Components.Parser
             {
                 return new Tuple<bool, int>(true, re.Item2.GetIntOrDefault(dbname));
             }
+        }
+
+        public Tuple<bool, Neutrino> ReadData(string name, params string[] dbnames)
+        {
+            Neutrino neu2Read = new Neutrino();
+            neu2Read.TheName = name;
+            if (dbnames != null || dbnames.Length != 0)
+            {
+                foreach (var item in dbnames)
+                {
+                    neu2Read.AddField(item, "0");
+                }
+            }
+            var datablock = Neutrino2DataBlock(neu2Read);
+            return CommModule.Try2ReadDataWithSign(datablock, 1);
         }
         #endregion End of IMXParser interface
     }

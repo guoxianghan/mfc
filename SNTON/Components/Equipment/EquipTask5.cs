@@ -167,7 +167,7 @@ namespace SNTON.Components.Equipment
             return ret;
         }
 
-        public  int UpdateEquipTask5(IStatelessSession session = null, params EquipTask5Entity[] tasks)
+        public int UpdateEquipTask5(IStatelessSession session = null, params EquipTask5Entity[] tasks)
         {
             if (tasks == null || tasks.Length == 0)
                 return 0;
@@ -188,6 +188,30 @@ namespace SNTON.Components.Equipment
                 protData.ExitWriteLock();
             }
             return r;
+        }
+
+        public EquipTask5Entity GetEquipTask5(Guid guid, IStatelessSession session = null)
+        {
+            EquipTask5Entity ret = null;
+
+            if (session == null)
+            {
+                ret = BrokerDelegate(() => GetEquipTask5(guid, session), ref session);
+                return ret;
+            }
+            try
+            {
+                var tmp = ReadList<EquipTask5Entity>(session, string.Format("FROM {0} where  TaskGuid = '{1}' AND ISDELETED={2} order by ID desc", EntityDbTable, guid.ToString(), Constants.SNTONConstants.DeletedTag.NotDeleted));
+                if (tmp.Any())
+                {
+                    ret = tmp.FirstOrDefault();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.ErrorMethod("Failed to get " + EntityDbTable, e);
+            }
+            return ret;
         }
     }
 }

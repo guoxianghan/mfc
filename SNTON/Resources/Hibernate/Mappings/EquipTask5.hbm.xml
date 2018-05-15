@@ -18,11 +18,13 @@
     <property name="time_6" column="time_6" />
     <property name="time_7" column="time_7" />
     <property name="time_8" column="time_8" />
+    <property name="time_9" column="time_9" />
     <property name="Created" column="Created" />
     <property name="Updated" column="Updated" />
     <property name="Deleted" column="Deleted" />
     <property name="IsDeleted" column="IsDeleted" />
     <property name="PlatNo" column="PlatNo" />
+    <property name="outOfStock" column="outOfStock" />
     <property name="StorageArea" column="StorageArea" />
     <property name="SeqNo" column="SeqNo" />
     <property name="TaskGuid" column="TaskGuid" />

@@ -27,7 +27,7 @@ namespace SNTON.Entities.DBTables.Equipments
         public virtual byte ConveyorId { get; set; }
 
         /// <summary>
-        ///  -1：（AGV）预备任务0：（AGV）新任务1：(科捷)输送线已接收（有库存,准备出库）2：(科捷)已出库3：(科捷)已完成4：（AGV）完成确认（删除） 5：（库存不足6：（正在出库7：（出库完成8：（等待对接
+        /// -1：（AGV）预备任务0：（AGV）新任务1：(科捷)输送线已接收（有库存,准备出库）2：（AGV）接收确认3：(科捷)正在出库4：(科捷)出库完成5：（AGV）出库完成确认6：（科捷）缓存到位7：（AGV）正在取货8：(科捷)任务完成9：（AGV）完成确认（删除）
         /// </summary>
         [DataMember]
         public virtual byte Status { get; set; }
@@ -91,12 +91,22 @@ namespace SNTON.Entities.DBTables.Equipments
         /// </summary>
         [DataMember]
         public virtual DateTime time_8 { get; set; }
+        /// <summary>
+        /// time_8
+        /// </summary>
+        [DataMember]
+        public virtual DateTime time_9 { get; set; }
 
         /// <summary>
         /// PlatNo
         /// </summary>
         [DataMember]
         public virtual byte PlatNo { get; set; }
+        /// <summary>
+        /// outOfStock 是否有库存默认0, 没库存1
+        /// </summary>
+        [DataMember]
+        public virtual byte outOfStock { get; set; }
 
         /// <summary>
         /// StorageArea

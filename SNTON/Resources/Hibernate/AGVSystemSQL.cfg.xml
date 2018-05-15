@@ -11,7 +11,7 @@ for your own use before compile tests in VisualStudio.
   <session-factory name="NHibernate">
     <property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
     <property name="connection.connection_string">
-Server=.;User Id=sa;Password=123;Database=SNTON;
+      Server=192.168.1.251;User Id=sa;Password=123456;Database=JoinAll;
     </property>
     <property name="connection.isolation">ReadCommitted</property>
     <property name="adonet.batch_size">1</property>

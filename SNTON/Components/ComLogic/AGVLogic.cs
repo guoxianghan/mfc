@@ -195,7 +195,7 @@ namespace SNTON.Components.ComLogic
                     AGVInfo(neutrino);
                     break;
                 case SNTONAGVCommunicationProtocol.AGVRoute:
-                    SaveAGVRoute(neutrino);
+                    //SaveAGVRoute(neutrino);
                     break;
                 case SNTONAGVCommunicationProtocol.AGVStatus:
                     SaveAgvStatues(neutrino);
@@ -230,6 +230,39 @@ namespace SNTON.Components.ComLogic
             Neutrino neutrino = new Neutrino();
             neutrino.AddField("TELEGRAMID", SNTONAGVCommunicationProtocol.AliveReq.PadRight(20));
             Send(neutrino);
+            AGVRoute();
+
+        }
+        void AGVRoute()
+        {
+            var routelocation = this.BusinessLogic.AGVBYSStatusProvider._AGVBYSStatusCache;
+            var weblocation = this.BusinessLogic.Agv_three_configProvider._AllAgv_three_config;
+            agv_three_configEntity act = null;
+            foreach (var item in routelocation)
+            {
+                float x = item.LocationX;
+                float y = item.LocationY;
+                if (x != 0 || y != 0)
+                {
+                    weblocation.ForEach(c =>
+                    {
+                        c.Dev_x = Math.Abs(x - c.fac_X);
+                        c.Dev_y = Math.Abs(y - c.fac_Y);
+                    });
+                    var weblocationx = weblocation.OrderBy(c => c.StDev).ToList().Take(20);
+                    act = weblocationx.FirstOrDefault();
+                }
+                else
+                    act = this.BusinessLogic.Agv_three_configProvider._originLocation;
+                if (this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.ContainsKey(item.AGVID))
+                {
+                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute[item.AGVID] = new AGVRouteEntity() { AGVId = item.AGVID, agv_id = act.agv_id, Created = DateTime.Now, fac_x = act.fac_x, fac_y = act.fac_y, X = x, Y = y };
+                }
+                else
+                {
+                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.Add(item.AGVID, new AGVRouteEntity() { AGVId = item.AGVID, agv_id = act.agv_id, Created = DateTime.Now, fac_x = act.fac_x, fac_y = act.fac_y, X = x, Y = y });
+                }
+            }
         }
         private void AGVStatusReq()
         {//100000000000000002
@@ -549,10 +582,10 @@ namespace SNTON.Components.ComLogic
                 float x = 0;
                 float y = 0;
 
-                if (neutrino.GetField("CurrentX").TrimStart('0') != "")
-                    x = Convert.ToSingle(neutrino.GetField("CurrentX").TrimStart('0'));
-                if (neutrino.GetField("CurrentY").TrimStart('0') != "")
-                    y = Convert.ToSingle(neutrino.GetField("CurrentY").TrimStart('0'));
+                //if (neutrino.GetField("CurrentX").TrimStart('0') != "")
+                //    x = Convert.ToSingle(neutrino.GetField("CurrentX").TrimStart('0'));
+                //if (neutrino.GetField("CurrentY").TrimStart('0') != "")
+                //    y = Convert.ToSingle(neutrino.GetField("CurrentY").TrimStart('0'));
 
                 var agvsystem = this.BusinessLogic.AGVBYSStatusProvider._AGVBYSStatusCache.FirstOrDefault(c => c.AGVID == agvid);
                 if (agvsystem != null)

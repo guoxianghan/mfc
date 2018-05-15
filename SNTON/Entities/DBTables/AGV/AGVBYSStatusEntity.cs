@@ -17,7 +17,7 @@ namespace SNTON.Entities.DBTables.AGV
         /// AGVID
         /// </summary>
         [DataMember]
-        public virtual int AGVID { get; set; }
+        public virtual short AGVID { get; set; }
 
         /// <summary>
         /// SystemID
@@ -139,5 +139,5 @@ namespace SNTON.Entities.DBTables.AGV
         [DataMember]
         public virtual DateTime Time { get; set; }
 
-    }	
+    }
 }

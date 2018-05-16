@@ -106,8 +106,8 @@ namespace SNTON.Components.ComLogic
                         logger.WarnMethod("光电已经写入成功:" + cmd.ControlID + "," + cmd.EquipName);
                         continue;
                     }
-                    else
-                        logger.WarnMethod("光电待写入:" + cmd.ControlID + "," + cmd.EquipName);
+                    //else
+                    //logger.WarnMethod("光电待写入:" + cmd.ControlID + "," + cmd.EquipName);
                     bool r = MXParser.SendData(cmd.AGVDisStatus.Trim(), task.TaskType, "Write_Receive", 3);//写500 回复收到请求
                     Thread.Sleep(200);
                     r = MXParser.SendData(cmd.AGVDisStatus.Trim(), task.TaskType, "Write_Receive", 3);//写500 回复收到请求
@@ -293,7 +293,13 @@ namespace SNTON.Components.ComLogic
             List<tblProdCodeStructMachEntity> machstructcode = null;
             try
             {
-                machstructcode = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, machcodes.ToArray());
+                var group = MachineSplit(machcodes);
+                foreach (var item in group)
+                {
+                    var mach = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, item.ToArray());
+                    if (mach != null && mach.Count != 0)
+                        machstructcode.AddRange(mach);
+                }
             }
             catch (Exception ex)
             {
@@ -401,10 +407,16 @@ namespace SNTON.Components.ComLogic
                 {
                     machcodes.Add(item.MachCode.Trim());
                 }
-            List<tblProdCodeStructMachEntity> machstructcode = null;
+            List<tblProdCodeStructMachEntity> machstructcode = new List<tblProdCodeStructMachEntity>();
             try
             {
-                machstructcode = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, machcodes.ToArray());
+                var group = MachineSplit(machcodes);
+                foreach (var item in group)
+                {
+                    var mach = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, item.ToArray());
+                    if (mach != null && mach.Count != 0)
+                        machstructcode.AddRange(mach);
+                }
             }
             catch (Exception ex)
             {
@@ -587,6 +599,11 @@ namespace SNTON.Components.ComLogic
                 logger.InfoMethod($"结束写光电 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
                 logger.ErrorMethod("写地面滚筒光电失败", ex);
             }
+        }
+        IEnumerable<IGrouping<string, string>> MachineSplit(List<string> machnames)
+        {
+            var group = machcodes.GroupBy(x => x.Substring(0, 4));
+            return group;
         }
     }
 

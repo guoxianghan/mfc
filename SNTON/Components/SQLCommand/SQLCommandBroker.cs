@@ -359,5 +359,38 @@ namespace SNTON.Components.SQLCommand
             }
             return ret;
         }
+
+        public bool CreateEquipTask5(EquipTask5Entity task, List<RobotArmTaskEntity> armtsks, List<MidStorageSpoolsEntity> mids, IStatelessSession session = null)
+        {
+            bool r = false;
+            if (session == null)
+            {
+                r = BrokerDelegate(() => CreateEquipTask5(task, armtsks, mids, session), ref session);
+                return r;
+            }
+            try
+            {
+                protData.EnterWriteLock();
+                List<MidStorageEntity> midlist = new List<MidStorageEntity>();
+                foreach (var item in mids)
+                {
+                    midlist.Add(new MidStorageEntity() { Created = item.Created, Deleted = item.Deleted, Description = item.Description, HCoordinate = item.HCoordinate, Id = item.Id, IdsList = item.IdsList, IsDeleted = item.IsDeleted, IsEnable = item.IsEnable, IsOccupied = item.IsOccupied, IsVisible = item.IsVisible, SeqNo = item.SeqNo, StorageArea = item.StorageArea, Updated = item.Updated, VCoordinate = item.VCoordinate });
+                }
+                Update(session, task);
+                Update(session, armtsks);
+                Update(session, midlist);
+                r = true;   
+            }
+            catch (Exception ex)
+            {
+                r = false;
+                logger.ErrorMethod("创建4号库出库任务失败", ex);
+            }
+            finally
+            {
+                protData.ExitWriteLock();
+            }
+            return r;
+        }
     }
 }

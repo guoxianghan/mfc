@@ -33,6 +33,8 @@ using VI.MFC.Logging;
 using SNTON.WebServices.UserInterfaceBackend.Responses.RobotArmTask;
 using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
+using SNTON.WebServices.UserInterfaceBackend.Requests.Spool;
+using SNTON.WebServices.UserInterfaceBackend.Responses.Spools;
 
 namespace SNTON.WebServices.UserInterfaceBackend
 {
@@ -989,7 +991,39 @@ namespace SNTON.WebServices.UserInterfaceBackend
                 obj = ResponseBase.GetResponseByException<ResponseDataBase>(ex);
             }
             return obj;
-        } 
+        }
+
+        public SpoolsTaskResponse GetSpoolTask(SpoolTaskSearchRequest request)
+        {
+            SpoolsTaskResponse obj = new SpoolsTaskResponse();
+            try
+            {
+                logger.InfoMethod($"查询单丝信息:{JsonConvert.SerializeObject(request)}");
+                obj = BusinessLogic.GetSpoolTask(request);
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<SpoolsTaskResponse>(ex);
+            }
+            return obj;
+        }
+
+        public ResponseDataBase ClearMidStoreage(byte PlantNo, byte storageid, int status, string OriginalIds)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            try
+            {
+                logger.InfoMethod($"修改库位状态ClearMidStoreage,status:{status}, OriginalIds:{OriginalIds} time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                if (!string.IsNullOrEmpty(OriginalIds))
+                    obj = BusinessLogic.ClearMidStoreage(PlantNo, storageid, status, OriginalIds.Trim().Split(','));
+                else obj.data.Add("错误的库位信息");
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<ResponseDataBase>(ex);
+            }
+            return obj;
+        }
         #endregion
     }
 }

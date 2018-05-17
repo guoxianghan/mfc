@@ -24,6 +24,8 @@ using SNTON.WebServices.UserInterfaceBackend.Responses.MidStorage;
 using SNTON.WebServices.UserInterfaceBackend.Responses.RobotArmTask;
 using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
+using SNTON.WebServices.UserInterfaceBackend.Responses.Spools;
+using SNTON.WebServices.UserInterfaceBackend.Requests.Spool;
 
 namespace SNTON.WebServices.UserInterfaceBackend
 {
@@ -66,6 +68,13 @@ namespace SNTON.WebServices.UserInterfaceBackend
         object SaveSystemParameter(SystemParametersRequest request);
         #endregion
         #region Spools info
+        [OperationContract]
+        [DataContractFormat]
+        [WebInvoke(UriTemplate = "Spools/GetSpoolTask", Method = "POST",
+              ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
+        [ServiceKnownType(typeof(SpoolsTaskResponse))]
+        SpoolsTaskResponse GetSpoolTask(SpoolTaskSearchRequest request);
+
         [OperationContract]
         [DataContractFormat]
         [WebInvoke(UriTemplate = "Spools/SpoolsByBarcodeGet?barcode={barcode}", Method = "GET",
@@ -312,7 +321,12 @@ namespace SNTON.WebServices.UserInterfaceBackend
            ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
         [ServiceKnownType(typeof(ResponseDataBase))]
         ResponseDataBase ExcepitonLineOutStore(byte PlantNo, int storage, string OriginalId);
-
+        [OperationContract]
+        [DataContractFormat]
+        [WebInvoke(UriTemplate = "MidStorage/ClearMidStoreage", Method = "POST",
+           ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
+        [ServiceKnownType(typeof(ResponseDataBase))]
+        ResponseDataBase ClearMidStoreage(byte PlantNo, byte storageid, int status, string OriginalIds);
         #endregion
 
         #region EquipTask

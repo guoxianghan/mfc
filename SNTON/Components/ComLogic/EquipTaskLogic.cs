@@ -402,26 +402,26 @@ namespace SNTON.Components.ComLogic
             RobotArmTaskEntity armtsk = null;
             List<RobotArmTaskEntity> listarmtsk = new List<RobotArmTaskEntity>();
             var agvtsk = new AGVTasksEntity() { Created = createtime, SeqNo = seq, TaskGuid = guid, PlantNo = PlantNo, ProductType = exequiptsk.ProductType, Status = 0, TaskLevel = 5 };
-            int seqno = 0;
+            int seqno = 1;
             foreach (var item in needlspools)
             {
                 item.IsOccupied = 4;
                 armtsk = CreateOutStoreArmTask(storageno, lineno, tskconfig, guid, createtime, item, seq);
-                armtsk.SeqNo = seqno++;
+                armtsk.SeqNo = 2 * (seqno++) - 1;
                 armtsk.EquipControllerId = "0";
                 //armtsk.EquipControllerId = creaequptsk[0].EquipContollerId + "," + creaequptsk[1].EquipContollerId;
                 listarmtsk.Add(armtsk);
             }
+            seqno = 1;
             foreach (var item in needrspools)
             {
                 item.IsOccupied = 4;
                 armtsk = CreateOutStoreArmTask(storageno, lineno, tskconfig, guid, createtime, item, seq);
-                armtsk.SeqNo = seqno++;
+                armtsk.SeqNo = 2 * (seqno++);
                 armtsk.EquipControllerId = "0";
                 //armtsk.EquipControllerId = creaequptsk[0].EquipContollerId + "," + creaequptsk[1].EquipContollerId;
                 listarmtsk.Add(armtsk);
             }
-
 
             foreach (var equtsk in creaequptsk)
             {
@@ -689,7 +689,7 @@ namespace SNTON.Components.ComLogic
                     mids.AddRange(mid);
                 }
                 if (item.outOfStock == 1)
-                    continue; 
+                    continue;
                 #endregion
                 /*
                 创建出库任务

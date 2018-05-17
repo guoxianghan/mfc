@@ -13,6 +13,8 @@ using SNTON.WebServices.UserInterfaceBackend.Responses.MidStorage;
 using SNTON.WebServices.UserInterfaceBackend.Responses.RobotArmTask;
 using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
+using SNTON.WebServices.UserInterfaceBackend.Responses.Spools;
+using SNTON.WebServices.UserInterfaceBackend.Requests.Spool;
 
 namespace SNTON.BusinessLogic
 {
@@ -29,9 +31,17 @@ namespace SNTON.BusinessLogic
         SystemParametersResponse SystemParameterQuery();
         ResponseDataBase SystemParameterSave(SystemParametersRequest request);
         SpoolsResponse GetSpoolsByBarcode(string barcode);
-
+        SpoolsTaskResponse GetSpoolTask(SpoolTaskSearchRequest request);
         SpoolsResponse GetSpoolsByMidStorageId(long midStorageId);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="PlantNo"></param>
+        /// <param name="storageareaid"></param>
+        /// <param name="status 4异常口出库,0清空该库位状态,-1清空所有库位"></param>
+        /// <param name="OriginalIds"></param>
+        /// <returns></returns>
+        ResponseDataBase ClearMidStoreage(byte PlantNo, byte storageareaid, int status, params string[] OriginalIds);
         SpoolsResponse GetSpoolsByProudctType(string proudctType);
         EquipCallInfoResponse EquipCallInfor(int plantno, int EquipId);
         EquipConfigResponse EquipConfigs(short plantno);

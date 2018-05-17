@@ -42,6 +42,9 @@ using System.IO;
 using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
 using SNTON.Entities.DBTables.InStoreToOutStore;
+using SNTON.WebServices.UserInterfaceBackend.Requests.Spool;
+using SNTON.WebServices.UserInterfaceBackend.Responses.Spools;
+using SNTON.Com;
 
 namespace SNTON.BusinessLogic
 {
@@ -1052,9 +1055,10 @@ namespace SNTON.BusinessLogic
                 obj.data.Add("发送成功,等待抓取");
                 if (status == 2)
                 {
+                    #region MyRegion
                     /*
-                    完成后应更新该库位信息
-                    */
+                               完成后应更新该库位信息
+                               */
                     var mid = this.MidStorageProvider.GetMidStorage("[SeqNo] = " + armtsk.FromWhere + " AND [StorageArea]=" + armtsk.StorageArea, null);
                     if (mid != null)
                     {
@@ -1082,22 +1086,33 @@ namespace SNTON.BusinessLogic
                             equiptsks.ForEach(x => x.Status = 3);
                             this.EquipTaskProvider.UpdateEntity(equiptsks, null);
                         }
-                    }
+                    } 
+                    #endregion
                     obj.data.Add("发送成功");
                 }
             }
             else if (status == 1)
             {//矫正
-                //var misspools = this.MidStorageSpoolsProvider.GetMidStorages($"[Length]={armtsk.Length} AND [IsOccupied]=1 AND [StorageArea]={armtsk.StorageArea}", null);
-                //if (misspools == null)
-                //    misspools = this.MidStorageSpoolsProvider.GetMidStorages($"[IsOccupied]=1 AND [StorageArea]={armtsk.StorageArea}", null);
-                //var misspool = misspools.FirstOrDefault();
-                //misspool.IsOccupied = 4;
-                //armtsk.SpoolStatus = 0;
-                //armtsk.WhoolBarCode = misspool.FdTagNo.Trim();
-                //armtsk.FromWhere = misspool.SeqNo;
-                //this.RobotArmTaskSpoolProvider.UpdateArmTask(armtsk, null);
-                obj.data.Add("错误的龙门任务状态指令");
+                var arm = this.RobotArmTaskSpoolProvider.GetRobotArmTaskSpool(id, null);
+                var misspools = this.MidStorageSpoolsProvider.GetMidStorages($"[Length]={arm.Length} AND [IsOccupied]=1 AND [StorageArea]={arm.StorageArea}", null);
+                if (misspools == null)
+                    misspools = this.MidStorageSpoolsProvider.GetMidStorages($"[IsOccupied]=1 AND [StorageArea]={armtsk.StorageArea}", null);
+                var misspool = misspools.FirstOrDefault();
+                misspool.IsOccupied = 4;
+                armtsk.SpoolStatus = 0;
+                armtsk.WhoolBarCode = misspool.FdTagNo.Trim();
+                armtsk.FromWhere = misspool.SeqNo;
+                try
+                {
+                    this.MidStorageSpoolsProvider.UpdateMidStore(null, misspool);
+                    this.RobotArmTaskSpoolProvider.UpdateArmTask(arm, null);
+                    obj.data.Add("重新抓取成功");
+                }
+                catch (Exception ex)
+                {
+                    obj.data.Add("重新抓取失败");
+                    ex.ToString();
+                }
             }
 
             return obj;
@@ -1453,6 +1468,122 @@ namespace SNTON.BusinessLogic
                 }
                 #endregion
                 obj.data.Add("删除成功");
+            }
+            return obj;
+        }
+
+        /// <summary>
+        /// {"pageNumber":0,"pageSize":0,"datetime1":null,"datetime2":null,"FdTagNo":"","ProductType":"","CName":"","Const":"","Length":0,"StorageArea":0,"BobbinNo":""}
+        /// </summary>
+        /// <param name="searchRequest"></param>
+        /// <returns></returns>
+        public SpoolsTaskResponse GetSpoolTask(SpoolTaskSearchRequest searchRequest)
+        {
+            SpoolsTaskResponse obj = new SpoolsTaskResponse();
+            StringBuilder sb = new StringBuilder("ISDELETED=0");//SELECT * FROM [SNTON].[SpoolsTask]
+            if (searchRequest.datetime1.HasValue)
+                sb.Append(" AND Created" + ">='" + searchRequest.datetime1.Value.ToString("yyyy-MM-dd HH:mm:ss") + "' ");
+            if (searchRequest.datetime2.HasValue)
+                sb.Append(" AND Created" + "<='" + searchRequest.datetime2.Value.ToString("yyyy-MM-dd HH:mm:ss") + "' ");
+            if (!string.IsNullOrEmpty(searchRequest.CName))
+                sb.Append(" AND CName" + " = '" + searchRequest.CName.Trim() + "'");
+            if (!string.IsNullOrEmpty(searchRequest.FdTagNo))
+                sb.Append(" AND FdTagNo" + " = '" + searchRequest.FdTagNo.Trim() + "'");
+            if (searchRequest.StorageArea != 0)
+                sb.Append(" AND StorageArea" + " = '" + searchRequest.StorageArea + "'");
+            if (!string.IsNullOrEmpty(searchRequest.ProductType))
+                sb.Append(" AND ProductType" + " = '" + searchRequest.ProductType.Trim() + "'");
+            if (searchRequest.Length != 0)
+                sb.Append(" AND Length =" + searchRequest.Length + "");
+            if (!string.IsNullOrEmpty(searchRequest.BobbinNo))
+                sb.Append(" AND BobbinNo" + " = '" + searchRequest.BobbinNo.Trim() + "'");
+            if (!string.IsNullOrEmpty(searchRequest.Const))
+                sb.Append(" AND Const" + " = '" + searchRequest.Const.Trim() + "'");
+            //sb.Append(" AND ISDELETED=0");
+            string sql = DbHelperSQL.SQLToPage("[SNTON].[SpoolsTask]", sb.ToString(), "ID", searchRequest.pageNumber * searchRequest.pageSize, (searchRequest.pageNumber + 1) * searchRequest.pageSize);
+            var spools = this.SpoolsTaskProvider.GetSpoolsTasks(sql);
+            obj.CountNumber = Convert.ToInt32(DbHelperSQL.GetSingle("SELECT COUNT(1) FROM [SNTON].[SpoolsTask] WHERE " + sb.ToString()));
+            obj.pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(obj.CountNumber / searchRequest.pageSize)));
+            if (obj.CountNumber % searchRequest.pageSize > 0)
+                obj.pageCount = obj.pageCount + 1;
+            StringBuilder sbguid = new StringBuilder();
+            spools.ForEach(x => sbguid.Append($"'{x.TaskGroupGUID.ToString()}',"));
+            var equiptsks = this.EquipTaskView2Provider.GetEquipTaskView2($"TaskGuid IN ({sbguid.ToString().Trim(',')})", null);
+            foreach (var item in spools)
+            {
+                var o = new WebServices.UserInterfaceBackend.Models.Spool.SpoolTaskDataUI() { BobbinNo = item.BobbinNo, Updated = item.Updated, TaskGroupGUID = item.TaskGroupGUID, CName = item.CName, Const = item.Const, Created = item.Created, FdTagNo = item.FdTagNo, Id = item.Id, Length = item.Length, ProductType = item.ProductType, StorageArea = item.StorageArea };
+                obj.data.Add(o);
+                var eq = equiptsks.FindAll(x => x.TaskGuid == item.TaskGroupGUID);
+                if (eq.Count == 0)
+                    continue;
+                item.Updated = eq[0].Updated;
+                eq.ForEach(x => o.EquipName += x.EquipName.Trim() + " , ");
+                o.EquipName = o.EquipName.Trim(',');
+            }
+
+            return obj;
+        }
+
+        /// <summary>
+        /// ResponseDataBase ExcepitonLineOutStore
+        /// </summary>
+        /// <param name="PlantNo"></param>
+        /// <param name="storageareaid"></param>
+        /// <param name="status 4异常口出库,0清空库位,-1清空所有库位"></param>
+        /// <param name="OriginalIds"></param>
+        /// <returns></returns>
+        public ResponseDataBase ClearMidStoreage(byte PlantNo, byte storageareaid, int status, params string[] OriginalIds)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            if (status == 4)
+            {
+                obj = ExcepitonLineOutStore(PlantNo, storageareaid, OriginalIds);
+            }
+            else if (status == -1)
+            {
+                string sql = "StorageArea=" + storageareaid + " IsOccupied IN (1,4,5)";
+                var storages = this.MidStorageSpoolsProvider.GetMidStorages(sql, null);
+                storages.ForEach(x =>
+                {
+                    x.IsOccupied = 0;
+                    x.IdsList = "";
+                    x.Updated = DateTime.Now;
+                });
+                int re = this.MidStorageSpoolsProvider.UpdateMidStore(null, storages.ToArray());
+                if (re != 0)
+                    obj.data.Add("重置库位成功");
+                else
+                    obj.data.Add("重置库位失败");
+            }
+            else if (status == 0)
+            {
+                if (OriginalIds.Length == 0)
+                {
+                    obj = new ResponseDataBase();
+                    obj.Error = new ResponseError() { Message = "id是空的" };
+                    return obj;
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.Append("StorageArea=" + storageareaid);
+                sb.Append(" AND SeqNo IN (");
+                foreach (var item in OriginalIds)
+                {
+                    sb.Append($"'{item.Trim()}',");
+                }
+                sb = new StringBuilder(sb.ToString().Trim(','));
+                sb.Append(")");
+                var storages = this.MidStorageSpoolsProvider.GetMidStorages(sb.ToString(), null);
+                storages.ForEach(x =>
+                {
+                    x.IsOccupied = 0;
+                    x.IdsList = "";
+                    x.Updated = DateTime.Now;
+                });
+                int re = this.MidStorageSpoolsProvider.UpdateMidStore(null, storages.ToArray());
+                if (re != 0)
+                    obj.data.Add("重置库位成功");
+                else
+                    obj.data.Add("重置库位失败");
             }
             return obj;
         }

@@ -91,6 +91,31 @@ namespace SNTON.BusinessLogic
             set { equipTask5Provider = value; }
         }
         #endregion
+        #region SpoolsTask
+#pragma warning disable 649
+        [ConfigBoundProperty("SpoolsTaskProviderId")]
+        private string spoolsTaskProviderId;
+#pragma warning restore 649
+
+        private ISpoolsTask spoolsTaskProvider;
+        /* brokerNode
+
+		*/
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public ISpoolsTask SpoolsTaskProvider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref spoolsTaskProvider, spoolsTaskProviderId, this);
+
+                return spoolsTaskProvider;
+            }
+            set { spoolsTaskProvider = value; }
+        }
+        #endregion
+
 
 
         /// <summary>

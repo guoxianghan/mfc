@@ -23,6 +23,12 @@ namespace SNTON.Constants
             /// </summary>
             public const char IdsListSplitor = ',';
         }
+        /// <summary>
+        /// 返回按指定字符拼接的字符串
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
         public static string ToString(this Array a, char c)
         {
             StringBuilder sb = new StringBuilder();
@@ -32,6 +38,25 @@ namespace SNTON.Constants
             }
             return sb.ToString().Trim(c);
         }
+
+        public static IEnumerable<IEnumerable<T>> SplitObjectList<T>(List<T> objects, int count = 0)
+        {
+            var obj = new List<IEnumerable<T>>();
+            if (objects != null)
+            {
+                while (objects.Count != 0)
+                {
+                    obj.Add(objects.Take(count));
+                    objects.RemoveRange(0, count);
+                }
+            }
+            return obj;
+        }
+        /// <summary>
+        /// 求和
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
         public static long ToSum(this long[] a)
         {
             long sum = 0;
@@ -41,6 +66,11 @@ namespace SNTON.Constants
             }
             return sum;
         }
+        /// <summary>
+        /// 求平均数
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
         public static long ToAverage(this long[] a)
         {
             if (a == null || a.Length == 0)

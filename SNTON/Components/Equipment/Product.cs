@@ -124,7 +124,7 @@ namespace SNTON.Components.Equipment
         public List<ProductEntity> GetAllProductEntity(IStatelessSession session)
         {
 
-            List<ProductEntity> ret = new List<ProductEntity>();
+            List<ProductEntity> ret = null;
 
             if (session == null)
             {

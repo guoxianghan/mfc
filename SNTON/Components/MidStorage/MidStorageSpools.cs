@@ -109,21 +109,21 @@ namespace SNTON.Components.MidStorage
                 var tmp = ReadSqlList<MidStorageSpoolsEntity>(session, "SELECT * FROM " + DatabaseDbTable + " WHERE ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted + " AND StorageArea=" + area);
                 if (tmp.Any())
                 {
-                    StringBuilder sb = new StringBuilder();
-                    foreach (var item in tmp)
-                    {
-                        if (item.SpoolId != 0)
-                            sb.Append($"'{item.SpoolId.ToString()}',");
-                    }
-                    if (sb.ToString().Trim(',').Length != 0)
-                    {
-                        var spools = ReadSqlList<SpoolsEntity>(null, "SELECT * FROM SNTON.Spools WHERE ID in (" + sb.ToString().Trim(',') + ")");
-                        if (spools != null)
-                            foreach (var item in tmp)
-                            {
-                                item.Spool = spools.FirstOrDefault(x => x.Id == item.SpoolId);
-                            }
-                    }
+                    //StringBuilder sb = new StringBuilder();
+                    //foreach (var item in tmp)
+                    //{
+                    //    if (item.SpoolId != 0)
+                    //        sb.Append($"'{item.SpoolId.ToString()}',");
+                    //}
+                    //if (sb.ToString().Trim(',').Length != 0)
+                    //{
+                    //    var spools = ReadSqlList<SpoolsEntity>(null, "SELECT * FROM SNTON.Spools WHERE ID in (" + sb.ToString().Trim(',') + ")");
+                    //    if (spools != null)
+                    //        foreach (var item in tmp)
+                    //        {
+                    //            item.Spool = spools.FirstOrDefault(x => x.Id == item.SpoolId);
+                    //        }
+                    //}
                     ret = tmp.ToList();
                 }
             }
@@ -154,7 +154,7 @@ namespace SNTON.Components.MidStorage
                 if (tmp.Any())
                 {
                     ret = tmp.FirstOrDefault();
-                    ret.Spool = ReadSql<SpoolsEntity>(null, "SELECT * FROM SNTON.Spools WHERE ID=" + ret.SpoolId);
+                    //ret.Spool = ReadSql<SpoolsEntity>(null, "SELECT * FROM SNTON.Spools WHERE ID=" + ret.SpoolId);
 
                 }
             }
@@ -171,7 +171,7 @@ namespace SNTON.Components.MidStorage
 
         public List<MidStorageSpoolsEntity> GetMidStorages(string sql, IStatelessSession session)
         {
-            List<MidStorageSpoolsEntity> ret = new List<MidStorageSpoolsEntity>();
+            List<MidStorageSpoolsEntity> ret = null;
             if (session == null)
             {
                 ret = BrokerDelegate(() => GetMidStorages(sql, session), ref session);
@@ -189,21 +189,21 @@ namespace SNTON.Components.MidStorage
                 var tmp = ReadSqlList<MidStorageSpoolsEntity>(session, sqls);
                 if (tmp != null && tmp.Any())
                 {
-                    StringBuilder sb = new StringBuilder();
-                    foreach (var item in tmp)
-                    {
-                        if (item.SpoolId != 0)
-                            sb.Append($"'{item.SpoolId.ToString()}',");
-                    }
-                    if (sb.ToString().Trim(',').Length != 0)
-                    {
-                        var spools = ReadSqlList<SpoolsEntity>(null, "SELECT * FROM SNTON.Spools WHERE ID in (" + sb.ToString().Trim(',') + ")");
-                        if (spools != null)
-                            foreach (var item in tmp)
-                            {
-                                item.Spool = spools.FirstOrDefault(x => x.Id == item.SpoolId);
-                            }
-                    }
+                    //StringBuilder sb = new StringBuilder();
+                    //foreach (var item in tmp)
+                    //{
+                    //    if (item.SpoolId != 0)
+                    //        sb.Append($"'{item.SpoolId.ToString()}',");
+                    //}
+                    //if (sb.ToString().Trim(',').Length != 0)
+                    //{
+                    //    var spools = ReadSqlList<SpoolsEntity>(null, "SELECT * FROM SNTON.Spools WHERE ID in (" + sb.ToString().Trim(',') + ")");
+                    //    if (spools != null)
+                    //        foreach (var item in tmp)
+                    //        {
+                    //            item.Spool = spools.FirstOrDefault(x => x.Id == item.SpoolId);
+                    //        }
+                    //}
                     ret = tmp.ToList();
                 }
                 #endregion

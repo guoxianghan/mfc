@@ -435,8 +435,8 @@ namespace SNTON.BusinessLogic
                     else
                         mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
                     mid.OriginalId = item.SeqNo;
-                    if (item.Spool != null)
-                        mid.Barcodes = item.Spool.FdTagNo.Trim();
+                    if (!string.IsNullOrEmpty(item.FdTagNo))
+                        mid.Barcodes = item.FdTagNo.Trim();
                     int Status = 6;
                     int IsOccupied = item.IsOccupied;
                     if (item.IsVisible == -1)
@@ -1086,7 +1086,7 @@ namespace SNTON.BusinessLogic
                             equiptsks.ForEach(x => x.Status = 3);
                             this.EquipTaskProvider.UpdateEntity(equiptsks, null);
                         }
-                    } 
+                    }
                     #endregion
                     obj.data.Add("发送成功");
                 }

@@ -481,7 +481,7 @@ namespace SNTON.Components.ComLogic
             armtsk.SpoolStatus = 0;
             //armtsk.EquipControllerId = 1;
             armtsk.StorageArea = storageno;
-            armtsk.WhoolBarCode = spool.Spool.FdTagNo.Trim();
+            armtsk.WhoolBarCode = spool.FdTagNo.Trim();
             armtsk.ProductType = tskconfig.Item3.ToString();
             spool.Updated = createtime;
             spool.IsOccupied = 4;

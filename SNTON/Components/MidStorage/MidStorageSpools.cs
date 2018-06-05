@@ -21,7 +21,7 @@ namespace SNTON.Components.MidStorage
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const string EntityDbTable = "MidStorageSpoolsEntity";
         private const string DatabaseDbTable = "MidStorageSpools";
-        private VIThreadEx thread_realtimeequiptask;
+        private VIThreadEx thread_realtimeMidStoreCache;
         // only for unittest
         //private readonly Dictionary<long, EmployeeEnt> employeeList = new Dictionary<long, EmployeeEnt>();
         public List<MidStorageSpoolsEntity> RealTimeMidStoreCache { get; set; }
@@ -48,7 +48,7 @@ namespace SNTON.Components.MidStorage
         /// </summary>
         public MidStorageSpools()
         {
-            thread_realtimeequiptask = new VIThreadEx(MidStoreCache, null, "thread for reading MidStoreCache ", 2000);
+            thread_realtimeMidStoreCache = new VIThreadEx(MidStoreCache, null, "thread for reading MidStoreCache ", 4000);
         }
         /// <summary>
         /// PLACEHOLDER: Please extend if required.
@@ -81,7 +81,7 @@ namespace SNTON.Components.MidStorage
         /// </summary>
         protected override void StartInternal()
         {
-            thread_realtimeequiptask.Start();
+            //thread_realtimeMidStoreCache.Start();
             base.StartInternal();//start the cleanup thread
             logger.InfoMethod(EntityDbTable + " broker started.");
         }

@@ -204,7 +204,7 @@ namespace SNTON.Components.MidStorage
                     //            item.Spool = spools.FirstOrDefault(x => x.Id == item.SpoolId);
                     //        }
                     //}
-                    ret = tmp.ToList();
+                    ret = tmp;
                 }
                 #endregion
             }

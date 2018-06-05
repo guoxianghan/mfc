@@ -110,7 +110,7 @@ namespace SNTON.Components.RobotArm
             }
             catch (Exception e)
             {
-                logger.ErrorMethod("Failed to get RobotArmTaskEntityList", e);
+                logger.ErrorMethod("Failed to get RobotArmTaskSpoolsList", e);
             }
             return ret;
         }

@@ -249,7 +249,7 @@ namespace SNTON.Components.ComLogic
                         c.Dev_x = Math.Abs(x - c.fac_X);
                         c.Dev_y = Math.Abs(y - c.fac_Y);
                     });
-                    var weblocationx = weblocation.OrderBy(c => c.StDev).ToList().Take(20);
+                    var weblocationx = weblocation.OrderBy(c => c.StDev).Take(20);
                     act = weblocationx.FirstOrDefault();
                 }
                 else
@@ -372,8 +372,9 @@ namespace SNTON.Components.ComLogic
             long TaskNo = long.Parse(neutrino.GetField("TaskNo"), System.Globalization.NumberStyles.HexNumber);
             byte Action = Convert.ToByte(neutrino.GetField("Action"));
             int agvid = 0;
+            var dt = DateTime.Now;
             var agvtsk = BusinessLogic.AGVTasksProvider.GetAGVTaskEntityByTaskNo(TaskNo, null);
-            agvtsk.Updated = DateTime.Now;
+            agvtsk.Updated = dt;
             agvid = neutrino.GetIntOrDefault("AGVID");
             var eqtsk = BusinessLogic.EquipTaskProvider.GetEquipTaskEntityNotDeleted($"TaskGuid='{agvtsk.TaskGuid.ToString()}'", null);
             var outstoreagespools = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpoolEntity($"GUID='{agvtsk.TaskGuid.ToString()}'", null);
@@ -387,16 +388,16 @@ namespace SNTON.Components.ComLogic
                     if (agvtsk.Status >= status)
                     {
                         //logger.InfoMethod($"是哪个sb重发了指令,小车id:{agvid},开始执行:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status);
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = $"小车指令重复,小车id:{agvid},开始执行:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status, Source = "AGV指令重复", MsgLevel = 7 });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = dt, MsgContent = $"小车指令重复,小车id:{agvid},开始执行:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status, Source = "AGV指令重复", MsgLevel = 7 });
                         //return;
                     }
-                    eqtsk?.ForEach(x => x.Status = 6);
+                    eqtsk?.ForEach(x => { x.Status = 6; x.Updated = dt; });
                     agvtsk.AGVId = Convert.ToInt16(agvid);
                     logger.InfoMethod($"AGV调度成功,{JsonConvert.SerializeObject(agvtsk)}");
                     #region 更新直通口任务状态 
                     if (outstoreagespools != null)
                     {
-                        outstoreagespools.ForEach(x => x.Status = 16);
+                        outstoreagespools.ForEach(x => { x.Status = 16; x.Updated = dt; });
                         this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.UpdateEntity(null, outstoreagespools.ToArray());
                     }
                     #endregion
@@ -405,14 +406,14 @@ namespace SNTON.Components.ComLogic
                     status = (byte)AGVTaskStatus.Finished;
                     if (agvtsk.Status >= status)
                     {
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = $"小车指令重复,小车id:{agvid},任务完成:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status, Source = "AGV指令重复", MsgLevel = 7, MidStoreage = agvtsk.StorageArea });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = dt, MsgContent = $"小车指令重复,小车id:{agvid},任务完成:guid:" + agvtsk.TaskGuid.ToString() + ",status:" + status + ",agvtsk.Status:" + agvtsk.Status, Source = "AGV指令重复", MsgLevel = 7, MidStoreage = agvtsk.StorageArea });
                     }
                     this.BusinessLogic.AGVRouteProvider.DeleteAGVRoute(agvid, null);
-                    eqtsk?.ForEach(x => x.Status = 7);
+                    eqtsk?.ForEach(x => { x.Status = 7; x.Updated = dt; });
                     #region 任务完成后,删除直通口记录 
                     if (outstoreagespools != null)
                     {
-                        outstoreagespools.ForEach(x => x.Status = 128);
+                        outstoreagespools.ForEach(x => { x.Status = 128; x.Updated = dt; });
                         this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.UpdateEntity(null, outstoreagespools.ToArray());
                     }
                     #endregion

@@ -1356,7 +1356,7 @@ namespace SNTON.BusinessLogic
                 outstore?.ForEach(x => x.Status = -1);
                 agvtsk.IsDeleted = 1;
                 agvtsk.Status = 64;
-                var armtsks = this.RobotArmTaskProvider.GetRobotArmTasks("[TaskGroupGUID] in (" + agvtsk.TaskGuid.ToString() + ")", null);
+                var armtsks = this.RobotArmTaskProvider.GetRobotArmTasks("[TaskGroupGUID] in ('" + agvtsk.TaskGuid.ToString() + "')", null);
                 List<MidStorageEntity> mids = new List<MidStorageEntity>();
                 if (armtsks == null)
                     armtsks = new List<RobotArmTaskEntity>();
@@ -1500,26 +1500,44 @@ namespace SNTON.BusinessLogic
             if (!string.IsNullOrEmpty(searchRequest.Const))
                 sb.Append(" AND Const" + " = '" + searchRequest.Const.Trim() + "'");
             //sb.Append(" AND ISDELETED=0");
-            string sql = DbHelperSQL.SQLToPage("[SNTON].[SpoolsTask]", sb.ToString(), "ID", searchRequest.pageNumber * searchRequest.pageSize, (searchRequest.pageNumber + 1) * searchRequest.pageSize);
-            var spools = this.SpoolsTaskProvider.GetSpoolsTasks(sql);
+            string sql = DbHelperSQL.SQLToPage("[SNTON].[SpoolsTask]", sb.ToString(), "ID", (searchRequest.pageNumber - 1) * searchRequest.pageSize, (searchRequest.pageNumber + 0) * searchRequest.pageSize);
+
+            List<SpoolsTaskEntity> spools = new List<SpoolsTaskEntity>();
+            if (searchRequest.pageNumber == 0 && searchRequest.pageSize == 0)
+            {
+                spools = this.SpoolsTaskProvider.GetSpoolsTasks(sb.ToString());
+            }
+            else
+                spools = this.SpoolsTaskProvider.GetSpoolsTasks(sql);
             obj.CountNumber = Convert.ToInt32(DbHelperSQL.GetSingle("SELECT COUNT(1) FROM [SNTON].[SpoolsTask] WHERE " + sb.ToString()));
             obj.pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(obj.CountNumber / searchRequest.pageSize)));
             if (obj.CountNumber % searchRequest.pageSize > 0)
                 obj.pageCount = obj.pageCount + 1;
-            StringBuilder sbguid = new StringBuilder();
-            spools.ForEach(x => sbguid.Append($"'{x.TaskGroupGUID.ToString()}',"));
-            var equiptsks = this.EquipTaskView2Provider.GetEquipTaskView2($"TaskGuid IN ({sbguid.ToString().Trim(',')})", null);
-            foreach (var item in spools)
+
+            //StringBuilder sbguid = new StringBuilder();
+            //spools.ForEach(x => sbguid.Append($"'{x.TaskGroupGUID.ToString()}',"));
+            List<EquipTaskView2Entity> equiptasks = new List<EquipTaskView2Entity>();
+            var guids = SNTONConstants.SplitObjectList<Guid>((from i in spools select i.TaskGroupGUID).ToList(), 5);
+            foreach (var item in guids)
             {
-                var o = new WebServices.UserInterfaceBackend.Models.Spool.SpoolTaskDataUI() { BobbinNo = item.BobbinNo, Updated = item.Updated, TaskGroupGUID = item.TaskGroupGUID, CName = item.CName, Const = item.Const, Created = item.Created, FdTagNo = item.FdTagNo, Id = item.Id, Length = item.Length, ProductType = item.ProductType, StorageArea = item.StorageArea };
-                obj.data.Add(o);
-                var eq = equiptsks.FindAll(x => x.TaskGuid == item.TaskGroupGUID);
-                if (eq.Count == 0)
-                    continue;
-                item.Updated = eq[0].Updated;
-                eq.ForEach(x => o.EquipName += x.EquipName.Trim() + " , ");
-                o.EquipName = o.EquipName.Trim(',');
+                StringBuilder sbguid = new StringBuilder();
+                item.ForEach(x => sbguid.Append($"'{x.ToString()}',"));
+                var equiptsks = this.EquipTaskView2Provider.GetEquipTaskView2($"TaskGuid IN ({sbguid.ToString().Trim(',')})", null);
+                if (equiptsks != null)
+                    equiptasks.AddRange(equiptsks);
             }
+            if (searchRequest.pageNumber != 0 || searchRequest.pageSize != 0)
+                foreach (var item in spools)
+                {
+                    var o = new WebServices.UserInterfaceBackend.Models.Spool.SpoolTaskDataUI() { BobbinNo = item.BobbinNo, Updated = item.Updated, TaskGroupGUID = item.TaskGroupGUID, CName = item.CName, Const = item.Const, Created = item.Created, FdTagNo = item.FdTagNo, Id = item.Id, Length = item.Length, ProductType = item.ProductType, StorageArea = item.StorageArea };
+                    obj.data.Add(o);
+                    var eq = equiptasks.FindAll(x => x.TaskGuid == item.TaskGroupGUID);
+                    if (eq.Count == 0)
+                        continue;
+                    item.Updated = eq[0].Updated;
+                    eq.ForEach(x => o.EquipName += x.EquipName.Trim() + " , ");
+                    o.EquipName = o.EquipName.Trim(',');
+                }
 
             return obj;
         }

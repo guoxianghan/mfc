@@ -87,7 +87,6 @@ namespace SNTON.Components.ComLogic
                     var cmd = _EquipCmdList.FirstOrDefault(x => x.EquipFlag.Trim() == task.EquipFlag.Trim());
                     if (cmd == null)
                     {
-                        //logger.ErrorMethod("找不到对应的地面滚筒编号:" + JsonConvert.SerializeObject(task));
                         continue;
                     }
                     watch.Start();
@@ -108,9 +107,12 @@ namespace SNTON.Components.ComLogic
                     }
                     //else
                     //logger.WarnMethod("光电待写入:" + cmd.ControlID + "," + cmd.EquipName);
-                    bool r = MXParser.SendData(cmd.AGVDisStatus.Trim(), task.TaskType, "Write_Receive", 3);//写500 回复收到请求
-                    Thread.Sleep(200);
-                    r = MXParser.SendData(cmd.AGVDisStatus.Trim(), task.TaskType, "Write_Receive", 3);//写500 回复收到请求
+                    bool r = false;
+                    light = MXParser.ReadData(cmd.AGVDisStatus.Trim(), "Read_Receive", true);
+                    if (light.Item2 == 0)
+                        r = MXParser.SendData(cmd.AGVDisStatus.Trim(), task.TaskType, "Write_Receive", 3);//写500 回复收到请求
+                    //Thread.Sleep(200);
+                    //r = MXParser.SendData(cmd.AGVDisStatus.Trim(), task.TaskType, "Write_Receive", 3);//写500 回复收到请求
                     Thread.Sleep(200);
                     task.Status = 9;
                     r = MXParser.SendData(cmd.WAStatus.Trim(), task.TaskType, "Write_Light", 3);//写400 光电
@@ -465,7 +467,9 @@ namespace SNTON.Components.ComLogic
         }
         void ParserNe(List<EquipConfigerEntity> list, Neutrino plcNeutrino)
         {
-            byte inOrout = 0; int agvrunning = 0; byte recive = 0; //int cancel = 0; int iscancel = 0;
+            byte inOrout = 0;
+            int agvrunning = 0;
+            byte recive = 0; //int cancel = 0; int iscancel = 0;
             Neutrino nwrite = new Neutrino();
             nwrite.TheName = "WriteEquipLineStatus";
             foreach (var item in list)
@@ -474,12 +478,12 @@ namespace SNTON.Components.ComLogic
                 agvrunning = plcNeutrino.GetInt(item.WAStatus.Trim());//是否已调度AGV 1，已接收滚筒出料请求；2，已接收入料至滚筒请求 光电
                 recive = Convert.ToByte(plcNeutrino.GetInt(item.AGVDisStatus.Trim()));//地面滚筒请求 AGVDisStatus
                 #region 创建equiptsk
-                if (inOrout != 0 || recive != 0)
+               if (inOrout != 0 || recive != 0)
                 {//未调度
                     if (recive != 0)
                         inOrout = recive;
                     bool r = false;
-                    #region MyRegion
+                    #region 绑定作业标准书
                     if (item.MachStructCode == null)
                     {
                         string source = "该设备作业标准书未绑定:" + item.EquipList[0].EquipName.Trim() + "," + item.EquipList[1].EquipName.Trim();
@@ -512,11 +516,11 @@ namespace SNTON.Components.ComLogic
 
                         if (r)
                         {//创建拉空轮任务
-                            logger.InfoMethod("创建叫料任务成功, EquipName:" + item.EquipName.ToString() + ",TaskType:" + inOrout);
+                            logger.InfoMethod($"创建{inOrout}料任务成功, EquipName:" + item.EquipName.ToString() + ",TaskType:" + inOrout);
                         }
                         else //创建拉满轮任务
                         {
-                            logger.InfoMethod("创建叫料任务失败, EquipName:" + item.EquipName.ToString() + ",TaskType:" + inOrout);
+                            logger.InfoMethod($"创建{inOrout}料任务失败, EquipName:" + item.EquipName.ToString() + ",TaskType:" + inOrout);
                             continue;
                         }
                         #endregion
@@ -547,8 +551,13 @@ namespace SNTON.Components.ComLogic
                     #endregion
                     if (r)
                     {
-                        if (recive != 0) continue;
+                        if (recive != 0)
+                            continue;
                         logger.InfoMethod("通知地面滚筒收到任务请求:" + item.AGVDisStatus.Trim() + "," + inOrout.ToString());
+                        if (inOrout == 0)
+                        {
+                            logger.WarnMethod($"错误的回复信号:inOrout:{inOrout},recive:{recive},机台号:{item.EquipName}");
+                        }
                         nwrite.AddField(item.AGVDisStatus.Trim(), inOrout.ToString());
                     }
                 }

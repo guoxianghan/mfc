@@ -1,5 +1,6 @@
 ﻿using NHibernate;
 using SNTON.Entities.DBTables.AGV;
+using SNTON.Entities.DBTables.AGV_KJ_Interface;
 using SNTON.Entities.DBTables.Equipments;
 using SNTON.Entities.DBTables.InStoreToOutStore;
 using SNTON.Entities.DBTables.MidStorage;
@@ -53,6 +54,6 @@ namespace SNTON.Components.SQLCommand
         /// <param name="updateequiptsks"></param>
         /// <returns></returns>
         bool InStoreToOutStoreLine(List<InStoreToOutStoreSpoolViewEntity> instoreoutstore, AGVTasksEntity agvtsk, List<EquipTaskViewEntity> updateequiptsks, IStatelessSession session = null);
-        bool CreateEquipTask5(EquipTask5Entity task, List<RobotArmTaskEntity> armtsks, List<MidStorageSpoolsEntity> mids, IStatelessSession session = null);
+        bool CreateEquipTask5(T_AGV_KJ_InterfaceEntity task, List<RobotArmTaskEntity> armtsks, List<MidStorageSpoolsEntity> mids, IStatelessSession session = null);
     }
 }

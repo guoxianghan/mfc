@@ -37,7 +37,7 @@ namespace SNTON.Components.ComLogic
         public EquipLineLogic_()
         {
             //threadequiptask = new VIThreadEx(CheckEquipTask, null, "Check AGV task Ready", 1000);
-            thread_ReadEquipLineStatus = new VIThreadEx(RunEquipLine, null, "Check EquipLine Status", 3000);
+            thread_ReadEquipLineStatus = new VIThreadEx(ReadEquipLine, null, "Check EquipLine Status", 3000);
             thread_SendCreateAGV = new VIThreadEx(SendCreateAGV, null, "thread for SendCreateAGV", 3000);
             thread_heartbeat = new VIThreadEx(heartbeat, null, "heartbeat", 1000);
             //thread_plctest = new VIThreadEx(PLCTest, null, "PLCTest", 4000);
@@ -46,7 +46,7 @@ namespace SNTON.Components.ComLogic
         {
             //thread_plctest.Start();
             thread_ReadEquipLineStatus.Start();
-            //thread_SendCreateAGV.Start();
+            thread_SendCreateAGV.Start();
             thread_heartbeat.Start();
             base.StartInternal();
         }
@@ -65,6 +65,7 @@ namespace SNTON.Components.ComLogic
         {
             Stopwatch watch = Stopwatch.StartNew();//创建一个监听器
             watch.Start();
+            logger.InfoMethod($"开始写光电 {this.PLCNo}");
             if (_EquipCmdList == null)
                 _EquipCmdList = this.BusinessLogic.EquipConfigerProvider.EquipConfigers.FindAll(x => x.PLCNo == PLCNo);
             //var equiptsk = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"[STATUS]=1 AND PlantNo={PlantNo} AND PLCNo={PLCNo}", null);
@@ -175,6 +176,7 @@ namespace SNTON.Components.ComLogic
                 this.BusinessLogic.AGVTasksProvider.UpdateEntity(item, null);
                 #endregion
             }
+            logger.InfoMethod($"结束写光电 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
         }
         /// <summary>
 
@@ -395,6 +397,9 @@ namespace SNTON.Components.ComLogic
 
         void ReadEquipLine()
         {
+            Stopwatch watch = Stopwatch.StartNew();//创建一个监听器
+            watch.Start();
+            logger.InfoMethod($"开始读取地面滚筒请求 {this.PLCNo}");
             // LWCS1_B00 滚筒>WCS请求调度AGV 读
             // LStatus_1 滚筒状态 
             // EStatus_1_1 设备1状态
@@ -464,6 +469,8 @@ namespace SNTON.Components.ComLogic
                 #endregion
                 ParserNe(items.ToList(), plcstatus.Item2);
             }
+            logger.InfoMethod($"结束读取地面滚筒请求 {this.PLCNo} ,{ watch.ElapsedMilliseconds } 毫秒");
+            watch.Restart();
         }
         void ParserNe(List<EquipConfigerEntity> list, Neutrino plcNeutrino)
         {

@@ -64,12 +64,23 @@
       <HintPath>..\packages\FluentNHibernate.2.0.3.0\lib\net40\FluentNHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="HslCommunication">
+      <HintPath>..\dll\HslCommunication.dll</HintPath>
+    </Reference>
     <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MathNet.Numerics, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.0.0\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MathNet.Numerics.Data.Matlab, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.Data.Matlab.4.0.0\lib\net40\MathNet.Numerics.Data.Matlab.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MFCLib, Version=7.1.7.0, Culture=neutral, processorArchitecture=MSIL">
@@ -122,6 +133,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
@@ -141,26 +153,33 @@
     <Compile Include="BusinessLogic\UserInterfaceBackend\UIHelper.cs" />
     <Compile Include="BusinessLogic\UserInterfaceBackend\UserInterfaceBackend.cs" />
     <Compile Include="Components\ACTLogic\ACTLogicBase.cs" />
+    <Compile Include="Components\AGV\AGVBYSStatus.cs" />
     <Compile Include="Components\AGV\AGVConfig.cs" />
     <Compile Include="Components\AGV\AGVMagMarkerMapConfig.cs" />
     <Compile Include="Components\AGV\AGVRoute.cs" />
     <Compile Include="Components\AGV\AGVRouteArchive.cs" />
     <Compile Include="Components\AGV\AGVStatus.cs" />
     <Compile Include="Components\AGV\AGVTasks.cs" />
+    <Compile Include="Components\AGV\Agv_three_config.cs" />
+    <Compile Include="Components\AGV\IAGVBYSStatus.cs" />
     <Compile Include="Components\AGV\IAGVConfig.cs" />
     <Compile Include="Components\AGV\IAGVMagMarkerMapConfig.cs" />
     <Compile Include="Components\AGV\IAGVRoute.cs" />
     <Compile Include="Components\AGV\IAGVRouteArchive.cs" />
     <Compile Include="Components\AGV\IAGVStatus.cs" />
     <Compile Include="Components\AGV\IAGVTasks.cs" />
+    <Compile Include="Components\AGV\Iagv_three_config.cs" />
+    <Compile Include="Components\AGV_KJ_Interface\IT_AGV_KJ_Interface.cs" />
+    <Compile Include="Components\AGV_KJ_Interface\T_AGV_KJ_Interface.cs" />
     <Compile Include="Components\CleanUp\CleanUpBrokerBase.cs" />
     <Compile Include="Components\ComLogic\AGVLogic.cs" />
     <Compile Include="Components\ComLogic\ComLogic.cs" />
     <Compile Include="Components\ComLogic\EquipLineLogic_.cs" />
     <Compile Include="Components\ComLogic\EquipLineLogic.cs" />
-    <Compile Include="Components\ComLogic\EquipLineLogic2.cs" />
     <Compile Include="Components\ComLogic\EquipTaskLogic.cs" />
+    <Compile Include="Components\ComLogic\MidStoreLine4Logic.cs" />
     <Compile Include="Components\ComLogic\MidStoreLineLogic.cs" />
+    <Compile Include="Components\ComLogic\MidStoreRobotArm4Logic.cs" />
     <Compile Include="Components\ComLogic\MidStoreRobotArmLogic.cs" />
     <Compile Include="Components\Config\ButtonLocationConfig.cs" />
     <Compile Include="Components\Config\IButtonLocationConfig.cs" />
@@ -172,6 +191,7 @@
     <Compile Include="Components\Equipment\EquipProduction.cs" />
     <Compile Include="Components\Equipment\EquipStatus.cs" />
     <Compile Include="Components\Equipment\EquipTask.cs" />
+    <Compile Include="Components\Equipment\EquipTask5.cs" />
     <Compile Include="Components\Equipment\EquipTaskPruduct.cs" />
     <Compile Include="Components\Equipment\EquipTaskView.cs" />
     <Compile Include="Components\Equipment\EquipTaskView2.cs" />
@@ -183,6 +203,7 @@
     <Compile Include="Components\Equipment\IEquipProduction.cs" />
     <Compile Include="Components\Equipment\IEquipStatus.cs" />
     <Compile Include="Components\Equipment\IEquipTask.cs" />
+    <Compile Include="Components\Equipment\IEquipTask5.cs" />
     <Compile Include="Components\Equipment\IEquipTaskProduct.cs" />
     <Compile Include="Components\Equipment\IEquipTaskView.cs" />
     <Compile Include="Components\Equipment\IEquipTaskView2.cs" />
@@ -215,7 +236,9 @@
     <Compile Include="Components\RobotArm\RobotArmTask.cs" />
     <Compile Include="Components\RobotArm\RobotArmTaskSpool.cs" />
     <Compile Include="Components\Spools\ISpools.cs" />
+    <Compile Include="Components\Spools\ISpoolsTask.cs" />
     <Compile Include="Components\Spools\Spools.cs" />
+    <Compile Include="Components\Spools\SpoolsTask.cs" />
     <Compile Include="Components\SQLCommand\ISQLCommandBroker.cs" />
     <Compile Include="Components\SQLCommand\SQLCommandBroker.cs" />
     <Compile Include="Components\SystemParameters\ISystemParameters.cs" />
@@ -224,23 +247,29 @@
     <Compile Include="Components\SystemParameters\SystemParametersConfiguration.cs" />
     <Compile Include="Components\Textkeys\ITextKeysReadIn.cs" />
     <Compile Include="Components\Textkeys\TextKeysReadIn.cs" />
+    <Compile Include="Com\DbHelperSQL.cs" />
+    <Compile Include="Com\HslPLCClient.cs" />
     <Compile Include="Com\IMXCommModule.cs" />
     <Compile Include="Com\McProtocol.cs" />
     <Compile Include="Com\MXDataBlock.cs" />
     <Compile Include="Com\MXPLCClient.cs" />
     <Compile Include="Com\MXQPLCClient.cs" />
+    <Compile Include="Constants\PermutationAndCombination.cs" />
     <Compile Include="Constants\SNTONCommConstants.cs" />
     <Compile Include="Constants\SNTONConstants.cs" />
     <Compile Include="Constants\SNTONTelegram.cs" />
     <Compile Include="Entities\Business\FedExException.cs" />
     <Compile Include="Entities\Business\SortationChuteTransient.cs" />
     <Compile Include="Entities\Business\SortationSelfPickUp.cs" />
+    <Compile Include="Entities\DBTables\AGV\AGVBYSStatusEntity.cs" />
     <Compile Include="Entities\DBTables\AGV\AGVConfigEntity.cs" />
     <Compile Include="Entities\DBTables\AGV\AGVMagMarkerMapConfigEntity.cs" />
     <Compile Include="Entities\DBTables\AGV\AGVRouteArchiveEntity.cs" />
     <Compile Include="Entities\DBTables\AGV\AGVRouteEntity.cs" />
     <Compile Include="Entities\DBTables\AGV\AGVStatusEntity.cs" />
     <Compile Include="Entities\DBTables\AGV\AGVTasksEntity.cs" />
+    <Compile Include="Entities\DBTables\AGV\agv_three_configEntity.cs" />
+    <Compile Include="Entities\DBTables\AGV_KJ_Interface\T_AGV_KJ_InterfaceEntity.cs" />
     <Compile Include="Entities\DBTables\Config\ButtonLocationConfigEntity.cs" />
     <Compile Include="Entities\DBTables\EntityBase.cs" />
     <Compile Include="Entities\DBTables\Equipments\EquipConfigEntity.cs" />
@@ -249,6 +278,7 @@
     <Compile Include="Entities\DBTables\Equipments\EquipControllerConfigEntity.cs" />
     <Compile Include="Entities\DBTables\Equipments\EquipProductionEntity.cs" />
     <Compile Include="Entities\DBTables\Equipments\EquipStatusEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\EquipTask5Entity.cs" />
     <Compile Include="Entities\DBTables\Equipments\EquipTaskView2Entity.cs" />
     <Compile Include="Entities\DBTables\Equipments\EquipTaskViewEntity.cs" />
     <Compile Include="Entities\DBTables\Equipments\EquipTaskEntity.cs" />
@@ -269,6 +299,7 @@
     <Compile Include="Entities\DBTables\RobotArmTask\RobotArmTaskEntity.cs" />
     <Compile Include="Entities\DBTables\RobotArmTask\RobotArmTaskSpoolEntity.cs" />
     <Compile Include="Entities\DBTables\Spools\SpoolsEntity.cs" />
+    <Compile Include="Entities\DBTables\Spools\SpoolsTaskEntity.cs" />
     <Compile Include="Entities\DBTables\SystemParameters\SystemParametersConfigurationEntity.cs" />
     <Compile Include="Entities\DBTables\SystemParameters\SystemParametersEntity.cs" />
     <Compile Include="Com\MXTPLCClient.cs" />
@@ -303,9 +334,12 @@
     <Compile Include="WebServices\UserInterfaceBackend\Models\RobotArmTask\RobotArmTaskDataUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\SearchCondition.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\Spool\SpoolDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\Spool\SpoolTaskDataUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\SystemParameters\SystemParametersUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Requests\AGV\AGVRuteSearchRequest.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Requests\Equip\EquipSearchRequest.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Requests\Spool\SpoolSearchRequest.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Requests\Spool\SpoolTaskSearchRequest.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Requests\SystemParameters\SystemParametersRequest.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\AGV\AGVConfigResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\AGV\AGVRouteArchiveResponse.cs" />
@@ -322,6 +356,7 @@
     <Compile Include="WebServices\UserInterfaceBackend\Responses\Product\ProductResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\RobotArmTask\RobotArmTaskResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\Spools\SpoolsResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\Spools\SpoolsTaskResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\SystemParameters\SystemParametersResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\UserInterfaceBackend.cs" />
   </ItemGroup>
@@ -329,7 +364,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -420,7 +457,9 @@
     <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipTaskView.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Hibernate\Mappings\MidStorageSpools.hbm.xml" />
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\MidStorageSpools.hbm.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Hibernate\Mappings\MidStorageSpoolsCount.hbm.xml" />
@@ -447,6 +486,41 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Hibernate\Mappings\InStoreToOutStoreSpoolView.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\agv_three_config.hbm.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\EquipTask5.hbm.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\AGVBYSStatus.hbm.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\AGVSystemSQL.cfg.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\SpoolsTask.hbm.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\T_AGV_KJ_Interface.hbm.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\JK_InterfaceSQL.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

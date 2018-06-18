@@ -34,6 +34,7 @@ using SNTON.Components.ComLogic;
 using SNTON.Components.SQLCommand;
 using SNTON.Components.PLCAddressCode;
 using SNTON.Components.InStoreToOutStore;
+using SNTON.Components.AGV_KJ_Interface;
 
 namespace SNTON.BusinessLogic
 {
@@ -173,6 +174,35 @@ namespace SNTON.BusinessLogic
             set { aGVBYSStatusProvider = value; }
         }
         #endregion
+        #region T_AGV_KJ_Interface
+#pragma warning disable 649
+        [ConfigBoundProperty("T_AGV_KJ_InterfaceProviderId")]
+        private string t_AGV_KJ_InterfaceProviderId;
+#pragma warning restore 649
+
+        private IT_AGV_KJ_Interface t_AGV_KJ_InterfaceProvider;
+        /* brokerNode
+
+		*/
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public IT_AGV_KJ_Interface T_AGV_KJ_InterfaceProvider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref t_AGV_KJ_InterfaceProvider, t_AGV_KJ_InterfaceProviderId, this);
+
+                return t_AGV_KJ_InterfaceProvider;
+            }
+            set { t_AGV_KJ_InterfaceProvider = value; }
+        }
+        #endregion
+
+
+
+
+
 
 
 #pragma warning disable 649

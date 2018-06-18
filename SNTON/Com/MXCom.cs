@@ -18,7 +18,7 @@ using System.Xml;
 namespace SNTON.Com
 {
     public abstract class MXCom : VIRuntimeComponent, IDisposable
-    { 
+    {
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         protected readonly IList<ILogic> logicList = new List<ILogic>();
@@ -45,10 +45,10 @@ namespace SNTON.Com
         protected string ActPassword { get; set; }
         //private VIThreadEx checkFlagBitThread;
         protected string connectionName;
-          
-      
+
+
         [ConfigBoundProperty("Parser")]
-        private string parserId;
+        private string parserId = null;
         private IParser parserInstance;
         //private int ThreadShutdownTimeout = 5000;
         //private int tcheckFlagBitThreadTimeout = 5000;
@@ -124,6 +124,6 @@ namespace SNTON.Com
                 //Do connection action in the logic
                 logic.OnConnect();
             }
-        } 
+        }
     }
 }

@@ -39,7 +39,7 @@ namespace SNTON.Constants
             return sb.ToString().Trim(c);
         }
 
-        public static IEnumerable<IEnumerable<T>> SplitObjectList<T>(List<T> objects, int count = 0)
+        public static IEnumerable<IEnumerable<T>> SplitObjectList<T>(List<T> objects, int count)
         {
             var obj = new List<IEnumerable<T>>();
             if (objects != null)
@@ -47,10 +47,22 @@ namespace SNTON.Constants
                 while (objects.Count != 0)
                 {
                     obj.Add(objects.Take(count));
-                    objects.RemoveRange(0, count);
+                    if (count <= objects.Count)
+                        objects.RemoveRange(0, count);
+                    else objects.RemoveRange(0, objects.Count);
                 }
             }
             return obj;
+        }
+
+        public static IEnumerable<T> SplitObjectList<T>(List<T> objects)
+        {
+            if (objects != null)
+                foreach (var item in objects)
+                {
+                    yield return item;
+                }
+
         }
         /// <summary>
         /// 求和

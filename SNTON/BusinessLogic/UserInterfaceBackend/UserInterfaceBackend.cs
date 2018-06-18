@@ -425,7 +425,7 @@ namespace SNTON.BusinessLogic
             //Console.WriteLine("storagearea:" + storagearea);
             MidStorageBaseResponse obj = new MidStorageBaseResponse();
             List<MidStorageSpoolsEntity> list = new List<MidStorageSpoolsEntity>();
-            list = this.MidStorageSpoolsProvider.GetMidStorageByArea((short)storagearea, null);
+            list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == storagearea);
             if (list != null)
                 foreach (var item in list)
                 {
@@ -454,7 +454,7 @@ namespace SNTON.BusinessLogic
         {
             MidStorageDetailResponse obj = new MidStorageDetailResponse();
             int hours = this.SystemParametersProvider.GetSystemParametersSpoolTimeOut(null);
-            var list = this.MidStorageSpoolsProvider.GetMidStorageByArea((short)storagearea, null);
+            var list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == (short)storagearea);
             list = list.OrderBy(x => x.SeqNo).ToList();
             foreach (var item in list)
             {
@@ -530,7 +530,7 @@ namespace SNTON.BusinessLogic
             int hours = this.SystemParametersProvider.GetSystemParametersSpoolTimeOut(null);
 
             midstorecount = midstorecount.FindAll(x => x.Length != 0 && !string.IsNullOrEmpty(x.StructBarCode) && !string.IsNullOrEmpty(x.Const));
-            var midstore = this.MidStorageSpoolsProvider.GetMidStorages("IsOccupied != -1", null);
+            var midstore = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.IsOccupied != -1 && x.StorageArea == storeageid);// "IsOccupied != -1 AND StorageArea=" + storeageid, null);
             var p = from i in midstorecount
                     group new MidStorageSpoolsCountEntity { StorageArea = i.StorageArea, StructBarCode = i.StructBarCode, Length = i.Length, BobbinNo = i.BobbinNo, Count = i.Count, CName = i.CName.Trim(), Const = i.Const?.Trim() }
                     by new { i.StorageArea, i.Length, i.Const } into t
@@ -612,7 +612,7 @@ namespace SNTON.BusinessLogic
             //int hours = this.SystemParametersProvider.GetSystemParametersSpoolTimeOut(null);
             MidStorageInfoResponse obj = new MidStorageInfoResponse();
             //var list = this.MidStorageProvider.GetMidStorageByArea((short)storagearea, null);
-            var list = this.MidStorageSpoolsProvider.GetMidStorageByArea((short)storagearea, null);
+            var list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == storagearea);
             foreach (var item in list)
             {
                 var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageInfoDataUI() { Id = item.Id };
@@ -1481,10 +1481,10 @@ namespace SNTON.BusinessLogic
         {
             SpoolsTaskResponse obj = new SpoolsTaskResponse();
             StringBuilder sb = new StringBuilder("ISDELETED=0");//SELECT * FROM [SNTON].[SpoolsTask]
-            if (searchRequest.datetime1.HasValue)
-                sb.Append(" AND Created" + ">='" + searchRequest.datetime1.Value.ToString("yyyy-MM-dd HH:mm:ss") + "' ");
-            if (searchRequest.datetime2.HasValue)
-                sb.Append(" AND Created" + "<='" + searchRequest.datetime2.Value.ToString("yyyy-MM-dd HH:mm:ss") + "' ");
+            if (searchRequest.datetime11.Value!=DateTime.MinValue)
+                sb.Append(" AND Created" + ">='" + searchRequest.datetime11.Value.ToString("yyyy-MM-dd 00:00:00") + "' ");
+            if (searchRequest.datetime22.Value!=DateTime.MinValue)
+                sb.Append(" AND Created" + "<='" + searchRequest.datetime22.Value.ToString("yyyy-MM-dd 23:59:59") + "' ");
             if (!string.IsNullOrEmpty(searchRequest.CName))
                 sb.Append(" AND CName" + " = '" + searchRequest.CName.Trim() + "'");
             if (!string.IsNullOrEmpty(searchRequest.FdTagNo))

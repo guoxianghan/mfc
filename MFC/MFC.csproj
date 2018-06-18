@@ -52,7 +52,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>3</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <DocumentationFile>bin\Debug\MFChelp.XML</DocumentationFile>
     <CodeAnalysisRuleSet>..\MFC.ruleset</CodeAnalysisRuleSet>

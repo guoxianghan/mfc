@@ -81,7 +81,7 @@ namespace SNTON.Components.MidStorage
         /// </summary>
         protected override void StartInternal()
         {
-            //thread_realtimeMidStoreCache.Start();
+            thread_realtimeMidStoreCache.Start();
             base.StartInternal();//start the cleanup thread
             logger.InfoMethod(EntityDbTable + " broker started.");
         }
@@ -189,21 +189,7 @@ namespace SNTON.Components.MidStorage
                 var tmp = ReadSqlList<MidStorageSpoolsEntity>(session, sqls);
                 if (tmp != null && tmp.Any())
                 {
-                    //StringBuilder sb = new StringBuilder();
-                    //foreach (var item in tmp)
-                    //{
-                    //    if (item.SpoolId != 0)
-                    //        sb.Append($"'{item.SpoolId.ToString()}',");
-                    //}
-                    //if (sb.ToString().Trim(',').Length != 0)
-                    //{
-                    //    var spools = ReadSqlList<SpoolsEntity>(null, "SELECT * FROM SNTON.Spools WHERE ID in (" + sb.ToString().Trim(',') + ")");
-                    //    if (spools != null)
-                    //        foreach (var item in tmp)
-                    //        {
-                    //            item.Spool = spools.FirstOrDefault(x => x.Id == item.SpoolId);
-                    //        }
-                    //}
+
                     ret = tmp;
                 }
                 #endregion
@@ -216,6 +202,7 @@ namespace SNTON.Components.MidStorage
             {
                 protData.ExitReadLock();
             }
+            //GC.Collect();
             return ret;
         }
 

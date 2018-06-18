@@ -20,11 +20,13 @@ namespace SNTON.WebServices.UserInterfaceBackend.Requests.Spool
         /// <summary>
         /// 入库时间1
         /// </summary>
-        public DateTime? datetime1 { get; set; }
+        public string datetime1 { get; set; }
+        public DateTime? datetime11 { get { DateTime dt; DateTime.TryParse(datetime1, out dt); return dt; } }
+        public DateTime? datetime22 { get { DateTime dt; DateTime.TryParse(datetime2, out dt); return dt; } }
         /// <summary>
         /// 入库时间2
         /// </summary>
-        public DateTime? datetime2 { get; set; }
+        public string datetime2 { get; set; }
         /// <summary>
         /// FdTagNo
         /// </summary>

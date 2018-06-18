@@ -3,7 +3,7 @@
   <class name="SNTON.Entities.DBTables.MidStorage.MidStorageSpoolsEntity" schema="dbo" table="dbo.MidStorageSpools" xmlns="urn:nhibernate-mapping-2.2">
     <id name="Id">
       <column name="ID" not-null="true" />
-      <generator class="identity" />
+      <generator class="native" />
     </id>
     <property name="StorageArea" column="StorageArea" />
     <property name="Const" column="Const" />

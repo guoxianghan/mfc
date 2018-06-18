@@ -15,8 +15,9 @@ namespace SNTON.Components.MES
     {
         List<tblProdCodeStructMachEntity> GettblProdCodeStructMachs(IStatelessSession session = null, params string[] machcodes);
         tblProdCodeStructMachEntity GettblProdCodeStructMach(string sql, IStatelessSession session = null);
+        tblProdCodeStructMarkEntity GettblProdCodeStructMachStructBarCode(string StructBarCode, IStatelessSession session = null);
         /// <summary>
-        /// 条码
+        /// 二维码
         /// </summary>
         /// <param name="FdTagNo"></param>
         /// <param name="session"></param>

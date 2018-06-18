@@ -150,7 +150,7 @@
   <CONTROLSETS>
     <CONTROLSET Name ="TelegramDescriptions" Enabled ="true" path =".\Controlsets\TelDescControlset.xml"/>
     <!--AGV Configuration-->
-    <CONTROLSET Name ="PLC_AGV" Enabled ="false" path =".\Controlsets\AGVControlset.xml">
+    <CONTROLSET Name ="PLC_AGV" Enabled ="true" path =".\Controlsets\AGVControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="AGV"/>
         <VARIABLE Name="$HOST$" Value="192.168.1.251"/>
@@ -239,7 +239,7 @@
       </VARIABLES>
     </CONTROLSET>
 
-    <CONTROLSET Name ="PLC_RobotArm4" Enabled ="true" path =".\Controlsets\MidStoreRobotArmControlset.xml">
+    <CONTROLSET Name ="PLC_RobotArm4" Enabled ="false" path =".\Controlsets\MidStoreRobotArmControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="RobotArm4"/>
         <VARIABLE Name="$HOST$" Value="192.168.120.87"/>
@@ -412,7 +412,35 @@
 
 
     </HIBERNATE>
+    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="false" Id="AGVSQLServerDatabase" ResourceType="DB">
+      <CONFIG Configuration="SNTON.Resources.Hibernate.AGVSystemSQL.cfg.xml"
+              ConfigAssembly="SNTON.dll"
+              EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
+              DeadSessionDetectionTimeoutInSecs="3600"
+              RenewSessionTimeoutInSecs="3600" MaxNumberOfSessionsToDropPerCycle="1"
+              SessionTimeoutThreadCycleInSecs="999" MaxRetries="1" MaxReconnectAttempts="1" MaxNumberOfSessions="100"
+              StatisticsThreadCycleInSecs="999999"
+              ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700">
+        <!--
+      <CONFIG Configuration="FedEx.Resources.Hibernate.OracleMBeck.cfg.xml" ConfigAssembly="FedEx.dll" EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
+              DeadSessionDetectionTimeoutInSecs="3600"  RenewSessionTimeoutInSecs="3600" MaxNumberOfSessionsToDropPerCycle="1"
+              SessionTimeoutThreadCycleInSecs="999" MaxRetries="1" MaxReconnectAttempts="1" MaxNumberOfSessions="100"
+              StatisticsThreadCycleInSecs="999999"
+              ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700">
+       -->
 
+        <!-- Optional SESSION_PROFILING. Will use special MaxBusyTimeoutInMs instead of the globally defined one above.
+                     "TaskDescription" - The task description specified when getting the session object.
+                     "MaxBusyTimeoutInMs" - Timeout in milliseconds, after which a warning message will be logged in case a session is
+                                           busy/held for longer than the specified time. Useful for eg. detecting slow and
+                                           badly performing queries.
+                -->
+        <SESSION_PROFILING>
+        </SESSION_PROFILING>
+      </CONFIG>
+
+
+    </HIBERNATE>
     <!--
           Localization functionality. We can query one or more strings in a specific language by a key. 
     -->
@@ -633,6 +661,12 @@
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </SpoolsProvider>
 
+    <SpoolsTaskProvider Assembly="SNTON.DLL" Type="SNTON.Components.Spools.SpoolsTask" Id="SpoolsTaskProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </SpoolsTaskProvider>
+
     <SystemParametersProvider Assembly="SNTON.DLL" Type="SNTON.Components.SystemParameters.SystemParameters" Id="SystemParametersProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
@@ -740,6 +774,23 @@
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </agv_three_configProvider>
+    <EquipTask5Provider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipTask5" Id="EquipTask5Provider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </EquipTask5Provider>
+
+    <AGVBYSStatusProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVBYSStatus" Id="AGVBYSStatusProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="AGVSQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </AGVBYSStatusProvider>
+
+    <T_AGV_KJ_InterfaceProvider Assembly="SNTON.DLL" Type="SNTON.Components..T_AGV_KJ_Interface" Id="T_AGV_KJ_InterfaceProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="JK_InterfaceSQL"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </T_AGV_KJ_InterfaceProvider>
 
 
     <!--Business Logic Component Configuration Options:-->
@@ -786,7 +837,11 @@ SystemParametersConfigurationProviderId="SystemParametersConfigurationProvider"
               InStoreToOutStoreSpoolProviderId="InStoreToOutStoreSpoolProvider"
               ProductProviderId="ProductProvider"
               InStoreToOutStoreSpoolViewProviderId="InStoreToOutStoreSpoolViewProvider"
-              Agv_three_configProviderId="agv_three_configProvider"
+              Agv_three_configProviderId="agv_three_configProvider"             
+              EquipTask5ProviderId="EquipTask5Provider"
+              AGVBYSStatusProviderId="AGVBYSStatusProvider"
+              SpoolsTaskProviderId="SpoolsTaskProvider"
+T_AGV_KJ_InterfaceProviderId="T_AGV_KJ_InterfaceProvider"
        />
     </BusinessLogic>
 

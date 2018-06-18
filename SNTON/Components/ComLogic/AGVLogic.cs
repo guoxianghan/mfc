@@ -50,6 +50,10 @@ namespace SNTON.Components.ComLogic
 
         private void CheckAGVTaskSend()
         {
+            if (this.BusinessLogic.AGVBYSStatusProvider == null)
+            {
+
+            }
 
             //Neutrino re = new Neutrino();
             //re.AddField("TELEGRAMID", SNTONAGVCommunicationProtocol.AGVCmdExeReportAck.PadRight(20).ToString());
@@ -237,26 +241,26 @@ namespace SNTON.Components.ComLogic
         {
             var routelocation = this.BusinessLogic.AGVBYSStatusProvider._AGVBYSStatusCache;
             var weblocation = this.BusinessLogic.Agv_three_configProvider._AllAgv_three_config;
-            agv_three_configEntity act = null;
+            agv_three_configEntity act = new agv_three_configEntity();
             foreach (var item in routelocation)
             {
                 float x = item.LocationX;
                 float y = item.LocationY;
-                if (x != 0 || y != 0)
-                {
-                    weblocation.ForEach(c =>
-                    {
-                        c.Dev_x = Math.Abs(x - c.fac_X);
-                        c.Dev_y = Math.Abs(y - c.fac_Y);
-                    });
-                    var weblocationx = weblocation.OrderBy(c => c.StDev).Take(20);
-                    act = weblocationx.FirstOrDefault();
-                }
-                else
-                    act = this.BusinessLogic.Agv_three_configProvider._originLocation;
+                //if (x != 0 || y != 0)
+                //{
+                //    weblocation.ForEach(c =>
+                //    {
+                //        c.Dev_x = Math.Abs(x - c.fac_X);
+                //        c.Dev_y = Math.Abs(y - c.fac_Y);
+                //    });
+                //    var weblocationx = weblocation.OrderBy(c => c.StDev).Take(20);
+                //    act = weblocationx.FirstOrDefault();
+                //}
+                //else
+                //    act = this.BusinessLogic.Agv_three_configProvider._originLocation;
                 if (this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.ContainsKey(item.AGVID))
                 {
-                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute[item.AGVID] = new AGVRouteEntity() { AGVId = item.AGVID, agv_id = act.agv_id, Created = DateTime.Now, fac_x = act.fac_x, fac_y = act.fac_y, X = x, Y = y };
+                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute[item.AGVID] = new AGVRouteEntity() { AGVId = item.AGVID, agv_id = item.AGVID, Created = DateTime.Now, fac_x = act.fac_x, fac_y = act.fac_y, X = x, Y = y };
                 }
                 else
                 {
@@ -599,47 +603,49 @@ namespace SNTON.Components.ComLogic
                 {
 
                     var weblocation = new List<agv_three_configEntity>();
-                    weblocation = this.BusinessLogic.Agv_three_configProvider._AllAgv_three_config;
-                    //weblocation = this.BusinessLogic.Agv_three_configProvider._AllAgv_three_config.FindAll(t => Math.Abs(x - t.fac_X) <= l_x && Math.Abs(y - t.fac_Y) <= l_y);
-                    weblocation.ForEach(c =>
+                    //    weblocation = this.BusinessLogic.Agv_three_configProvider._AllAgv_three_config;
+                    //    //weblocation = this.BusinessLogic.Agv_three_configProvider._AllAgv_three_config.FindAll(t => Math.Abs(x - t.fac_X) <= l_x && Math.Abs(y - t.fac_Y) <= l_y);
+                    //    weblocation.ForEach(c =>
+                    //    {
+                    //        c.Dev_x = Math.Abs(x - c.fac_X);
+                    //        c.Dev_y = Math.Abs(y - c.fac_Y);
+                    //    });
+                    //    var weblocationx = weblocation.OrderBy(c => c.StDev).ToList().Take(20);
+                    //    act = weblocationx.FirstOrDefault();
+                    //}
+                    //else
+                    //    act = this.BusinessLogic.Agv_three_configProvider._originLocation;
+                    act = new agv_three_configEntity();
+                    short speed = Convert.ToInt16(neutrino.GetField("Speed"));
+                    byte status = 0;
+                    long TaskNo = 0;
+                    try
                     {
-                        c.Dev_x = Math.Abs(x - c.fac_X);
-                        c.Dev_y = Math.Abs(y - c.fac_Y);
-                    });
-                    var weblocationx = weblocation.OrderBy(c => c.StDev).ToList().Take(20);
-                    act = weblocationx.FirstOrDefault();
-                }
-                else
-                    act = this.BusinessLogic.Agv_three_configProvider._originLocation;
-                short speed = Convert.ToInt16(neutrino.GetField("Speed"));
-                byte status = 0;
-                long TaskNo = 0;
-                try
-                {
-                    status = Convert.ToByte(neutrino.GetField("StatusAGVRoute"));
-                    TaskNo = long.Parse(neutrino.GetField("TaskNoAGVRoute"), System.Globalization.NumberStyles.HexNumber);
-                }
-                catch (Exception e)
-                {
-                    logger.ErrorMethod($"解析AGVRoute status或TaskNo出错,SEQUENCE:{SEQUENCE},neutrino is " + JsonConvert.SerializeObject(neutrino), e, "SaveAGVRoute");
-                }
-                var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status, agv_id = act.agv_id, fac_x = act.fac_x, fac_y = act.fac_y };
-                var agvroutelist = this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute2[agvid];
+                        status = Convert.ToByte(neutrino.GetField("StatusAGVRoute"));
+                        TaskNo = long.Parse(neutrino.GetField("TaskNoAGVRoute"), System.Globalization.NumberStyles.HexNumber);
+                    }
+                    catch (Exception e)
+                    {
+                        logger.ErrorMethod($"解析AGVRoute status或TaskNo出错,SEQUENCE:{SEQUENCE},neutrino is " + JsonConvert.SerializeObject(neutrino), e, "SaveAGVRoute");
+                    }
+                    var tmp = new AGVRouteEntity() { AGVId = agvid, Created = DateTime.Now, Speed = speed, X = x, Y = y, Status = status, agv_id = agvid, fac_x = act.fac_x, fac_y = act.fac_y };
+                    var agvroutelist = this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute2[agvid];
 
 
-                if (this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.ContainsKey(agvid))
-                {
-                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute[agvid] = tmp;
+                    if (this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.ContainsKey(agvid))
+                    {
+                        this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute[agvid] = tmp;
+                    }
+                    else
+                    {
+                        this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.Add(agvid, tmp);
+                    }
+                    if (agvroutelist.Count >= 5)
+                    {
+                        agvroutelist.RemoveAt(0);
+                    }
+                    agvroutelist.Add(tmp);
                 }
-                else
-                {
-                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.Add(agvid, tmp);
-                }
-                if (agvroutelist.Count >= 5)
-                {
-                    agvroutelist.RemoveAt(0);
-                }
-                agvroutelist.Add(tmp);
             }
             catch (Exception e)
             {

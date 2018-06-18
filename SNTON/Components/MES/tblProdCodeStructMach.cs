@@ -231,5 +231,11 @@ LEFT JOIN [tblProdCode] P ON B.ProdCode=P.ProdCode where C.GroupID='{1}' AND B.S
             }
             return ret;
         }
+
+        public tblProdCodeStructMarkEntity GettblProdCodeStructMachStructBarCode(string StructBarCode, IStatelessSession session = null)
+        {
+            var list = ReadSql<tblProdCodeStructMarkEntity>(null, string.Format(QUERYSQL_StructMark, "'" + StructBarCode.Trim() + "'", "C06"));
+            return list;
+        }
     }
 }

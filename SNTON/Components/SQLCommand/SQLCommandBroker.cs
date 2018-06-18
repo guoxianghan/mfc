@@ -15,6 +15,7 @@ using SNTON.Entities.DBTables.AGV;
 using SNTON.Entities.DBTables.RobotArmTask;
 using SNTON.Entities.DBTables.InStoreToOutStore;
 using SNTON.Constants;
+using SNTON.Entities.DBTables.AGV_KJ_Interface;
 
 namespace SNTON.Components.SQLCommand
 {
@@ -360,7 +361,7 @@ namespace SNTON.Components.SQLCommand
             return ret;
         }
 
-        public bool CreateEquipTask5(EquipTask5Entity task, List<RobotArmTaskEntity> armtsks, List<MidStorageSpoolsEntity> mids, IStatelessSession session = null)
+        public bool CreateEquipTask5(T_AGV_KJ_InterfaceEntity task, List<RobotArmTaskEntity> armtsks, List<MidStorageSpoolsEntity> mids, IStatelessSession session = null)
         {
             bool r = false;
             if (session == null)

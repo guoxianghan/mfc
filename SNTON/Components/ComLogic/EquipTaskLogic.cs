@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SNTON.Constants;
 using SNTON.Entities.DBTables.AGV;
+using SNTON.Entities.DBTables.AGV_KJ_Interface;
 using SNTON.Entities.DBTables.Equipments;
 using SNTON.Entities.DBTables.InStoreToOutStore;
 using SNTON.Entities.DBTables.MES;
@@ -581,9 +582,9 @@ namespace SNTON.Components.ComLogic
                         var armtsks = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskStatus in(0,1,2,3)");//找到正在执行的ArmTask
                         agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8,9)", null);
                         #region MyRegion
-                        if (armtsks.FindAll(x => x.StorageArea == storeno).Count >= 3)
+                        if (armtsks != null && armtsks.FindAll(x => x.StorageArea == storeno).Count >= 3)
                             continue;//有正在执行的龙门任务
-                        if (agvrunningtsk.FindAll(x => x.StorageArea == storeno && x.StorageLineNo == 1).Count >= 3)
+                        if (agvrunningtsk != null && agvrunningtsk.FindAll(x => x.StorageArea == storeno && x.StorageLineNo == 1).Count >= 3)
                             continue;//出库线体满
                                      ///从暂存库创建出库任务
                         var tskconfig = TaskConfig.GetEnoughAGVEquipCount(mantsk[0].ProductType.Trim());//8 / 12
@@ -652,7 +653,7 @@ namespace SNTON.Components.ComLogic
             判断库存
             创建出库任务
             */
-            List<EquipTask5Entity> tasks = this.BusinessLogic.EquipTask5Provider.GetEquipTask5("ISDELETE=1 AND Plat=5 AND STATUS IN (0,5)", null);
+            List<T_AGV_KJ_InterfaceEntity> tasks = this.BusinessLogic.T_AGV_KJ_InterfaceProvider.GetT_AGV_KJ_Interface("STATUS IN (0)", null);
             if (tasks == null || tasks.Count == 0)
                 return;
             var machcodes = from i in tasks select i.DeviceID;
@@ -664,11 +665,13 @@ namespace SNTON.Components.ComLogic
                 return;
             }
             List<MidStorageSpoolsEntity> midstoreages = this.BusinessLogic.MidStorageSpoolsProvider.GetMidStorages($"StorageArea =4 AND IsOccupied IN (1)", null);
-            var test = GetEnumerable(tasks);
-            foreach (var item in test)
+            //var test = SNTONConstants.SplitObjectList(tasks);
+
+            #region foreach
+            foreach (var item in tasks)
             {
                 DateTime dt = DateTime.Now;
-                Guid guid = Guid.NewGuid();
+                Guid guid = item.TaskGuid;
                 item.tblProdCodeStructMach = machstructcode.FirstOrDefault(x => x.MachCode == item.DeviceID.Trim());
                 if (item.tblProdCodeStructMach == null)
                 {
@@ -683,7 +686,7 @@ namespace SNTON.Components.ComLogic
                     if (p.Count < mid.Count())
                     {
                         item.outOfStock = 1;//库存不足
-                        this.BusinessLogic.EquipTask5Provider.UpdateEquipTask5(null, item);
+                        this.BusinessLogic.T_AGV_KJ_InterfaceProvider.UpdateT_AGV_KJ_Interface(item);
                         continue;
                     }
                     mids.AddRange(mid);
@@ -698,13 +701,13 @@ namespace SNTON.Components.ComLogic
                 */
                 item.Status = 1;
                 item.time_1 = dt;
-                item.Updated = item.time_1;
-                string id = Convert.ToString(item.Id, 2);
+                string id = Convert.ToString(item.ID, 2);
                 if (id.Length > 5)
                     id = id.Substring(id.Length - 5);
                 int seq = Convert.ToInt32(id, 2);
                 List<RobotArmTaskEntity> robottsks = CreateRobotTask(mids, 1, seq, dt, guid);
                 bool r = this.BusinessLogic.SqlCommandProvider.CreateEquipTask5(item, robottsks, mids);
+                #region result
                 if (r)
                 {
                     logger.InfoMethod("创建出库任务成功," + JsonConvert.SerializeObject(item));
@@ -714,7 +717,9 @@ namespace SNTON.Components.ComLogic
                 {
                     logger.WarnMethod("创建出库任务失败");
                 }
+                #endregion
             }
+            #endregion
         }
 
         /// <summary>

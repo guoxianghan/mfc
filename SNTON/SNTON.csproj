@@ -87,14 +87,6 @@
       <HintPath>..\dll\MFCLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MITSUBISHI.Component.DotSupportMsg, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5d8f6a8a93196d7a, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\MELSEC\Act\Control\MITSUBISHI.Component.DotSupportMsg.dll</HintPath>
-    </Reference>
-    <Reference Include="MITSUBISHI.Component.DotUtlType, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6b44489e63a9c4bd, processorArchitecture=x86">
-      <HintPath>C:\MELSEC\Act\Control\MITSUBISHI.Component.DotUtlType.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
     <Reference Include="Mono.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\packages\CS-Script.bin.3.12.2.1\lib\net45\Mono.CSharp.dll</HintPath>
       <Private>True</Private>
@@ -315,6 +307,7 @@
     <Compile Include="WebServices\UserInterfaceBackend\Models\AGV\AGVConfigUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\AGV\AGVRouteArchiveUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\AGV\AGVTaskDataUI.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Models\AGV_KJ_Interface\AGV_KJ_InterfaceDataUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\EquipWatch\InStoreageLineDataUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\Equip\EquipCallDataUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Models\Equip\EquipConfigDataUI.cs" />
@@ -338,12 +331,14 @@
     <Compile Include="WebServices\UserInterfaceBackend\Models\SystemParameters\SystemParametersUI.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Requests\AGV\AGVRuteSearchRequest.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Requests\Equip\EquipSearchRequest.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Requests\ProductData\ProductDataRequest.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Requests\Spool\SpoolSearchRequest.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Requests\Spool\SpoolTaskSearchRequest.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Requests\SystemParameters\SystemParametersRequest.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\AGV\AGVConfigResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\AGV\AGVRouteArchiveResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\AGV\AGVTaskResponse.cs" />
+    <Compile Include="WebServices\UserInterfaceBackend\Responses\AGV_KJ_Interface\AGV_KJ_InterfaceResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\EquipWatch\InStoreageLineResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\Equip\EquipConfigInfoResponse.cs" />
     <Compile Include="WebServices\UserInterfaceBackend\Responses\Equip\EquipConfigResponse.cs" />
@@ -515,10 +510,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Hibernate\Mappings\T_AGV_KJ_Interface.hbm.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Hibernate\JK_InterfaceSQL.xml">
+    <EmbeddedResource Include="Resources\Hibernate\JK_InterfaceSQL.cfg.xml">
+      <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

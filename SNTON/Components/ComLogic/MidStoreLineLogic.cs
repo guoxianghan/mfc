@@ -131,11 +131,11 @@ namespace SNTON.Components.ComLogic
         }
         void ReadWarningInfo()
         {
-            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 2);
+            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 2 && x.MidStoreNo == this.StorageArea);
             if (_WarnningCode == null || _WarnningCode.Count == 0)
                 return;
             Neutrino ne = new Neutrino();
-            ne.TheName = "ReadMidStoreRobotArmWarnning";
+            ne.TheName = "MidStoreWarning";
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
             {
                 ne.AddField(item.Key.Trim(), "0");
@@ -152,20 +152,26 @@ namespace SNTON.Components.ComLogic
                     var fi = _WarnningCode.FirstOrDefault(x => x.BIT == c && x.AddressName.Trim() == item.Key);
                     if (fi == null)
                         continue;
-                    if (binary[c] != '0' && !fi.Value)
+                    if (binary[c] != '0' && !fi.IsWarning)
                     {
-                        fi.Value = true;
+                        fi.IsWarning = true;
                         this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7, MidStoreage = this.StorageArea });
-
                     }
                     else
-                        fi.Value = false;
+                        fi.IsWarning = false;
                 }
             }
 
             #endregion
 
-            if (_WarnningCode.Exists(x => x.Value))
+            var realtimewarning = _WarnningCode.FindAll(x => x.LastWarning != x.IsWarning);
+            if (realtimewarning != null && realtimewarning.Count != 0)
+            {
+                realtimewarning.ForEach(x => { x.LastWarning = x.IsWarning; x.Updated = DateTime.Now; });
+                //_WarnningCode.ForEach(x=> { x.LastWarning});
+                this.BusinessLogic.MachineWarnningCodeProvider.UpdateWarning(realtimewarning, null);
+            }
+            if (_WarnningCode.Exists(x => x.IsWarning))
                 IsWarning = true;
             else IsWarning = false;
             int r = n.Item2.GetInt("LINE_STATUS");
@@ -901,8 +907,14 @@ namespace SNTON.Components.ComLogic
                     instorearmtsks.Add(armtsk);
                     #endregion
                 }
-                this.BusinessLogic.MidStorageProvider.UpdateMidStore(null, instore.ToArray());
-                logger.InfoMethod(" 没有需要该类型轮子的设备的任务,将所有轮子分配库位任务成功");
+                int ii = this.BusinessLogic.MidStorageProvider.UpdateMidStore(null, instore.ToArray());
+                if (ii != 0)
+                    logger.InfoMethod(" 没有需要该类型轮子的设备的任务,将所有轮子分配库位任务成功");
+                else
+                {
+                    logger.ErrorMethod(" 更新入库状态失败");
+                    return 0;
+                }
                 this.BusinessLogic.RobotArmTaskProvider.InsertArmTask(instorearmtsks);
                 logger.InfoMethod(" 没有需要该类型轮子的设备的任务,将所有轮子创建直通线入库任务成功");
                 #endregion

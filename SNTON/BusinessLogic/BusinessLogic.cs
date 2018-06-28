@@ -399,7 +399,20 @@ namespace SNTON.BusinessLogic
                 return _EquipTaskLogic;
             }
         }
-
+        [ConfigBoundProperty("MidStoreLineLogicId4")]
+#pragma warning disable 649
+        private string _MidStoreLineLogic4;
+#pragma warning restore 649
+        private MidStoreLine4Logic midStoreLineLogic4;
+        public MidStoreLine4Logic MidStoreLineLogic4
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref midStoreLineLogic4, _MidStoreLineLogic4, this);
+                return midStoreLineLogic4;
+            }
+        }
+ 
         [ConfigBoundProperty("MidStoreLineLogicId2")]
 #pragma warning disable 649
         private string _MidStoreLineLogic2;

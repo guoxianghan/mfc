@@ -175,6 +175,33 @@ namespace SNTON.Components.Equipment
             }
             return i;
         }
+
+        public bool AddProduct(ProductEntity entity, IStatelessSession session = null)
+        {
+            bool i = false;
+            if (session == null)
+            {
+                i = BrokerDelegate(() => AddProduct(entity, session), ref session);
+                return i;
+            }
+            try
+            {
+                protData.EnterWriteLock();
+
+                Insert(session, entity);
+                i = true;
+            }
+            catch (Exception ex)
+            {
+                i = false;
+                logger.ErrorMethod("failed to insert ProductEntity", ex);
+            }
+            finally
+            {
+                protData.ExitWriteLock();
+            }
+            return i;
+        }
     }
 }
 

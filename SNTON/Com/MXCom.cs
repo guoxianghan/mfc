@@ -11,7 +11,7 @@ using VI.MFC.Utils.ConfigBinder;
 using VI.MFC;
 using SNTON.Components.Parser;
 using VI.MFC.Logic;
-using MITSUBISHI.Component;
+//using MITSUBISHI.Component;
 using VI.MFC.Utils;
 using System.Xml;
 

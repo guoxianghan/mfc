@@ -45,6 +45,8 @@ using SNTON.Entities.DBTables.InStoreToOutStore;
 using SNTON.WebServices.UserInterfaceBackend.Requests.Spool;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Spools;
 using SNTON.Com;
+using SNTON.WebServices.UserInterfaceBackend.Requests.ProductData;
+using SNTON.WebServices.UserInterfaceBackend.Responses.AGV_KJ_Interface;
 
 namespace SNTON.BusinessLogic
 {
@@ -454,7 +456,7 @@ namespace SNTON.BusinessLogic
         {
             MidStorageDetailResponse obj = new MidStorageDetailResponse();
             int hours = this.SystemParametersProvider.GetSystemParametersSpoolTimeOut(null);
-            var list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == (short)storagearea);
+            var list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == (short)storagearea && (x.IsOccupied == 1 || x.IsOccupied == 4));
             list = list.OrderBy(x => x.SeqNo).ToList();
             foreach (var item in list)
             {
@@ -477,7 +479,14 @@ namespace SNTON.BusinessLogic
                         mid.IsTimeOut = false;
                     else
                         mid.IsTimeOut = true;
-
+                mid.Barcodes = item.FdTagNo.Trim();
+                mid.BobbinNo = item.BobbinNo;
+                mid.Cname = mid.Cname;
+                mid.Const = item.Const;
+                mid.InStoreageTime = item.Created;
+                mid.Length = item.Length;
+                mid.StorageArea = item.StorageArea;
+                mid.StructBarCode = item.StructBarCode;
                 Status = MidStorageStatusToShow(Status, IsOccupied);
                 mid.Status = Status;
                 obj.data.Add(mid);
@@ -715,11 +724,7 @@ namespace SNTON.BusinessLogic
             if (item.IsVisible == -1)
                 Status = 6;
             //mid.InStoreageTime = item.Updated;
-            if (IsOccupied == 1)
-                if (item.Updated.Value.AddHours(hours) > DateTime.Now)
-                    mid.IsTimeOut = false;
-                else
-                    mid.IsTimeOut = true;
+
             Status = MidStorageStatusToShow(Status, IsOccupied);
             mid.Status = Status;
             obj.data.Add(mid);
@@ -1173,7 +1178,7 @@ namespace SNTON.BusinessLogic
                         obj.data.Add(i + "号库线体报警; ");
                     if (this.GetMidStoreLineLogic(i).IsStoreageEnough)
                         obj.data.Add(i + "号库已满; ");
-                    var warnning = this.GetMidStoreLineLogic(i)._WarnningCode?.FindAll(x => x.Value);
+                    var warnning = this.GetMidStoreLineLogic(i)._WarnningCode?.FindAll(x => x.IsWarning);
                     if (warnning != null && warnning.Count != 0)
                     {
                         warnning.ForEach(x =>
@@ -1188,7 +1193,7 @@ namespace SNTON.BusinessLogic
                         obj.data.Add(i + "号龙门退出自动或故障; ");
                     //if (!GetMidStoreRobotArmLogic(i).IsCanSend)
                     //    sb.Append(i + "号龙门库不允许下发指令; "); 
-                    var warnning = this.GetMidStoreRobotArmLogic(i)._WarnningCode?.FindAll(x => x.Value);
+                    var warnning = this.GetMidStoreRobotArmLogic(i)._WarnningCode?.FindAll(x => x.IsWarning);
                     if (warnning != null && warnning.Count != 0)
                     {
                         warnning.ForEach(x =>
@@ -1405,7 +1410,7 @@ namespace SNTON.BusinessLogic
             if (list != null)
                 foreach (var item in list)
                 {
-                    obj.data.Add(new WebServices.UserInterfaceBackend.Models.Product.ProductDataUI() { CName = item.CName, Const = item.Const, Id = item.Id, Length = item.Length, LRRatio = item.LRRatio, PlatingType = item.PlatingType, ProductNo = item.ProductNo, ProductType = item.ProductType, SeqNo = item.SeqNo });
+                    obj.data.Add(new WebServices.UserInterfaceBackend.Models.Product.ProductDataUI() { CName = item.CName, Const = item.Const, Id = item.Id, Length = item.Length, LRRatio = item.LRRatio, PlatingType = item.PlatingType, ProductNo = item.ProductNo, ProductType = item.ProductType, SeqNo = item.SeqNo, IsDeleted = item.IsDeleted, Created = item.Created.ToString("yyyy-MM-dd HH:mm:ss") });
                 }
             return obj;
         }
@@ -1481,9 +1486,9 @@ namespace SNTON.BusinessLogic
         {
             SpoolsTaskResponse obj = new SpoolsTaskResponse();
             StringBuilder sb = new StringBuilder("ISDELETED=0");//SELECT * FROM [SNTON].[SpoolsTask]
-            if (searchRequest.datetime11.Value!=DateTime.MinValue)
+            if (searchRequest.datetime11.Value != DateTime.MinValue)
                 sb.Append(" AND Created" + ">='" + searchRequest.datetime11.Value.ToString("yyyy-MM-dd 00:00:00") + "' ");
-            if (searchRequest.datetime22.Value!=DateTime.MinValue)
+            if (searchRequest.datetime22.Value != DateTime.MinValue)
                 sb.Append(" AND Created" + "<='" + searchRequest.datetime22.Value.ToString("yyyy-MM-dd 23:59:59") + "' ");
             if (!string.IsNullOrEmpty(searchRequest.CName))
                 sb.Append(" AND CName" + " = '" + searchRequest.CName.Trim() + "'");
@@ -1533,7 +1538,7 @@ namespace SNTON.BusinessLogic
                     obj.data.Add(o);
                     var eq = equiptasks.FindAll(x => x.TaskGuid == item.TaskGroupGUID);
                     if (eq.Count == 0)
-                        continue;
+                    { item.Updated = null; continue; }
                     item.Updated = eq[0].Updated;
                     eq.ForEach(x => o.EquipName += x.EquipName.Trim() + " , ");
                     o.EquipName = o.EquipName.Trim(',');
@@ -1559,8 +1564,9 @@ namespace SNTON.BusinessLogic
             }
             else if (status == -1)
             {
-                string sql = "StorageArea=" + storageareaid + " IsOccupied IN (1,4,5)";
+                string sql = "StorageArea=" + storageareaid + " AND IsOccupied IN (1,4,5)";
                 var storages = this.MidStorageSpoolsProvider.GetMidStorages(sql, null);
+                if (storages == null) storages = new List<MidStorageSpoolsEntity>();
                 storages.ForEach(x =>
                 {
                     x.IsOccupied = 0;
@@ -1603,6 +1609,79 @@ namespace SNTON.BusinessLogic
                 else
                     obj.data.Add("重置库位失败");
             }
+            return obj;
+        }
+
+        public ResponseDataBase WarningInfo(byte midstoreno)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            var messages = this.MachineWarnningCodeProvider.GetAllMachineWarnningCodeEntity(null);
+            if (messages == null) messages = new List<Entities.DBTables.PLCAddressCode.MachineWarnningCodeEntity>();
+            if (midstoreno != 0)
+                messages = messages.FindAll(x => x.IsWarning && x.MidStoreNo == midstoreno);
+            messages.ForEach(x => { obj.data.Add(midstoreno + "号库" + (x.MachineCode == 1 ? "龙门" : "线体") + x.Description); });
+            return obj;
+        }
+
+        public ResponseDataBase SaveProductData(ProductDataRequest data)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            bool r = false;
+            ProductEntity ent = new ProductEntity() { CName = data.CName, Const = data.Const, Created = Convert.ToDateTime(data.Created), IsDeleted = data.IsDeleted, Id = data.Id, IsWarning = 1, Length = data.Length, LRRatio = data.LRRatio, PlatingType = data.PlatingType, ProductNo = data.ProductNo, ProductType = data.ProductType, SeqNo = data.SeqNo };
+            if (data.IsDeleted == -1)
+            {
+                ent.Deleted = DateTime.Now;
+            }
+            if (data.Id == 0)
+            {
+                r = this.ProductProvider.AddProduct(ent);
+                obj.data.Add("添加成功");
+            }
+            else
+            {
+                int i = this.ProductProvider.UpdateEntity(null, ent);
+                if (data.IsDeleted == -1)
+                    if (i == 0)
+                        obj.data.Add("删除成功");
+                    else
+                        obj.data.Add("删除失败");
+                else
+                {
+                    if (i == 0)
+                        obj.data.Add("保存成功");
+                    else
+                        obj.data.Add("保存失败");
+                }
+            }
+            return obj;
+        }
+
+        public AGV_KJ_InterfaceResponse GetJiKeAGVTask(int storagearea)
+        {
+            AGV_KJ_InterfaceResponse obj = new AGV_KJ_InterfaceResponse();
+            var tasks = this.T_AGV_KJ_InterfaceProvider.GetT_AGV_KJ_Interface("[STATUS]<=7", null);
+            if (tasks != null)
+                foreach (var item in tasks)
+                {
+                    obj.data.Add(new WebServices.UserInterfaceBackend.Models.AGV_KJ_Interface.AGV_KJ_InterfaceDataUI() { ConveyorID = item.ConveyorID, Count = item.Count, Created = item.Created, DeviceID = item.DeviceID, ID = item.ID, issuetime = item.issuetime, outOfStock = item.outOfStock, PlatNo = item.PlatNo, SeqNo = item.SeqNo, Status = item.Status, StorageArea = item.StorageArea, TaskGuid = item.TaskGuid, time_0 = item.time_0, time_1 = item.time_1, time_2 = item.time_2, time_3 = item.time_3, time_4 = item.time_4, time_5 = item.time_5, time_6 = item.time_6, time_7 = item.time_7, time_8 = item.time_8 });
+                }
+            return obj;
+        }
+
+        public ResponseDataBase SetJiKeAGVTaskStatus(int storeage, int id, int status)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            var tsk = this.T_AGV_KJ_InterfaceProvider.GetT_AGV_KJ_InterfaceEntityByID(id);
+            if (tsk.Status >= 5)
+            {
+                obj.data.Add("任务已执行，无法重置");
+                return obj;
+            }
+            tsk.Status = status;
+            bool r = this.T_AGV_KJ_InterfaceProvider.UpdateT_AGV_KJ_Interface(tsk);
+            if (r)
+                obj.data.Add("重置成功");
+            else obj.data.Add("重置失败");
             return obj;
         }
     }

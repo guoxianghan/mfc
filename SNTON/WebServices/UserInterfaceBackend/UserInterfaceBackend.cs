@@ -35,6 +35,8 @@ using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
 using SNTON.WebServices.UserInterfaceBackend.Requests.Spool;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Spools;
+using SNTON.WebServices.UserInterfaceBackend.Requests.ProductData;
+using SNTON.WebServices.UserInterfaceBackend.Responses.AGV_KJ_Interface;
 
 namespace SNTON.WebServices.UserInterfaceBackend
 {
@@ -1017,6 +1019,62 @@ namespace SNTON.WebServices.UserInterfaceBackend
                 if (!string.IsNullOrEmpty(OriginalIds))
                     obj = BusinessLogic.ClearMidStoreage(PlantNo, storageid, status, OriginalIds.Trim().Split(','));
                 else obj.data.Add("错误的库位信息");
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<ResponseDataBase>(ex);
+            }
+            return obj;
+        }
+
+        public ResponseDataBase WarningInfo(byte midstoreno)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            try
+            {
+                obj = BusinessLogic.WarningInfo(midstoreno);
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<ResponseDataBase>(ex);
+            }
+            return obj;
+        }
+
+        public ResponseDataBase SaveProductData(ProductDataRequest data)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            try
+            {
+                obj = BusinessLogic.SaveProductData(data);
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<ResponseDataBase>(ex);
+            }
+            return obj;
+        }
+
+        public AGV_KJ_InterfaceResponse GetJiKeAGVTask(int storagearea)
+        {
+            AGV_KJ_InterfaceResponse obj = new AGV_KJ_InterfaceResponse();
+            try
+            {
+                obj = BusinessLogic.GetJiKeAGVTask(storagearea);
+            }
+            catch (Exception ex)
+            {
+                obj = ResponseBase.GetResponseByException<AGV_KJ_InterfaceResponse>(ex);
+            }
+            return obj;
+        }
+
+        public ResponseDataBase SetJiKeAGVTaskStatus(int storeage, int id, int status)
+        {
+            ResponseDataBase obj = new ResponseDataBase();
+            try
+            {
+                obj = BusinessLogic.SetJiKeAGVTaskStatus(storeage, id, status);
             }
             catch (Exception ex)
             {

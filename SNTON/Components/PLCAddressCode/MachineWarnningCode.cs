@@ -90,6 +90,7 @@ namespace SNTON.Components.PLCAddressCode
         {
             if (MachineWarnningCodes == null)
                 MachineWarnningCodes = GetAllMachineWarnningCodeEntity(null);
+
         }
         #endregion
 
@@ -144,6 +145,60 @@ namespace SNTON.Components.PLCAddressCode
                 logger.ErrorMethod("Failed to get MachineWarnningCodeEntityList", e);
             }
             return ret;
+        }
+
+        public int UpdateWarning(List<MachineWarnningCodeEntity> list, IStatelessSession session = null)
+        {
+            if (list == null || list.Count == 0)
+                return 0;
+            int i = 0;
+            if (session == null)
+            {
+                i = BrokerDelegate(() => UpdateWarning(list, session), ref session);
+                return i;
+            }
+            try
+            {
+                protData.EnterWriteLock();
+
+                Update(session, list);
+                i = list.Count;
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("更新MachineWarnningCodeEntity list 失败", ex);
+            }
+            finally
+            {
+                protData.ExitWriteLock();
+            }
+            return i;
+        }
+
+        public bool ResetWarning(byte midstoreno, byte machecode, IStatelessSession session = null)
+        {
+            bool i = false;
+            if (session == null)
+            {
+                i = BrokerDelegate(() => ResetWarning(midstoreno, machecode, session), ref session);
+                return i;
+            }
+            try
+            {
+                protData.EnterWriteLock();
+                string sql = $"UPDATE SNTON.MachineWarnningCode SET IsWarning=1 WHERE [MidStoreNo]={midstoreno} AND [MachineCode]={machecode}";
+                RunSqlStatement(null, sql);
+
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("重置报警信息失败", ex);
+            }
+            finally
+            {
+                protData.ExitWriteLock();
+            }
+            return i;
         }
     }
 }

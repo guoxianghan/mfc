@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using VI.MFC.Logic;
 using VI.MFC.Utils.ProcessQueue;
 using VI.MFC.COM;
-using MITSUBISHI.Component;
+//using MITSUBISHI.Component;
 using ActProgTypeLib;
 
 namespace SNTON.Components.ACTLogic

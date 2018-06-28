@@ -170,7 +170,8 @@ LEFT JOIN [tblProdCode] P ON B.ProdCode=P.ProdCode where C.GroupID='{1}' AND B.S
                     StringBuilder s = new StringBuilder();
                     foreach (var item in ret)
                     {
-                        s.Append("'" + item.StructBarCode.Trim() + "',");
+                        if (!s.ToString().Contains(item.StructBarCode.Trim()))
+                            s.Append("'" + item.StructBarCode.Trim() + "',");
                     }
                     var list = ReadSqlList<tblProdCodeStructMarkEntity>(null, string.Format(QUERYSQL_StructMark, s.ToString().TrimEnd(','), "C06"));
                     StringBuilder sb = new StringBuilder();
@@ -190,7 +191,10 @@ LEFT JOIN [tblProdCode] P ON B.ProdCode=P.ProdCode where C.GroupID='{1}' AND B.S
                             logger.ErrorMethod("单丝作业标准书未绑定", ex);
                         }
                     }
-                    var list4 = ReadSqlList<tblProdCodeStructMarkEntity>(null, string.Format(QUERYSQL_StructMark, sb.ToString().TrimEnd(','), "C26"));
+                    string sqlc06 = @"select B.StructBarCode,B.ProdCode,B.ProdLength,P.Const,C.CName,B.[TitleProdName],B.Supply1,B.SupplyQty1,B.Supply2,B.SupplyQty2,B.SpoolType from tblProdCodeStructMark B 
+Inner Join tblCommon C on C.CodeID = B.SpoolType
+LEFT JOIN[tblProdCode] P ON B.ProdCode = P.ProdCode where C.GroupID IN ({1}) AND B.StructBarCode IN ({0})";
+                    var list4 = ReadSqlList<tblProdCodeStructMarkEntity>(null, string.Format(sqlc06, sb.ToString().TrimEnd(','), "'C26','C06'"));
                     foreach (var item in ret)
                     {
                         item.ProdCodeStructMark3 = list.FirstOrDefault(x => x.StructBarCode.Trim() == item.StructBarCode.Trim());

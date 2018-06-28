@@ -20,7 +20,7 @@ namespace SNTON.Components.AGV_KJ_Interface
 
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const string EntityDbTable = "T_AGV_KJ_InterfaceEntity";
-        private const string DatabaseDbTable = "SNTON.T_AGV_KJ_Interface";
+        private const string DatabaseDbTable = "T_AGV_KJ_Interface";
 
         // only for unittest
         //private readonly Dictionary<long, EmployeeEnt> employeeList = new Dictionary<long, EmployeeEnt>();
@@ -161,7 +161,7 @@ namespace SNTON.Components.AGV_KJ_Interface
             try
             {
                 protData.EnterReadLock();
-                var tmp = ReadSqlList<T_AGV_KJ_InterfaceEntity>(session, $"SELECT * FROM {DatabaseDbTable} WHERE ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted + (string.IsNullOrEmpty(sql) ? "" : " AND " + sql));
+                var tmp = ReadSqlList<T_AGV_KJ_InterfaceEntity>(session, $"SELECT * FROM {DatabaseDbTable} WHERE " + sql);
                 if (tmp.Any())
                 {
                     ret = tmp.ToList();
@@ -202,6 +202,35 @@ namespace SNTON.Components.AGV_KJ_Interface
                 protData.ExitWriteLock();
             }
             return r;
+        }
+
+        public T_AGV_KJ_InterfaceEntity GetT_AGV_KJ_InterfaceEntity(string sql, IStatelessSession session = null)
+        {
+            T_AGV_KJ_InterfaceEntity ret = null;
+
+            if (session == null)
+            {
+                ret = BrokerDelegate(() => GetT_AGV_KJ_InterfaceEntity(sql, session), ref session);
+                return ret;
+            }
+            try
+            {
+                protData.EnterReadLock();
+                var tmp = ReadSqlList<T_AGV_KJ_InterfaceEntity>(session, $"SELECT * FROM {DatabaseDbTable} WHERE " + sql);
+                if (tmp.Any())
+                {
+                    ret = tmp.ToList().FirstOrDefault();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.ErrorMethod("Failed to get T_AGV_KJ_InterfaceEntity", e);
+            }
+            finally
+            {
+                protData.ExitReadLock();
+            }
+            return ret;
         }
     }
 }

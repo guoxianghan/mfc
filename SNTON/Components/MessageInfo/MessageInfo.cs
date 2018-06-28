@@ -202,7 +202,7 @@ namespace SNTON.Components.MessageInfo
                 //if (searchRequest.msgLevel != 4)
                 //    sb.Append(" AND " + nameof(m.MsgLevel) + "=" + searchRequest.msgLevel);
                 if (!string.IsNullOrEmpty(searchRequest.Key))
-                    sb.Append(" AND Message" + " LIKE '%" + searchRequest.Key + "%'");
+                    sb.Append(" AND MsgContent" + " LIKE '%" + searchRequest.Key + "%'");
                 if (searchRequest.MidStoreage != 0)
                     sb.Append(" AND MidStoreage =" + searchRequest.MidStoreage);
 

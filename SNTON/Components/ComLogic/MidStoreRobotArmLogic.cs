@@ -93,11 +93,26 @@ namespace SNTON.Components.ComLogic
         }
         void ReadWarningInfo()
         {
-            IsAuto();
+            if (_WarnningCode == null || _WarnningCode.Count == 0)
+                _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 1 && x.MidStoreNo == this.StorageArea);
+            if (_WarnningCode == null || _WarnningCode.Count == 0)
+                _WarnningCode = new List<MachineWarnningCodeEntity>();
+            int i = IsAuto();//龙门状态，0自动无故障，1退出自动无故障，2故障
+            if (i != 0)
+            {
+                if (_WarnningCode.FirstOrDefault(x => x.BIT == 0) != null)
+                    _WarnningCode.FirstOrDefault(x => x.BIT == 0).IsWarning = true;
+                IsWarning = true;
+            }
+            else
+            {
+                if (_WarnningCode.FirstOrDefault(x => x.BIT == 0) != null)
+                    _WarnningCode.FirstOrDefault(x => x.BIT == 0).IsWarning = false;
+                IsWarning = false;
+            }
             SendWarning();
-            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 1);
-            if (_WarnningCode == null)
-                return;
+            var warn = _WarnningCode.FindAll(x => x.IsWarning);
+            warn.ForEach(x => x.IsWarning = false);
             Neutrino ne = new Neutrino();
             ne.TheName = "ReadMidStoreRobotArmWarnning";
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
@@ -108,24 +123,32 @@ namespace SNTON.Components.ComLogic
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
             {
                 int plcvalue = n.Item2.GetInt(item.Key.Trim());
-
-                if (plcvalue != 0)
+                var bit = _WarnningCode.FirstOrDefault(x => x.AddressName.Trim() == item.Key && x.BIT == plcvalue);
+                if (bit == null || plcvalue == 0)
+                    continue;
+                if (!bit.IsWarning)
                 {
-                    var bit = _WarnningCode.FirstOrDefault(x => x.AddressName.Trim() == item.Key && x.BIT == plcvalue);
-                    if (bit == null)
-                        continue;
-                    if (!bit.Value)
-                    {
-                        bit.Value = true;
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号龙门" + bit.Description.Trim(), Source = this.StorageArea + "号龙门报警", MsgLevel = 7, MidStoreage = this.StorageArea });
-                    }
-                    _WarnningCode.FindAll(x => x.AddressName.Trim() == item.Key && x.BIT != plcvalue).ForEach(x => x.Value = false);
+                    bit.IsWarning = true;
+                    this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号龙门" + bit.Description.Trim(), Source = this.StorageArea + "号龙门报警", MsgLevel = 7, MidStoreage = this.StorageArea });
                 }
-                else
-                    _WarnningCode.ForEach(x => x.Value = false);
-
             }
+            var realtimewarning = _WarnningCode.FindAll(x => x.IsWarning);
+            List<MachineWarnningCodeEntity> update = new List<MachineWarnningCodeEntity>();
 
+            foreach (var item in realtimewarning)
+            {
+                var tmp = warn.FirstOrDefault(x => x.Id == item.Id);
+                if (tmp != null)
+                    warn.Remove(tmp);
+            }
+            update.AddRange(warn);
+            update.AddRange(realtimewarning);
+
+            if (update != null && update.Count != 0)
+            {
+                update.ForEach(x => x.Updated = DateTime.Now);
+                this.BusinessLogic.MachineWarnningCodeProvider.UpdateWarning(update, null);
+            }
         }
         /// <summary>
         /// 反馈回调
@@ -363,23 +386,34 @@ namespace SNTON.Components.ComLogic
                 }
                 #endregion
 
-                this.BusinessLogic.MidStorageProvider.UpdateMidStore(null, midstore);
-                logger.InfoMethod("成功更新库位状态:armtsk.id=" + armtsk.Id);
+                int res = this.BusinessLogic.MidStorageProvider.UpdateMidStore(null, midstore);
+                if (res != 0)
+                    logger.InfoMethod("成功更新库位状态:armtsk.id=" + armtsk.Id);
+                else
+                {
+                    logger.InfoMethod("失败更新库位状态:armtsk.id=" + armtsk.Id);
+                }
 
                 if (i == 2)
                 {
                     logger.InfoMethod("读取暂存库GetMidStorages耗时:" + watch.ElapsedMilliseconds);
                     watch.Restart();
                 }
-                this.BusinessLogic.RobotArmTaskProvider.UpdateArmTask(armtsk);
+                bool r = this.BusinessLogic.RobotArmTaskProvider.UpdateArmTask(armtsk);
                 if (i == 2)
                 {
                     logger.InfoMethod("更新龙门任务UpdateArmTask耗时:" + watch.ElapsedMilliseconds);
                     watch.Restart();
                 }
-                logger.InfoMethod("成功更新正在抓取的轮子状态,出库," + JsonConvert.SerializeObject(armtsk));
+                if (r)
+                    logger.InfoMethod("成功更新正在抓取的轮子状态,出库," + JsonConvert.SerializeObject(armtsk));
+                else
+                {
+                    logger.InfoMethod("失败更新正在抓取的轮子状态,出库," + JsonConvert.SerializeObject(armtsk));
+                    return;
+                }
                 //判断是不是最后一个
-                bool r = this.BusinessLogic.RobotArmTaskProvider.SetArmTasksUnitStatus(armtsk.TaskGroupGUID);
+                r = this.BusinessLogic.RobotArmTaskProvider.SetArmTasksUnitStatus(armtsk.TaskGroupGUID);
                 if (i == 2)
                 {
                     logger.InfoMethod("判断是不是最后一个SetArmTasksUnitStatus耗时:" + watch.ElapsedMilliseconds);

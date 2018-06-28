@@ -53,7 +53,15 @@ namespace SNTON.WebServices.UserInterfaceBackend.Models.Product
         /// <summary>
         /// 优先级
         /// </summary>
-
         public byte SeqNo { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public string Created { get; set; }
+        /// <summary>
+        /// 是否删除-1
+        /// </summary>
+        public short IsDeleted { get; set; }
     }
 }

@@ -93,11 +93,26 @@ namespace SNTON.Components.ComLogic
         }
         void ReadWarningInfo()
         {
-            IsAuto();
+            if (_WarnningCode == null || _WarnningCode.Count == 0)
+                _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 1 && x.MidStoreNo == this.StorageArea);
+            if (_WarnningCode == null || _WarnningCode.Count == 0)
+                _WarnningCode = new List<MachineWarnningCodeEntity>();
+            int i = IsAuto();//龙门状态，0自动无故障，1退出自动无故障，2故障
+            if (i != 0)
+            {
+                if (_WarnningCode.FirstOrDefault(x => x.BIT == 0) != null)
+                    _WarnningCode.FirstOrDefault(x => x.BIT == 0).IsWarning = true;
+                IsWarning = true;
+            }
+            else
+            {
+                if (_WarnningCode.FirstOrDefault(x => x.BIT == 0) != null)
+                    _WarnningCode.FirstOrDefault(x => x.BIT == 0).IsWarning = false;
+                IsWarning = false;
+            }
             SendWarning();
-            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 1);
-            if (_WarnningCode == null)
-                return;
+            var warn = _WarnningCode.FindAll(x => x.IsWarning);
+            warn.ForEach(x => x.IsWarning = false);
             Neutrino ne = new Neutrino();
             ne.TheName = "ReadMidStoreRobotArmWarnning";
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
@@ -108,24 +123,32 @@ namespace SNTON.Components.ComLogic
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
             {
                 int plcvalue = n.Item2.GetInt(item.Key.Trim());
-
-                if (plcvalue != 0)
+                var bit = _WarnningCode.FirstOrDefault(x => x.AddressName.Trim() == item.Key && x.BIT == plcvalue);
+                if (bit == null || plcvalue == 0)
+                    continue;
+                if (!bit.IsWarning)
                 {
-                    var bit = _WarnningCode.FirstOrDefault(x => x.AddressName.Trim() == item.Key && x.BIT == plcvalue);
-                    if (bit == null)
-                        continue;
-                    if (!bit.Value)
-                    {
-                        bit.Value = true;
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号龙门" + bit.Description.Trim(), Source = this.StorageArea + "号龙门报警", MsgLevel = 7, MidStoreage = this.StorageArea });
-                    }
-                    _WarnningCode.FindAll(x => x.AddressName.Trim() == item.Key && x.BIT != plcvalue).ForEach(x => x.Value = false);
+                    bit.IsWarning = true;
+                    this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号龙门" + bit.Description.Trim(), Source = this.StorageArea + "号龙门报警", MsgLevel = 7, MidStoreage = this.StorageArea });
                 }
-                else
-                    _WarnningCode.ForEach(x => x.Value = false);
-
             }
+            var realtimewarning = _WarnningCode.FindAll(x => x.IsWarning);
+            List<MachineWarnningCodeEntity> update = new List<MachineWarnningCodeEntity>();
 
+            foreach (var item in realtimewarning)
+            {
+                var tmp = warn.FirstOrDefault(x => x.Id == item.Id);
+                if (tmp != null)
+                    warn.Remove(tmp);
+            }
+            update.AddRange(warn);
+            update.AddRange(realtimewarning);
+
+            if (update != null && update.Count != 0)
+            {
+                update.ForEach(x => x.Updated = DateTime.Now);
+                this.BusinessLogic.MachineWarnningCodeProvider.UpdateWarning(update, null);
+            }
         }
         /// <summary>
         /// 反馈回调
@@ -386,11 +409,18 @@ namespace SNTON.Components.ComLogic
                 }
                 if (r)
                 {//如果是最后一个
-                    var equiptsks = this.BusinessLogic.EquipTask5Provider.GetEquipTask5($"TaskGuid='{armtsk.TaskGroupGUID}'", null);
-                    if (equiptsks != null && equiptsks.Count != 0)
+                    //var equiptsks = this.BusinessLogic.EquipTask5Provider.GetEquipTask5($"TaskGuid='{armtsk.TaskGroupGUID}'", null);
+                    //if (equiptsks != null && equiptsks.Count != 0)
+                    //{
+                    //    equiptsks.ForEach(x => { x.Status = 4; });
+                    //    this.BusinessLogic.EquipTask5Provider.UpdateEquipTask5(null, equiptsks.ToArray());
+                    //}
+                    var agvtsk = this.BusinessLogic.T_AGV_KJ_InterfaceProvider.GetT_AGV_KJ_InterfaceEntity($"TaskGuid='{armtsk.TaskGroupGUID.ToString()}'");
+                    if (agvtsk != null)
                     {
-                        equiptsks.ForEach(x => { x.Status = 4; });
-                        this.BusinessLogic.EquipTask5Provider.UpdateEquipTask5(null, equiptsks.ToArray());
+                        agvtsk.Status = 3;
+                        agvtsk.time_3 = DateTime.Now;
+                        r = this.BusinessLogic.T_AGV_KJ_InterfaceProvider.UpdateT_AGV_KJ_Interface(agvtsk, null);
                     }
                     if (i == 2)
                     {
@@ -604,7 +634,7 @@ namespace SNTON.Components.ComLogic
             {
                 if (armtskrunning.TaskType == 2)
                 {
-                    int ONLINE_INSTORE_RobotArmSeqNo = this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).ONLINE_INSTORE_RobotArmSeqNo();
+                    int ONLINE_INSTORE_RobotArmSeqNo = this.BusinessLogic.MidStoreLineLogic4.ONLINE_INSTORE_RobotArmSeqNo();
                     if (ONLINE_INSTORE_RobotArmSeqNo == 0)
                     {
                         //this.BusinessLogic.MessageInfoProvider.Add(null, new Entities.DBTables.Message.MessageEntity() { Created = DateTime.Now, MsgContent = $"{this.StorageArea}号龙门库直通线流水号:{ONLINE_INSTORE_RobotArmSeqNo},龙门任务流水号:{armtskrunning.SpoolSeqNo},单丝二维码:{armtskrunning.WhoolBarCode.Trim()}", MsgLevel = 7, Source = $"{this.StorageArea}号龙门库直通线流水号错误" });
@@ -650,17 +680,17 @@ namespace SNTON.Components.ComLogic
                     case "WS18":
                         armcode = 1;
                         SendCommand(cmd, armtskrunning.FromWhere, armtskrunning.ToWhere, 200, 1540, 1540, armcode, 0, 0);//250, 2200, 2200, 3, 0, 0
-                        this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).SendProductType(cmd, "2");
+                        this.BusinessLogic.MidStoreLineLogic4.SendProductType(cmd, "2");
                         break;
                     case "WS34":
                         armcode = 2;
                         SendCommand(cmd, armtskrunning.FromWhere, armtskrunning.ToWhere, 200, 2620, 2620, armcode, 0, 0);//250, 2200, 2200, 3, 0, 0
-                        this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).SendProductType(cmd, "2");
+                        this.BusinessLogic.MidStoreLineLogic4.SendProductType(cmd, "2");
                         break;
                     case "WS44":
                         armcode = 3;
                         SendCommand(cmd, armtskrunning.FromWhere, armtskrunning.ToWhere, 250, 2200, 2200, armcode, 0, 0);//250, 2200, 2200, 3, 0, 0
-                        this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).SendProductType(cmd, "1");
+                        this.BusinessLogic.MidStoreLineLogic4.SendProductType(cmd, "1");
                         break;
                     default:
                         logger.WarnMethod("未知的单丝类型:armtskrunning.CName:" + armtskrunning.CName);
@@ -674,16 +704,21 @@ namespace SNTON.Components.ComLogic
                 #region 告诉线体任务流水号
                 if (armtskrunning.ToWhere == 1)
                 {//正常出库口
-                    this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).WriteSeqNo("OUTSTORE_SeqNo_Write", armtskrunning.AGVSeqNo);
+                    this.BusinessLogic.MidStoreLineLogic4.WriteSeqNo("OUTSTORE_SeqNo_Write", armtskrunning.AGVSeqNo);
                 }
                 else if (armtskrunning.ToWhere == 2)
                 {//直通线
-                    this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).WriteSeqNo("ONLINE_SeqNo_Write", armtskrunning.AGVSeqNo);
+                    this.BusinessLogic.MidStoreLineLogic4.WriteSeqNo("ONLINE_SeqNo_Write", armtskrunning.AGVSeqNo);
                 }
                 #endregion
                 if (!armtsksrunning.Exists(x => x.SpoolStatus == 0))//如果是最后一个,清空入库出库型号
                 {
-                    this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).ClearLineProductType();
+                    this.BusinessLogic.MidStoreLineLogic4.ClearLineProductType();
+                }
+                else if (armtsksrunning.FindAll(x => x.SpoolStatus != 0).Count == 1)
+                {
+                    //告诉线体该批次有几个轮子
+                    this.BusinessLogic.MidStoreLineLogic4.WriteSeqNo("RobotArmTaskCount", armtsksrunning.Count);
                 }
                 this.BusinessLogic.RobotArmTaskProvider.UpdateArmTaskStatus(armtskrunning.TaskGroupGUID, 2);
                 this.BusinessLogic.RobotArmTaskProvider.UpdateArmTask(armtskrunning);
@@ -713,7 +748,7 @@ namespace SNTON.Components.ComLogic
                 Neutrino ne = new Neutrino();
                 ne.TheName = "龙门线体报警";
                 int alarm = 0;
-                if (this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea) != null && (this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsScanEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsStoreageEnough || this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).IsWarning))
+                if (this.BusinessLogic.MidStoreLineLogic4 != null && (this.BusinessLogic.MidStoreLineLogic4.IsScanEnough || this.BusinessLogic.MidStoreLineLogic4.IsStoreageEnough || this.BusinessLogic.MidStoreLineLogic4.IsWarning))
                     alarm = 1;
                 if (this.IsWarning)
                     alarm = 1;
@@ -770,20 +805,20 @@ namespace SNTON.Components.ComLogic
             {
                 case 0:
                     //0从暂存库到出库线 出库
-                    cmd = this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).ReadLineStatus("OUTSTORE_ARM_SET");
+                    cmd = this.BusinessLogic.MidStoreLineLogic4.ReadLineStatus("OUTSTORE_ARM_SET");
                     break;
                 case 1:
                     //1从暂存库到直通线 出库
-                    cmd = this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).ReadLineStatus("ONLINE_OUTSTORE_ALLOW_SET");
+                    cmd = this.BusinessLogic.MidStoreLineLogic4.ReadLineStatus("ONLINE_OUTSTORE_ALLOW_SET");
                     break;
                 case 2:
                     //2从直通线到暂存库(入库);
-                    cmd = this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).ReadLineStatus("ONLINE_INSTORE_ALLOW_GET");
+                    cmd = this.BusinessLogic.MidStoreLineLogic4.ReadLineStatus("ONLINE_INSTORE_ALLOW_GET");
                     break;
                 case 3:
                     //3直通线到异常口; 
-                    int i = this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).ReadLineStatus("ONLINE_OUTSTORE_ALLOW_SET");
-                    cmd = this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).ReadLineStatus("ExLine_ARM_SET");
+                    int i = this.BusinessLogic.MidStoreLineLogic4.ReadLineStatus("ONLINE_OUTSTORE_ALLOW_SET");
+                    cmd = this.BusinessLogic.MidStoreLineLogic4.ReadLineStatus("ExLine_ARM_SET");
                     if (i == cmd && i == 1)
                     { cmd = 1; }
                     else
@@ -793,7 +828,7 @@ namespace SNTON.Components.ComLogic
                     break;
                 case 4:
                     //4从暂存库到异常口 出库                 
-                    cmd = this.BusinessLogic.GetMidStoreLineLogic(this.StorageArea).ReadLineStatus("ExLine_ARM_SET");
+                    cmd = this.BusinessLogic.MidStoreLineLogic4.ReadLineStatus("ExLine_ARM_SET");
                     break;
                 default:
                     throw new NotImplementedException("未识别的TaskType,Value:" + TaskType);

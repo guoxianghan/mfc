@@ -4,9 +4,9 @@ This template was written to work with NHibernate.Test.
 Copy the template to your NHibernate.Test project folder and rename it in hibernate.cfg.xml and change it 
 for your own use before compile tests in VisualStudio.
 -->
-<!-- This is the System.Data.dll provider for SQL Server -->
 <!-- This is the System.Data.dll provider for SQL Server 
-      Server=192.168.120.227;User Id=sa;Password=!@#123qwe;Database=SNTON;
+      Server=192.168.120.227;User Id=sa;Password=!@#123qwe;Database=SNTON; 
+      Server=192.168.121.50;User Id=KJ_Interface;Password=KJ_Interface;Database=DYST;
       Server=.;User Id=sa;Password=123;Database=SNTON;-->
 <hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
   <session-factory name="NHibernate">
@@ -15,11 +15,11 @@ for your own use before compile tests in VisualStudio.
       Server=.;User Id=sa;Password=123;Database=SNTON;
     </property>
     <property name="connection.isolation">ReadCommitted</property>
-    <property name="adonet.batch_size">1</property>
-    <property name="show_sql">false</property>
-    <property name="dialect">NHibernate.Dialect.MsSql2008Dialect</property>
-    <!--<property name="command_timeout">60</property>-->
-    <property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
+		<property name="adonet.batch_size">1</property>
+		<property name="show_sql">false</property>
+		<property name="dialect">NHibernate.Dialect.MsSql2008Dialect</property>
+		<!--<property name="command_timeout">60</property>-->
+		<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
     <!--Mapping info-->
     <!--
     <mapping resource="VI.Resources.Hibernate.Mappings.ConfigValue.hbm.xml" assembly="MFCLib"/>
@@ -27,9 +27,7 @@ for your own use before compile tests in VisualStudio.
     <mapping resource="VI.Resources.Hibernate.Mappings.ConfigParam.hbm.xml" assembly="MFCLib"/>
     <mapping resource="VI.Resources.Hibernate.Mappings.InfoMessage.hbm.xml" assembly="MFCLib"/>
      -->
-
     <mapping resource="SNTON.Resources.Hibernate.Mappings.T_AGV_KJ_Interface.hbm.xml" assembly="SNTON"/>
-
 
   </session-factory>
 </hibernate-configuration>

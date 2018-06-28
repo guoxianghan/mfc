@@ -47,9 +47,16 @@ namespace SNTON.Entities.DBTables.PLCAddressCode
         [DataMember]
         public virtual string Description { get; set; }
         /// <summary>
+        /// 上次报警信息
+        /// </summary>
+        public virtual bool LastWarning { get; set; } = false;
+        /// <summary>
         /// 是否触发报警
         /// </summary>
-        public virtual bool Value { get; set; }
+        [DataMember]
+        public virtual bool IsWarning { get; set; }
+        [DataMember]
+        public virtual byte MidStoreNo { get; set; }
 
     }
 }

@@ -15,6 +15,8 @@ using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Spools;
 using SNTON.WebServices.UserInterfaceBackend.Requests.Spool;
+using SNTON.WebServices.UserInterfaceBackend.Requests.ProductData;
+using SNTON.WebServices.UserInterfaceBackend.Responses.AGV_KJ_Interface;
 
 namespace SNTON.BusinessLogic
 {
@@ -67,12 +69,14 @@ namespace SNTON.BusinessLogic
         AGVRouteResponse RealTimeAGVRoute();
         AGVRouteListResponse RealTimeAGVRouteList();
         AGVTaskResponse RunningAGVTask();
+        ResponseDataBase SetJiKeAGVTaskStatus(int storeage, int id, int status);
         /// <summary>
         /// 收空轮任务
         /// </summary>
         /// <returns></returns>
         AGVTaskResponse RunningAGVRecoveryTask();
         ResponseDataBase SetAGVTaskStatus(long id, int status);
+        ResponseDataBase SaveProductData(ProductDataRequest data);
         ProductResponse GetProduct();
         /// <summary>
         /// 修改呼叫任务状态 -1,删除
@@ -89,6 +93,7 @@ namespace SNTON.BusinessLogic
         MidStorageDetailResponse GetMidStorageDetail(int storagearea);
         MidStorageDetailResponse GetMidStorageDetailById(int storageid, int id);
         MidStorageInfoResponse GetMidStorageInfo(int storagearea);
+        AGV_KJ_InterfaceResponse GetJiKeAGVTask(int storagearea);
         #endregion
 
         #region EquipTask 
@@ -131,6 +136,12 @@ namespace SNTON.BusinessLogic
         ResponseDataBase ExceptionInStoreLine(int plantno, int storeageareaid);
         InStoreageLineResponse InStoreageLineStatus();
         ResponseDataBase StoreageStatus();
+        /// <summary>
+        /// 获取指定暂存库的报警信息
+        /// </summary>
+        /// <param name="midstoreno"></param>
+        /// <returns></returns>
+        ResponseDataBase WarningInfo(byte midstoreno);
         /// <summary>
         /// 
         /// </summary>

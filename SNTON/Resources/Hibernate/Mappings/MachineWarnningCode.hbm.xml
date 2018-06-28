@@ -14,5 +14,7 @@
     <property name="Deleted" column="Deleted" />
     <property name="IsDeleted" column="IsDeleted" />
     <property name="BIT" column="BIT" />
+    <property name="IsWarning" column="IsWarning" />
+    <property name="MidStoreNo" column="MidStoreNo" />
   </class>
 </hibernate-mapping>

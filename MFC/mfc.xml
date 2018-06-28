@@ -150,7 +150,7 @@
   <CONTROLSETS>
     <CONTROLSET Name ="TelegramDescriptions" Enabled ="true" path =".\Controlsets\TelDescControlset.xml"/>
     <!--AGV Configuration-->
-    <CONTROLSET Name ="PLC_AGV" Enabled ="true" path =".\Controlsets\AGVControlset.xml">
+    <CONTROLSET Name ="PLC_AGV" Enabled ="false" path =".\Controlsets\AGVControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="AGV"/>
         <VARIABLE Name="$HOST$" Value="192.168.1.251"/>
@@ -248,7 +248,7 @@
         <VARIABLE Name="$RobotArmID$" Value="4"/>
         <VARIABLE Name="$PlantNo$" Value="4"/>
         <VARIABLE Name="$StorageArea$" Value="4"/>
-        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreRobotArmLogic"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreRobotArm4Logic"/>
       </VARIABLES>
     </CONTROLSET>
 
@@ -258,10 +258,10 @@
         <VARIABLE Name="$HOST$" Value="192.168.120.78"/>
         <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
         <VARIABLE Name="$PORT$" Value="4021"/>
-        <VARIABLE Name="$PlantNo$" Value="34"/>
+        <VARIABLE Name="$PlantNo$" Value="4"/>
         <VARIABLE Name="$RobotArmID$" Value="4"/>
-        <VARIABLE Name="$StorageArea$" Value="34"/>
-        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreLineLogic"/>
+        <VARIABLE Name="$StorageArea$" Value="4"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreLine4Logic"/>
       </VARIABLES>
     </CONTROLSET>
     <!--B1 区-->
@@ -412,8 +412,38 @@
 
 
     </HIBERNATE>
-    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="false" Id="AGVSQLServerDatabase" ResourceType="DB">
+    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="true" Id="AGVSQLServerDatabase" ResourceType="DB">
       <CONFIG Configuration="SNTON.Resources.Hibernate.AGVSystemSQL.cfg.xml"
+              ConfigAssembly="SNTON.dll"
+              EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
+              DeadSessionDetectionTimeoutInSecs="3600"
+              RenewSessionTimeoutInSecs="3600" MaxNumberOfSessionsToDropPerCycle="1"
+              SessionTimeoutThreadCycleInSecs="999" MaxRetries="1" MaxReconnectAttempts="1" MaxNumberOfSessions="100"
+              StatisticsThreadCycleInSecs="999999"
+              ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700">
+        <!--
+      <CONFIG Configuration="FedEx.Resources.Hibernate.OracleMBeck.cfg.xml" ConfigAssembly="FedEx.dll" EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
+              DeadSessionDetectionTimeoutInSecs="3600"  RenewSessionTimeoutInSecs="3600" MaxNumberOfSessionsToDropPerCycle="1"
+              SessionTimeoutThreadCycleInSecs="999" MaxRetries="1" MaxReconnectAttempts="1" MaxNumberOfSessions="100"
+              StatisticsThreadCycleInSecs="999999"
+              ReconnectErrorcodes="1012,1033,1034,1041,1089,3113,3114,3121,3135,4068,6502,6508,12203,12205,12500,12532,12535,12537,12545,12547,12571,21700">
+       -->
+
+        <!-- Optional SESSION_PROFILING. Will use special MaxBusyTimeoutInMs instead of the globally defined one above.
+                     "TaskDescription" - The task description specified when getting the session object.
+                     "MaxBusyTimeoutInMs" - Timeout in milliseconds, after which a warning message will be logged in case a session is
+                                           busy/held for longer than the specified time. Useful for eg. detecting slow and
+                                           badly performing queries.
+                -->
+        <SESSION_PROFILING>
+        </SESSION_PROFILING>
+      </CONFIG>
+
+
+    </HIBERNATE>
+    
+    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="true" Id="JK_InterfaceSQLDatabase" ResourceType="DB">
+      <CONFIG Configuration="SNTON.Resources.Hibernate.JK_InterfaceSQL.cfg.xml"
               ConfigAssembly="SNTON.dll"
               EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
               DeadSessionDetectionTimeoutInSecs="3600"
@@ -786,8 +816,8 @@
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </AGVBYSStatusProvider>
 
-    <T_AGV_KJ_InterfaceProvider Assembly="SNTON.DLL" Type="SNTON.Components..T_AGV_KJ_Interface" Id="T_AGV_KJ_InterfaceProvider" Enabled="true">
-      <CONFIG HibernateSessionPoolToUse="JK_InterfaceSQL"
+    <T_AGV_KJ_InterfaceProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV_KJ_Interface.T_AGV_KJ_Interface" Id="T_AGV_KJ_InterfaceProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="JK_InterfaceSQLDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </T_AGV_KJ_InterfaceProvider>
@@ -822,7 +852,8 @@ SystemParametersConfigurationProviderId="SystemParametersConfigurationProvider"
               MidStoreLineLogicId1="PLCMidStoreLine1Logic"
               MidStoreLineLogicId2="PLCMidStoreLine2Logic"
               MidStoreLineLogicId3="PLCMidStoreLine3Logic"
-			  PLCRobotArm3Logic="PLCRobotArm3Logic"
+              MidStoreLineLogicId4="PLCMidStoreLine4Logic"
+			        PLCRobotArm3Logic="PLCRobotArm3Logic"
               PLCRobotArm2Logic="PLCRobotArm2Logic"
               PLCRobotArm1Logic="PLCRobotArm1Logic"
               EquipTaskViewProviderid="EquipTaskViewProviderid"

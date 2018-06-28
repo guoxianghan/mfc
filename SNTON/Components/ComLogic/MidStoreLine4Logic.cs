@@ -131,7 +131,7 @@ namespace SNTON.Components.ComLogic
         }
         void ReadWarningInfo()
         {
-            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 2);
+            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 2 && x.MidStoreNo == this.StorageArea);
             if (_WarnningCode == null || _WarnningCode.Count == 0)
                 return;
             Neutrino ne = new Neutrino();
@@ -152,20 +152,26 @@ namespace SNTON.Components.ComLogic
                     var fi = _WarnningCode.FirstOrDefault(x => x.BIT == c && x.AddressName.Trim() == item.Key);
                     if (fi == null)
                         continue;
-                    if (binary[c] != '0' && !fi.Value)
+                    if (binary[c] != '0' && !fi.IsWarning)
                     {
-                        fi.Value = true;
+                        fi.IsWarning = true;
                         this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7, MidStoreage = this.StorageArea });
 
                     }
                     else
-                        fi.Value = false;
+                        fi.IsWarning = false;
                 }
             }
 
             #endregion
-
-            if (_WarnningCode.Exists(x => x.Value))
+            var realtimewarning = _WarnningCode.FindAll(x => x.LastWarning != x.IsWarning);
+            if (realtimewarning != null && realtimewarning.Count != 0)
+            {
+                realtimewarning.ForEach(x => { x.LastWarning = x.IsWarning; x.Updated = DateTime.Now; });
+                //_WarnningCode.ForEach(x=> { x.LastWarning});
+                this.BusinessLogic.MachineWarnningCodeProvider.UpdateWarning(realtimewarning, null);
+            }
+            if (_WarnningCode.Exists(x => x.IsWarning))
                 IsWarning = true;
             else IsWarning = false;
             int r = n.Item2.GetInt("LINE_STATUS");
@@ -318,12 +324,14 @@ namespace SNTON.Components.ComLogic
             if (online == 1)
             {//直通线
                 seqno = neutrino.GetIntOrDefault("ONLINE_SeqNo_Read");
-                LineCallAGV2(MidStoreLine.InStoreLine, seqno);
+                if (seqno != 0)
+                    LineCallAGV2(MidStoreLine.InStoreLine, seqno);
             }
             if (outline == 1)
             {//出库线
                 seqno = neutrino.GetIntOrDefault("OUTSTORE_SeqNo_Read");
-                LineCallAGV2(MidStoreLine.OutStoreLine, seqno);
+                if (seqno != 0)
+                    LineCallAGV2(MidStoreLine.OutStoreLine, seqno);
             }
         }
 
@@ -333,41 +341,38 @@ namespace SNTON.Components.ComLogic
             string line = "";
             if (seqno == 0)
                 return;
+            //int ConveyorId = 0;
             if (midline == MidStoreLine.InStoreLine)
             {
+                //ConveyorId = 4;
                 line = "直通线";
             }
             else if (midline == MidStoreLine.OutStoreLine)
             {
+                //ConveyorId = 1;
                 line = "正常出库线";
             }
-            var equiptsks = this.BusinessLogic.EquipTask5Provider.GetEquipTask5($"Status IN (4,5)  AND SeqNo={seqno} AND ConveyorId={midline} AND StorageArea={StorageArea}");
-            if (equiptsks == null || equiptsks.Count == 0)
-            {
-                logger.WarnMethod($"{StorageArea}号暂存库{line}线体找不到对应的AGV接料任务,SeqNo={seqno} !");
+
+            var agvtsk = this.BusinessLogic.T_AGV_KJ_InterfaceProvider.GetT_AGV_KJ_InterfaceEntity($"Status=4 AND SeqNo ={seqno} AND ConveyorId={midline}");
+            if (agvtsk == null)
                 return;
-            }
-            else if (equiptsks.Count > 1)
-            {
-                logger.WarnMethod($"{StorageArea}号暂存库{line}线体找到多个对应的AGV接料任务,SeqNo={seqno} !");
-            }
-            var equiptsk = equiptsks.OrderBy(x => x.Created).ToList().FirstOrDefault();
-            var armtsks = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskGroupGUID='{equiptsk.TaskGuid.ToString()}'", null);
+            //var niagvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTask($"Status=2 AND SeqNo ={seqno} AND ConveyorId={ConveyorId}");
+            //if (niagvtsk != null)
+            //{ niagvtsk.Status = 2; }
+            var armtsks = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskGroupGUID='{agvtsk.TaskGuid.ToString()}'", null);
             if (armtsks != null && armtsks.Count != 0)
                 if (armtsks.Exists(x => x.SpoolStatus == 1))
                 {
                     return;
                 }
+            agvtsk.Status = 5;
+            agvtsk.time_5 = DateTime.Now;
             //armtsks.ForEach(x => x.TaskStatus = 4);
-            this.BusinessLogic.RobotArmTaskProvider.UpdateArmTaskStatus(equiptsk.TaskGuid, 4);
+            this.BusinessLogic.RobotArmTaskProvider.UpdateArmTaskStatus(agvtsk.TaskGuid, 4);
+            bool r = this.BusinessLogic.T_AGV_KJ_InterfaceProvider.UpdateT_AGV_KJ_Interface(agvtsk, null);
             //将armtask改成4
-            if (equiptsk != null)
-            {
-                equiptsk.Status = 6;
-                equiptsk.Updated = DateTime.Now;
-                this.BusinessLogic.EquipTask5Provider.UpdateEquipTask5(null, equiptsk);
-                logger.InfoMethod($"{StorageArea}号库{line}线体收到接料请求,将AGV请求状态改为2,guid:" + equiptsk.TaskGuid.ToString());
-            }
+            logger.InfoMethod($"{StorageArea}号库{line}线体收到接料请求,将AGV请求状态改为3,guid:" + agvtsk.TaskGuid.ToString());
+
         }
 
         public Queue<string> barcodeQueue { get; set; } = new Queue<string>();

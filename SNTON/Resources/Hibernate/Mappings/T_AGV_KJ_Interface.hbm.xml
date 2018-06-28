@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<hibernate-mapping xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schema="dbo" namespace="SNTON.Entities.DBTables" assembly="SNTON">
-  <class name="dbo.T_AGV_KJ_InterfaceEntity" schema="dbo" table="dbo.T_AGV_KJ_Interface" xmlns="urn:nhibernate-mapping-2.2">
+<hibernate-mapping  xmlns="urn:nhibernate-mapping-2.2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schema="dbo" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.AGV_KJ_Interface.T_AGV_KJ_InterfaceEntity" schema="dbo" table="T_AGV_KJ_Interface" xmlns="urn:nhibernate-mapping-2.2"> 
     <id name="ID">
       <column name="ID" not-null="true" />
       <generator class="identity" />
@@ -21,9 +21,9 @@
     <property name="time_8" column="time_8" />
     <property name="StorageArea" column="StorageArea" />
     <property name="TaskGuid" column="TaskGuid" />
-    <property name="PlatNo" column="PlatNo" />
-    <property name="Created" column="Created" />
+    <property name="PlatNo" column="PlatNo" /> 
     <property name="SeqNo" column="SeqNo" />
     <property name="Count" column="Count" />
+    <property name="Created" column="Created" />
   </class>
 </hibernate-mapping>

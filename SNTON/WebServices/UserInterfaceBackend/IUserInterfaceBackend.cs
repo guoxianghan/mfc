@@ -26,6 +26,8 @@ using SNTON.WebServices.UserInterfaceBackend.Responses.EquipWatch;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Product;
 using SNTON.WebServices.UserInterfaceBackend.Responses.Spools;
 using SNTON.WebServices.UserInterfaceBackend.Requests.Spool;
+using SNTON.WebServices.UserInterfaceBackend.Requests.ProductData;
+using SNTON.WebServices.UserInterfaceBackend.Responses.AGV_KJ_Interface;
 
 namespace SNTON.WebServices.UserInterfaceBackend
 {
@@ -282,6 +284,18 @@ namespace SNTON.WebServices.UserInterfaceBackend
         [ServiceKnownType(typeof(AGVTaskResponse))]
         AGVTaskResponse RunningAGVRecoveryTask();
 
+        [WebInvoke(UriTemplate = "AGVTask/GetJiKeAGVTask?storagearea={storagearea}", Method = "GET",
+        ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
+        [ServiceKnownType(typeof(AGV_KJ_InterfaceResponse))]
+        AGV_KJ_InterfaceResponse GetJiKeAGVTask(int storagearea);
+
+        [WebInvoke(UriTemplate = "AGVTask/SetJiKeAGVTask", Method = "POST",
+        ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
+        [ServiceKnownType(typeof(ResponseDataBase))]
+        ResponseDataBase SetJiKeAGVTaskStatus(int storeage,int id,int status);
+
+
+
         [WebInvoke(UriTemplate = "AGV/SetAGVTaskStatus", Method = "POST",
         ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
         [ServiceKnownType(typeof(ResponseDataBase))]
@@ -328,7 +342,10 @@ namespace SNTON.WebServices.UserInterfaceBackend
         [ServiceKnownType(typeof(ResponseDataBase))]
         ResponseDataBase ClearMidStoreage(byte PlantNo, byte storageid, int status, string OriginalIds);
         #endregion
-
+        [WebInvoke(UriTemplate = "MidStorage/WarningInfo?midstoreno={midstoreno}", Method = "GET",
+           ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
+        [ServiceKnownType(typeof(ResponseDataBase))]
+        ResponseDataBase WarningInfo(byte midstoreno);
         #region EquipTask
 
         #endregion
@@ -414,6 +431,11 @@ namespace SNTON.WebServices.UserInterfaceBackend
          ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
         [ServiceKnownType(typeof(ProductResponse))]
         object GetProduct();
+        [DataContractFormat]
+        [WebInvoke(UriTemplate = "Product/SaveProductData", Method = "POST",
+ ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
+        [ServiceKnownType(typeof(ResponseDataBase))]
+        ResponseDataBase SaveProductData(ProductDataRequest data);
         /// <summary>
         /// 更改报警比例?id={id}&lrratio={lrratio}&seqno={seqno}
         /// </summary>

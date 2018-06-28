@@ -31,16 +31,19 @@ namespace SNTON.Components.ComLogic
             equip.Init(configNode);
             return equip;
         }
-        private VIThreadEx thread_ReadDervice;
+        private VIThreadEx thread_InitOutStoreTask;
+        private VIThreadEx thread_Init_JK_AGV_Task;
         protected override void StartInternal()
         {
-            thread_ReadDervice.Start();
+            //thread_InitOutStoreTask.Start();
+            thread_Init_JK_AGV_Task.Start();
             base.StartInternal();
         }
         public EquipTaskLogic()
         {
             //thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 3000);
-            thread_ReadDervice = new VIThreadEx(RunCreateTask, null, "thread for InitRobotAGVTask", 8000);
+            thread_InitOutStoreTask = new VIThreadEx(RunCreateTask, null, "thread for InitRobotAGVTask", 8000);
+            thread_Init_JK_AGV_Task = new VIThreadEx(Init_JK_AGV_Task, null, "thread for InitRobotAGVTask", 8000);
         }
 
         void RunCreateTask()
@@ -646,26 +649,28 @@ namespace SNTON.Components.ComLogic
             else return 0;
         }
 
-        void InitEquipTask5()
+        void Init_JK_AGV_Task()
         {
             /*
             轮询EquipTask5
             判断库存
             创建出库任务
             */
+
             List<T_AGV_KJ_InterfaceEntity> tasks = this.BusinessLogic.T_AGV_KJ_InterfaceProvider.GetT_AGV_KJ_Interface("STATUS IN (0)", null);
             if (tasks == null || tasks.Count == 0)
                 return;
+            tasks = tasks.OrderBy(x => x.ID).ToList();
             var machcodes = from i in tasks select i.DeviceID;
             List<tblProdCodeStructMachEntity> machstructcode = null;
-            machstructcode = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, machcodes.ToArray());
+            machstructcode = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, machcodes.Distinct().ToArray());
+            //machstructcode = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, "5M0603");
             if (machstructcode == null || machstructcode.Count == 0)
             {
                 logger.ErrorMethod("绑定作业标准书失败");
                 return;
             }
             List<MidStorageSpoolsEntity> midstoreages = this.BusinessLogic.MidStorageSpoolsProvider.GetMidStorages($"StorageArea =4 AND IsOccupied IN (1)", null);
-            //var test = SNTONConstants.SplitObjectList(tasks);
 
             #region foreach
             foreach (var item in tasks)
@@ -682,8 +687,10 @@ namespace SNTON.Components.ComLogic
                 #region 判断库存
                 foreach (var p in item.tblProdCodeStructMach.ProdCodeStructMarks)
                 {
-                    var mid = midstoreages.FindAll(x => x.Length == p.ProdLength).OrderByDescending(x => x.Updated).Take(p.Count);
-                    if (p.Count < mid.Count())
+                    if (p.CName.Contains("捻股") || !string.IsNullOrEmpty(p.Supply1))
+                        continue;
+                    var mid = midstoreages.FindAll(x => x.Length == p.ProdLength).OrderByDescending(x => x.Updated).Take(p.Count * item.Count);
+                    if (p.Count * item.Count > mid.Count())
                     {
                         item.outOfStock = 1;//库存不足
                         this.BusinessLogic.T_AGV_KJ_InterfaceProvider.UpdateT_AGV_KJ_Interface(item);
@@ -705,11 +712,38 @@ namespace SNTON.Components.ComLogic
                 if (id.Length > 5)
                     id = id.Substring(id.Length - 5);
                 int seq = Convert.ToInt32(id, 2);
-                List<RobotArmTaskEntity> robottsks = CreateRobotTask(mids, 1, seq, dt, guid);
+                /*
+                判断从哪条线出
+                   */
+                var agvtsks = this.BusinessLogic.T_AGV_KJ_InterfaceProvider.GetT_AGV_KJ_Interface(" [STATUS] IN (1,2,3,4,5)", null);
+                if (agvtsks == null) agvtsks = new List<T_AGV_KJ_InterfaceEntity>();
+
+                int ConveyorID = 0;
+                if (mids.FindAll(x => x.CName == "WS44").Count == 9)
+                {
+                    if (agvtsks.FindAll(x => x.ConveyorID.Trim() == "2").Count <= 2)
+                        ConveyorID = 2;
+                    else return;
+                }
+                else
+                {
+                    if (agvtsks.FindAll(x => x.ConveyorID.Trim() == "1").Count <= 2)
+                        ConveyorID = 1;
+                    else if (agvtsks.FindAll(x => x.ConveyorID.Trim() == "2").Count <= 2)
+                        ConveyorID = 2;
+                    else
+                    {
+                        //线体已满
+                        return;
+                    }
+                }
+                item.ConveyorID = ConveyorID.ToString();
+                List<RobotArmTaskEntity> robottsks = CreateRobotTask(mids, ConveyorID, seq, dt, guid);
                 bool r = this.BusinessLogic.SqlCommandProvider.CreateEquipTask5(item, robottsks, mids);
                 #region result
                 if (r)
                 {
+                    this.BusinessLogic.T_AGV_KJ_InterfaceProvider.UpdateT_AGV_KJ_Interface(item, null);
                     logger.InfoMethod("创建出库任务成功," + JsonConvert.SerializeObject(item));
                     break;
                 }
@@ -733,6 +767,12 @@ namespace SNTON.Components.ComLogic
         /// <returns></returns>
         List<RobotArmTaskEntity> CreateRobotTask(List<MidStorageSpoolsEntity> list, int ConveyorId, int seq, DateTime dt, Guid guid)
         {
+            //guid = Guid.NewGuid();
+            int lineno = ConveyorId;
+            //if (ConveyorId == 1)
+            //    lineno = 1;
+            //else if (ConveyorId == 3)
+            //    lineno = 2;
             List<RobotArmTaskEntity> tsks = new List<RobotArmTaskEntity>();
             RobotArmTaskEntity obj = null;
             foreach (var item in list)
@@ -740,7 +780,7 @@ namespace SNTON.Components.ComLogic
                 var tskconfig = TaskConfig.GetEnoughAGVEquipCount(item.CName.Trim());//8 / 12
                 item.IsOccupied = 4;
                 item.Updated = dt;
-                obj = new RobotArmTaskEntity() { AGVSeqNo = seq, CName = item.CName.Trim(), FromWhere = item.SeqNo, PlantNo = 5, ProductType = tskconfig.Item3.ToString(), SeqNo = 0, RobotArmID = "4", StorageArea = 4, TaskType = 0, ToWhere = 1, Created = dt, TaskGroupGUID = guid, WhoolBarCode = item.FdTagNo.Trim() };
+                obj = new RobotArmTaskEntity() { AGVSeqNo = seq, CName = item.CName.Trim(), FromWhere = item.SeqNo, PlantNo = 4, ProductType = tskconfig.Item3.ToString(), SeqNo = 0, RobotArmID = "4", StorageArea = 4, TaskType = 0, ToWhere = lineno, Created = dt, TaskGroupGUID = guid, WhoolBarCode = item.FdTagNo.Trim() };
                 tsks.Add(obj);
             }
             return tsks;

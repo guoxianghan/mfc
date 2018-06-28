@@ -241,26 +241,30 @@ namespace SNTON.Components.RobotArm
             }
         }
 
-        public void UpdateArmTask(RobotArmTaskEntity entity, IStatelessSession session = null)
+        public bool UpdateArmTask(RobotArmTaskEntity entity, IStatelessSession session = null)
         {
+            bool r = false;
             if (session == null)
             {
-                BrokerDelegate(() => UpdateArmTask(entity, session), ref session);
-                return;
+                r = BrokerDelegate(() => UpdateArmTask(entity, session), ref session);
+                return r;
             }
             try
             {
                 protData.EnterWriteLock();
                 Update(session, entity);
+                r = true;
             }
             catch (Exception ex)
             {
+                r = false;
                 logger.ErrorMethod("Failed to get update RobotArmTaskEntity", ex);
             }
             finally
             {
                 protData.ExitWriteLock();
             }
+            return r;
         }
 
         public void UpdateArmTasks(List<RobotArmTaskEntity> lst, IStatelessSession session = null)

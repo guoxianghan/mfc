@@ -16,7 +16,7 @@ namespace SNTON.Components.RobotArm
         RobotArmTaskEntity GetRobotArmTask(string sqlwhere, IStatelessSession session = null);
         void CreateArmTask(RobotArmTaskEntity entity, IStatelessSession session = null);
         void InsertArmTask(List<RobotArmTaskEntity> lst, IStatelessSession session = null);
-        void UpdateArmTask(RobotArmTaskEntity entity, IStatelessSession session = null);
+        bool UpdateArmTask(RobotArmTaskEntity entity, IStatelessSession session = null);
         void UpdateArmTasks(List<RobotArmTaskEntity> lst, IStatelessSession session = null);
         void UpdateArmTaskStatus(Guid guid, int status, IStatelessSession session = null);
         int SetArmTaskDelete(IStatelessSession session = null, params long[] ids);

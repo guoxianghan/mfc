@@ -372,13 +372,14 @@ namespace SNTON.Components.SQLCommand
             try
             {
                 protData.EnterWriteLock();
+                //task.TaskGuid = armtsks[0].TaskGroupGUID;
                 List<MidStorageEntity> midlist = new List<MidStorageEntity>();
                 foreach (var item in mids)
                 {
                     midlist.Add(new MidStorageEntity() { Created = item.Created, Deleted = item.Deleted, Description = item.Description, HCoordinate = item.HCoordinate, Id = item.Id, IdsList = item.IdsList, IsDeleted = item.IsDeleted, IsEnable = item.IsEnable, IsOccupied = item.IsOccupied, IsVisible = item.IsVisible, SeqNo = item.SeqNo, StorageArea = item.StorageArea, Updated = item.Updated, VCoordinate = item.VCoordinate });
                 }
-                Update(session, task);
-                Update(session, armtsks);
+                //Update(session, task);
+                Insert(session, armtsks);
                 Update(session, midlist);
                 r = true;   
             }

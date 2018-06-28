@@ -11,7 +11,7 @@ using VI.MFC.Components.Sequencer.Sequencehandler;
 using VI.MFC.Logic;
 using log4net;
 using System.Reflection;
-using MITSUBISHI.Component;
+//using MITSUBISHI.Component;
 using VI.MFC.Logging;
 using VI.MFC.Utils;
 using System.Windows.Forms;

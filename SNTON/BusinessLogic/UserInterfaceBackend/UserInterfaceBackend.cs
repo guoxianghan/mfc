@@ -1375,7 +1375,7 @@ namespace SNTON.BusinessLogic
                 armtsks.ForEach(x => seqno.Append(x.FromWhere + ","));
                 if (seqno.Length != 0)
                 {
-                    mids = this.MidStorageProvider.GetMidStorages($"StorageArea ={armtsks[0].StorageArea} AND FromWhere IN({seqno.ToString().Trim(',')})", null);
+                    mids = this.MidStorageProvider.GetMidStorages($"StorageArea ={agvtsk.StorageArea} AND SeqNo IN({seqno.ToString().Trim(',')})", null);
                     #region MyRegion
                     if (mids != null)
                         foreach (var item in mids)
@@ -1628,6 +1628,7 @@ namespace SNTON.BusinessLogic
             ResponseDataBase obj = new ResponseDataBase();
             bool r = false;
             ProductEntity ent = new ProductEntity() { CName = data.CName, Const = data.Const, Created = Convert.ToDateTime(data.Created), IsDeleted = data.IsDeleted, Id = data.Id, IsWarning = 1, Length = data.Length, LRRatio = data.LRRatio, PlatingType = data.PlatingType, ProductNo = data.ProductNo, ProductType = data.ProductType, SeqNo = data.SeqNo };
+            ent.Created = DateTime.Now;
             if (data.IsDeleted == -1)
             {
                 ent.Deleted = DateTime.Now;
@@ -1639,15 +1640,25 @@ namespace SNTON.BusinessLogic
             }
             else
             {
-                int i = this.ProductProvider.UpdateEntity(null, ent);
+                var pro = this.ProductProvider.GetProductEntityByID(data.Id);
+                pro.IsDeleted = ent.IsDeleted;
+                
+                int i = 0;// this.ProductProvider.UpdateEntity(null, pro);
                 if (data.IsDeleted == -1)
-                    if (i == 0)
+                {
+                    pro.IsDeleted = -1;
+                    pro.Deleted = DateTime.Now;
+                    i = this.ProductProvider.UpdateEntity(null, pro);
+                    if (i != 0)
                         obj.data.Add("删除成功");
                     else
                         obj.data.Add("删除失败");
+                }
                 else
                 {
-                    if (i == 0)
+                    pro = new ProductEntity() { Id = ent.Id, IsDeleted = ent.IsDeleted, CName = ent.CName, Const = ent.Const, Created = ent.Created, Deleted = ent.Deleted, IsWarning = ent.IsWarning, Length = ent.Length, LRRatio = ent.LRRatio, PlatingType = ent.PlatingType, ProductNo = ent.ProductNo, ProductType = ent.ProductType, SeqNo = ent.SeqNo, Updated = ent.Updated };
+                    i = this.ProductProvider.UpdateEntity(null, pro);
+                    if (i != 0)
                         obj.data.Add("保存成功");
                     else
                         obj.data.Add("保存失败");

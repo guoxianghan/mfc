@@ -1640,6 +1640,10 @@ namespace SNTON.BusinessLogic
                     obj.data.Add("重置库位失败");
 
             }
+            else
+            {
+                obj.data.Add("错误的参数");
+            }
             return obj;
         }
 

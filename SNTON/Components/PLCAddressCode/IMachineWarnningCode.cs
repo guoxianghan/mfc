@@ -12,7 +12,7 @@ namespace SNTON.Components.PLCAddressCode
     {
         MachineWarnningCodeEntity GetMachineWarnningCodeEntityByID(long id, IStatelessSession session = null);
         List<MachineWarnningCodeEntity> GetAllMachineWarnningCodeEntity(IStatelessSession session = null);
-        List<MachineWarnningCodeEntity> MachineWarnningCodes { get; set; }
+        List<MachineWarnningCodeEntity> MachineWarnningCache { get; set; }
         int UpdateWarning(List<MachineWarnningCodeEntity> list, IStatelessSession session = null);
         /// <summary>
         /// 

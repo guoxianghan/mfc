@@ -12,6 +12,7 @@ using System.Xml;
 using VI.MFC.Logging;
 using SNTON.Components.PLCAddressCode;
 using SNTON.Entities.DBTables.PLCAddressCode;
+using VI.MFC.Utils;
 
 namespace SNTON.Components.PLCAddressCode
 {
@@ -22,9 +23,12 @@ namespace SNTON.Components.PLCAddressCode
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const string EntityDbTable = "MachineWarnningCodeEntity";
         private const string DatabaseDbTable = "SNTON.MachineWarnningCode";
-
-        public List<MachineWarnningCodeEntity> MachineWarnningCodes { get; set; }
-
+        private VIThreadEx thread_realtimeWarningCache;
+        public List<MachineWarnningCodeEntity> MachineWarnningCache { get; set; }
+        void GetWarnningCache()
+        {
+            MachineWarnningCache = GetAllMachineWarnningCodeEntity(null);
+        }
         // only for unittest
         //private readonly Dictionary<long, EmployeeEnt> employeeList = new Dictionary<long, EmployeeEnt>();
 
@@ -45,7 +49,7 @@ namespace SNTON.Components.PLCAddressCode
         /// </summary>
         public MachineWarnningCode()
         {
-
+            thread_realtimeWarningCache = new VIThreadEx(GetWarnningCache, null, "thread readding for warninfo", 4000);
         }
         /// <summary>
         /// PLACEHOLDER: Please extend if required.
@@ -78,6 +82,7 @@ namespace SNTON.Components.PLCAddressCode
         /// </summary>
         protected override void StartInternal()
         {
+            thread_realtimeWarningCache.Start();
             base.StartInternal();//start the cleanup thread
             logger.InfoMethod(EntityDbTable + " broker started.");
         }
@@ -88,8 +93,6 @@ namespace SNTON.Components.PLCAddressCode
         /// </summary>
         public override void ReadBrokerData()
         {
-            if (MachineWarnningCodes == null)
-                MachineWarnningCodes = GetAllMachineWarnningCodeEntity(null);
 
         }
         #endregion
@@ -124,8 +127,8 @@ namespace SNTON.Components.PLCAddressCode
         {
 
             List<MachineWarnningCodeEntity> ret = new List<MachineWarnningCodeEntity>();
-            if (MachineWarnningCodes != null)
-                return MachineWarnningCodes;
+            //if (MachineWarnningCodes != null)
+            //    return MachineWarnningCodes;
             if (session == null)
             {
                 ret = BrokerDelegate(() => GetAllMachineWarnningCodeEntity(session), ref session);
@@ -138,7 +141,7 @@ namespace SNTON.Components.PLCAddressCode
                 {
                     ret = tmp.ToList();
                 }
-                MachineWarnningCodes = ret;
+                MachineWarnningCache = ret;
             }
             catch (Exception e)
             {

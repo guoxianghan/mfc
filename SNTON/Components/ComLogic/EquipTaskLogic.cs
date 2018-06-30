@@ -35,7 +35,7 @@ namespace SNTON.Components.ComLogic
         private VIThreadEx thread_Init_JK_AGV_Task;
         protected override void StartInternal()
         {
-            //thread_InitOutStoreTask.Start();
+            thread_InitOutStoreTask.Start();
             thread_Init_JK_AGV_Task.Start();
             base.StartInternal();
         }
@@ -671,7 +671,7 @@ namespace SNTON.Components.ComLogic
                 return;
             }
             List<MidStorageSpoolsEntity> midstoreages = this.BusinessLogic.MidStorageSpoolsProvider.GetMidStorages($"StorageArea =4 AND IsOccupied IN (1)", null);
-
+            if (midstoreages == null) midstoreages = new List<MidStorageSpoolsEntity>();
             #region foreach
             foreach (var item in tasks)
             {
@@ -689,6 +689,7 @@ namespace SNTON.Components.ComLogic
                 {
                     if (p.CName.Contains("捻股") || !string.IsNullOrEmpty(p.Supply1))
                         continue;
+                    item.Length = p.ProdLength;
                     var mid = midstoreages.FindAll(x => x.Length == p.ProdLength).OrderByDescending(x => x.Updated).Take(p.Count * item.Count);
                     if (p.Count * item.Count > mid.Count())
                     {

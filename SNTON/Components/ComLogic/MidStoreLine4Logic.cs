@@ -131,7 +131,7 @@ namespace SNTON.Components.ComLogic
         }
         void ReadWarningInfo()
         {
-            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 2 && x.MidStoreNo == this.StorageArea);
+            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCache.FindAll(x => x.MachineCode == 2 && x.MidStoreNo == this.StorageArea);
             if (_WarnningCode == null || _WarnningCode.Count == 0)
                 return;
             Neutrino ne = new Neutrino();
@@ -762,7 +762,11 @@ namespace SNTON.Components.ComLogic
                 }
                 #endregion
             }
-            if (cmd == 2)
+            var res = this.MXParser.ReadData("ExLine_BACK0", "ZHITONGXIANMAN");
+            //读直通线上是否已满 0允许出库;1满
+            if (res.Item2 == 1)
+                cmd = 1;
+            if (cmd == 2 && res.Item2 == 0)
             {//创建出库任务
 
                 //Guid guid = Guid.NewGuid();

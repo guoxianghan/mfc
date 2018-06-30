@@ -91,8 +91,8 @@ namespace SNTON.Components.ComLogic
         {
             thread_ReadBarCode.Start();
             thread_heartbeat.Start();
-            thread_warninginfo.Start();
             thread_LineStatusCallAGV.Start();
+            thread_warninginfo.Start();
             base.StartInternal();
         }
         int BACKUP3 = 0;
@@ -131,13 +131,22 @@ namespace SNTON.Components.ComLogic
         }
         void ReadWarningInfo()
         {
-            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 2 && x.MidStoreNo == this.StorageArea);
+            //var res = this.MXParser.ReadData("ExLine_BACK0", "ZHITONGXIANMAN");
+            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCache.FindAll(x => x.MachineCode == 2 && x.MidStoreNo == this.StorageArea);
             if (_WarnningCode == null || _WarnningCode.Count == 0)
                 return;
+            var enough = _WarnningCode.FirstOrDefault(x => x.Description.Contains("暂存库已满"));
+            if (enough != null)
+            {
+                enough.LastWarning = enough.IsWarning;
+                enough.IsWarning = IsStoreageEnough;
+            }
             Neutrino ne = new Neutrino();
             ne.TheName = "MidStoreWarning";
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
             {
+                if (string.IsNullOrEmpty(item.Key))
+                    continue;
                 ne.AddField(item.Key.Trim(), "0");
             }
             ne.AddField("LINE_STATUS", "0");
@@ -145,6 +154,8 @@ namespace SNTON.Components.ComLogic
             #region MyRegion
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
             {
+                if (string.IsNullOrEmpty(item.Key))
+                    continue;
                 int i = n.Item2.GetInt(item.Key.Trim());
                 char[] binary = System.Convert.ToString(i, 2).ToArray();
                 for (int c = 0; c < binary.Length; c++)
@@ -846,7 +857,12 @@ namespace SNTON.Components.ComLogic
                 }
                 #endregion
             }
-            if (cmd == 2)
+            var res = this.MXParser.ReadData("ExLine_BACK0", "ZHITONGXIANMAN");
+            if (res.Item2 == 1)
+                cmd = 1;
+            if (cmd == 2 && res.Item2 == 0)
+                //读直通线上是否已满 0允许出库;1满
+                if (cmd == 2 && res.Item2 == 0)
             {//创建出库任务
 
                 //Guid guid = Guid.NewGuid();

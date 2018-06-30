@@ -93,26 +93,32 @@ namespace SNTON.Components.ComLogic
         }
         void ReadWarningInfo()
         {
-            if (_WarnningCode == null || _WarnningCode.Count == 0)
-                _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCodes.FindAll(x => x.MachineCode == 1 && x.MidStoreNo == this.StorageArea);
+            _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCache.FindAll(x => x.MachineCode == 1 && x.MidStoreNo == this.StorageArea);
             if (_WarnningCode == null || _WarnningCode.Count == 0)
                 _WarnningCode = new List<MachineWarnningCodeEntity>();
+            _WarnningCode.ForEach(x => { x.LastWarning = x.IsWarning; x.IsWarning = false; });
+            List<MachineWarnningCodeEntity> update = new List<MachineWarnningCodeEntity>();
             int i = IsAuto();//龙门状态，0自动无故障，1退出自动无故障，2故障
+            var war = _WarnningCode.FirstOrDefault(x => x.BIT == 8 && x.PLCAddress.Trim() == "D651");
             if (i != 0)
             {
-                if (_WarnningCode.FirstOrDefault(x => x.BIT == 0) != null)
-                    _WarnningCode.FirstOrDefault(x => x.BIT == 0).IsWarning = true;
+                if (war != null && !war.IsWarning)
+                {
+                    war.IsWarning = true;
+                    update.Add(war);
+                }
                 IsWarning = true;
             }
             else
             {
-                if (_WarnningCode.FirstOrDefault(x => x.BIT == 0) != null)
-                    _WarnningCode.FirstOrDefault(x => x.BIT == 0).IsWarning = false;
+                if (war != null && war.IsWarning)
+                {
+                    war.IsWarning = false;
+                    update.Add(war);
+                }
                 IsWarning = false;
             }
             SendWarning();
-            var warn = _WarnningCode.FindAll(x => x.IsWarning);
-            warn.ForEach(x => x.IsWarning = false);
             Neutrino ne = new Neutrino();
             ne.TheName = "ReadMidStoreRobotArmWarnning";
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
@@ -120,30 +126,47 @@ namespace SNTON.Components.ComLogic
                 ne.AddField(item.Key.Trim(), "0");
             }
             var n = this.MXParser.ReadData(ne, true);
-            foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
+            foreach (var items in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
             {
-                int plcvalue = n.Item2.GetInt(item.Key.Trim());
-                var bit = _WarnningCode.FirstOrDefault(x => x.AddressName.Trim() == item.Key && x.BIT == plcvalue);
-                if (bit == null || plcvalue == 0)
+
+                int plcvalue = n.Item2.GetInt(items.Key.Trim());
+                if (plcvalue == 0)
+                {
+                    var warr = _WarnningCode.FindAll(x => x.IsWarning && x.Description != "退出自动" && x.AddressName.Trim() == items.Key);
+                    warr.ForEach(x => x.IsWarning = false);
+                    update.AddRange(warr);
+                }
+                var bit = _WarnningCode.FirstOrDefault(x => x.AddressName.Trim() == items.Key && x.BIT == plcvalue);
+                if (bit == null || (bit.PLCAddress.Trim() == "D651" && bit.BIT == 8))
                     continue;
+                if (plcvalue != 0)
+                {
+                    //报警
+                    if (!bit.IsWarning)
+                    {
+                        //bit.LastWarning = true;
+                        bit.IsWarning = true;
+                        //update.Add(bit);
+                    }
+                }
+                else
+                {
+                    if (bit.IsWarning)
+                    {
+                        //bit.LastWarning = false;
+                        bit.IsWarning = false;
+                        //update.Add(bit);
+                    }
+                    //不报警
+                }
                 if (!bit.IsWarning)
                 {
-                    bit.IsWarning = true;
+                    //bit.IsWarning = true;
                     this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号龙门" + bit.Description.Trim(), Source = this.StorageArea + "号龙门报警", MsgLevel = 7, MidStoreage = this.StorageArea });
                 }
             }
-            var realtimewarning = _WarnningCode.FindAll(x => x.IsWarning);
-            List<MachineWarnningCodeEntity> update = new List<MachineWarnningCodeEntity>();
-
-            foreach (var item in realtimewarning)
-            {
-                var tmp = warn.FirstOrDefault(x => x.Id == item.Id);
-                if (tmp != null)
-                    warn.Remove(tmp);
-            }
-            update.AddRange(warn);
-            update.AddRange(realtimewarning);
-
+            var tmp = _WarnningCode.FindAll(x => x.LastWarning != x.IsWarning);
+            update.AddRange(tmp);
             if (update != null && update.Count != 0)
             {
                 update.ForEach(x => x.Updated = DateTime.Now);

@@ -1552,7 +1552,7 @@ namespace SNTON.BusinessLogic
         /// </summary>
         /// <param name="PlantNo"></param>
         /// <param name="storageareaid"></param>
-        /// <param name="status 4异常口出库,0清空库位,-1清空所有库位"></param>
+        /// <param name="status: 4异常口出库,0清空指定库位,-1清空所有库位,1重置指定库位状态"></param>
         /// <param name="OriginalIds"></param>
         /// <returns></returns>
         public ResponseDataBase ClearMidStoreage(byte PlantNo, byte storageareaid, int status, params string[] OriginalIds)
@@ -1575,9 +1575,9 @@ namespace SNTON.BusinessLogic
                 });
                 int re = this.MidStorageSpoolsProvider.UpdateMidStore(null, storages.ToArray());
                 if (re != 0)
-                    obj.data.Add("重置库位成功");
+                    obj.data.Add("清除所有库位成功");
                 else
-                    obj.data.Add("重置库位失败");
+                    obj.data.Add("清除所有库位失败");
             }
             else if (status == 0)
             {
@@ -1605,9 +1605,40 @@ namespace SNTON.BusinessLogic
                 });
                 int re = this.MidStorageSpoolsProvider.UpdateMidStore(null, storages.ToArray());
                 if (re != 0)
+                    obj.data.Add("清除库位成功");
+                else
+                    obj.data.Add("清除库位失败");
+            }
+            else if (status == 1)
+            {
+                if (OriginalIds.Length == 0)
+                {
+                    obj = new ResponseDataBase();
+                    obj.Error = new ResponseError() { Message = "id是空的" };
+                    return obj;
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.Append("StorageArea=" + storageareaid);
+                sb.Append(" AND SeqNo IN (");
+                foreach (var item in OriginalIds)
+                {
+                    sb.Append($"'{item.Trim()}',");
+                }
+                sb = new StringBuilder(sb.ToString().Trim(','));
+                sb.Append(")");
+                var storages = this.MidStorageSpoolsProvider.GetMidStorages(sb.ToString(), null);
+                storages.ForEach(x =>
+                {
+                    x.IsOccupied = 1;
+                    //x.IdsList = "";
+                    x.Updated = DateTime.Now;
+                });
+                int re = this.MidStorageSpoolsProvider.UpdateMidStore(null, storages.ToArray());
+                if (re != 0)
                     obj.data.Add("重置库位成功");
                 else
                     obj.data.Add("重置库位失败");
+
             }
             return obj;
         }
@@ -1642,7 +1673,7 @@ namespace SNTON.BusinessLogic
             {
                 var pro = this.ProductProvider.GetProductEntityByID(data.Id);
                 pro.IsDeleted = ent.IsDeleted;
-                
+
                 int i = 0;// this.ProductProvider.UpdateEntity(null, pro);
                 if (data.IsDeleted == -1)
                 {

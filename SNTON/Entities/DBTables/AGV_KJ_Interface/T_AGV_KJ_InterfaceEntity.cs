@@ -138,6 +138,11 @@ namespace SNTON.Entities.DBTables.AGV_KJ_Interface
         /// </summary>
         [DataMember]
         public virtual int Count { get; set; }
-        public virtual  tblProdCodeStructMachEntity tblProdCodeStructMach { get;  set; }
-    }	
+        [DataMember]
+        /// <summary>
+        /// ³¤¶È
+        /// </summary>
+        public virtual int Length { get; set; }
+        public virtual tblProdCodeStructMachEntity tblProdCodeStructMach { get; set; }
+    }
 }

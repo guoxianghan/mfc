@@ -25,5 +25,6 @@
     <property name="SeqNo" column="SeqNo" />
     <property name="Count" column="Count" />
     <property name="Created" column="Created" />
+    <property name="Length" column="Length" />
   </class>
 </hibernate-mapping>

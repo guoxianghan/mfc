@@ -1709,7 +1709,7 @@ namespace SNTON.BusinessLogic
             if (tasks != null)
                 foreach (var item in tasks)
                 {
-                    obj.data.Add(new WebServices.UserInterfaceBackend.Models.AGV_KJ_Interface.AGV_KJ_InterfaceDataUI() { ConveyorID = item.ConveyorID, Count = item.Count, Created = item.Created, DeviceID = item.DeviceID, ID = item.ID, issuetime = item.issuetime, outOfStock = item.outOfStock, PlatNo = item.PlatNo, SeqNo = item.SeqNo, Status = item.Status, StorageArea = item.StorageArea, TaskGuid = item.TaskGuid, time_0 = item.time_0, time_1 = item.time_1, time_2 = item.time_2, time_3 = item.time_3, time_4 = item.time_4, time_5 = item.time_5, time_6 = item.time_6, time_7 = item.time_7, time_8 = item.time_8 });
+                    obj.data.Add(new WebServices.UserInterfaceBackend.Models.AGV_KJ_Interface.AGV_KJ_InterfaceDataUI() { ConveyorID = item.ConveyorID, Count = item.Count, Created = item.Created, DeviceID = item.DeviceID, ID = item.ID, issuetime = item.issuetime, outOfStock = item.outOfStock, PlatNo = item.PlatNo, SeqNo = item.SeqNo, Status = item.Status, StorageArea = item.StorageArea, TaskGuid = item.TaskGuid, time_0 = item.time_0, time_1 = item.time_1, time_2 = item.time_2, time_3 = item.time_3, time_4 = item.time_4, time_5 = item.time_5, time_6 = item.time_6, time_7 = item.time_7, time_8 = item.time_8, Length = item.Length.ToString() });
                 }
             return obj;
         }

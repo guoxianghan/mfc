@@ -46,7 +46,7 @@ namespace MFC
 
             // Service properties
             serviceInstaller.StartType = ServiceStartMode.Automatic;
-            string name = "VISION.MFC1";
+            string name = "VISION.MFC";
             //name = "VISION.MFC2";
             //name = "VISION.MFC3";
             //name = "VISION.MFCEquipLine";

@@ -131,13 +131,22 @@ namespace SNTON.Components.ComLogic
         }
         void ReadWarningInfo()
         {
+            //var res = this.MXParser.ReadData("ExLine_BACK0", "ZHITONGXIANMAN");
             _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCache.FindAll(x => x.MachineCode == 2 && x.MidStoreNo == this.StorageArea);
             if (_WarnningCode == null || _WarnningCode.Count == 0)
                 return;
+            var enough = _WarnningCode.FirstOrDefault(x => x.Description.Contains("暂存库已满"));
+            if (enough != null)
+            {
+                enough.LastWarning = enough.IsWarning;
+                enough.IsWarning = IsStoreageEnough;
+            }
             Neutrino ne = new Neutrino();
-            ne.TheName = "ReadMidStoreRobotArmWarnning";
+            ne.TheName = "MidStoreWarning";
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
             {
+                if (string.IsNullOrEmpty(item.Key))
+                    continue;
                 ne.AddField(item.Key.Trim(), "0");
             }
             ne.AddField("LINE_STATUS", "0");
@@ -145,6 +154,8 @@ namespace SNTON.Components.ComLogic
             #region MyRegion
             foreach (var item in _WarnningCode.GroupBy(x => x.AddressName.Trim()))
             {
+                if (string.IsNullOrEmpty(item.Key))
+                    continue;
                 int i = n.Item2.GetInt(item.Key.Trim());
                 char[] binary = System.Convert.ToString(i, 2).ToArray();
                 for (int c = 0; c < binary.Length; c++)
@@ -156,7 +167,6 @@ namespace SNTON.Components.ComLogic
                     {
                         fi.IsWarning = true;
                         this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7, MidStoreage = this.StorageArea });
-
                     }
                     else
                         fi.IsWarning = false;
@@ -164,6 +174,7 @@ namespace SNTON.Components.ComLogic
             }
 
             #endregion
+
             var realtimewarning = _WarnningCode.FindAll(x => x.LastWarning != x.IsWarning);
             if (realtimewarning != null && realtimewarning.Count != 0)
             {

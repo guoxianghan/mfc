@@ -135,6 +135,7 @@ namespace SNTON.Components.ComLogic
             _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCache.FindAll(x => x.MachineCode == 2 && x.MidStoreNo == this.StorageArea);
             if (_WarnningCode == null || _WarnningCode.Count == 0)
                 return;
+            _WarnningCode.ForEach(x => x.LastWarning = x.IsWarning);
             var enough = _WarnningCode.FirstOrDefault(x => x.Description.Contains("暂存库已满"));
             if (enough != null)
             {
@@ -157,16 +158,22 @@ namespace SNTON.Components.ComLogic
                 if (string.IsNullOrEmpty(item.Key))
                     continue;
                 int i = n.Item2.GetInt(item.Key.Trim());
+                if (i == 0)
+                {
+                    item.ToList().ForEach(x => x.IsWarning = false);
+                    continue;
+                }
                 char[] binary = System.Convert.ToString(i, 2).ToArray();
                 for (int c = 0; c < binary.Length; c++)
                 {
                     var fi = _WarnningCode.FirstOrDefault(x => x.BIT == c && x.AddressName.Trim() == item.Key);
                     if (fi == null)
                         continue;
-                    if (binary[c] != '0' && !fi.IsWarning)
+                    if (binary[c] == '1')
                     {
                         fi.IsWarning = true;
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7, MidStoreage = this.StorageArea });
+                        if (!fi.LastWarning)
+                            this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7, MidStoreage = this.StorageArea });
                     }
                     else
                         fi.IsWarning = false;
@@ -178,8 +185,7 @@ namespace SNTON.Components.ComLogic
             var realtimewarning = _WarnningCode.FindAll(x => x.LastWarning != x.IsWarning);
             if (realtimewarning != null && realtimewarning.Count != 0)
             {
-                realtimewarning.ForEach(x => { x.LastWarning = x.IsWarning; x.Updated = DateTime.Now; });
-                //_WarnningCode.ForEach(x=> { x.LastWarning});
+                realtimewarning.ForEach(x => {x.Updated = DateTime.Now; });
                 this.BusinessLogic.MachineWarnningCodeProvider.UpdateWarning(realtimewarning, null);
             }
             if (_WarnningCode.Exists(x => x.IsWarning))
@@ -495,6 +501,7 @@ namespace SNTON.Components.ComLogic
                                                    StorageArea,
                                                    readbarcode);
                 File.AppendAllText("./barcode.log", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  " + barcodeReadingInfo + "\r\n");
+                this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "错误的二维码," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 6, MidStoreage = this.StorageArea });
                 return;
             }
             //Add log to trace the spool to exception

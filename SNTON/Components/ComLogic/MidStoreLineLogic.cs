@@ -135,6 +135,7 @@ namespace SNTON.Components.ComLogic
             _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCache.FindAll(x => x.MachineCode == 2 && x.MidStoreNo == this.StorageArea);
             if (_WarnningCode == null || _WarnningCode.Count == 0)
                 return;
+            _WarnningCode.ForEach(x => { x.LastWarning = x.IsWarning; x.IsWarning = false; });
             var enough = _WarnningCode.FirstOrDefault(x => x.Description.Contains("暂存库已满"));
             if (enough != null)
             {
@@ -157,16 +158,19 @@ namespace SNTON.Components.ComLogic
                 if (string.IsNullOrEmpty(item.Key))
                     continue;
                 int i = n.Item2.GetInt(item.Key.Trim());
+                if (i == 0)
+                    continue;
                 char[] binary = System.Convert.ToString(i, 2).ToArray();
                 for (int c = 0; c < binary.Length; c++)
                 {
                     var fi = _WarnningCode.FirstOrDefault(x => x.BIT == c && x.AddressName.Trim() == item.Key);
                     if (fi == null)
                         continue;
-                    if (binary[c] != '0' && !fi.IsWarning)
+                    if (binary[c] == '1')
                     {
                         fi.IsWarning = true;
-                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7, MidStoreage = this.StorageArea });
+                        if (!fi.LastWarning)
+                            this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = this.StorageArea + "号线体" + fi.Description.Trim(), Source = this.StorageArea + "号线体报警", MsgLevel = 7, MidStoreage = this.StorageArea });
                     }
                     else
                         fi.IsWarning = false;
@@ -178,7 +182,7 @@ namespace SNTON.Components.ComLogic
             var realtimewarning = _WarnningCode.FindAll(x => x.LastWarning != x.IsWarning);
             if (realtimewarning != null && realtimewarning.Count != 0)
             {
-                realtimewarning.ForEach(x => { x.LastWarning = x.IsWarning; x.Updated = DateTime.Now; });
+                realtimewarning.ForEach(x => { x.Updated = DateTime.Now; });
                 //_WarnningCode.ForEach(x=> { x.LastWarning});
                 this.BusinessLogic.MachineWarnningCodeProvider.UpdateWarning(realtimewarning, null);
             }
@@ -557,6 +561,7 @@ namespace SNTON.Components.ComLogic
                                                    StorageArea,
                                                    readbarcode);
                 File.AppendAllText("./barcode.log", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  " + barcodeReadingInfo + "\r\n");
+                this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "错误的二维码," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 6, MidStoreage = this.StorageArea });
                 return;
             }
             //Add log to trace the spool to exception
@@ -643,7 +648,7 @@ namespace SNTON.Components.ComLogic
                     }
                     else
                     {
-                        //this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "错误的二维码," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 5 });
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "错误的二维码," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 5 });
                         logger.WarnMethod("错误的二维码," + barcode);
                     }
                     //By Song@2018.01.25
@@ -863,17 +868,17 @@ namespace SNTON.Components.ComLogic
             if (cmd == 2 && res.Item2 == 0)
                 //读直通线上是否已满 0允许出库;1满
                 if (cmd == 2 && res.Item2 == 0)
-            {//创建出库任务
+                {//创建出库任务
 
-                //Guid guid = Guid.NewGuid();
-                bool issuccesstooutstore = CreateInStoreToOutStore(agvseqno, guid, createtime, midstores, tskconfig, list, out outstoreagequeue);
-                if (issuccesstooutstore)
-                {
-                    //将该批次保存下来
-                    return 2;
+                    //Guid guid = Guid.NewGuid();
+                    bool issuccesstooutstore = CreateInStoreToOutStore(agvseqno, guid, createtime, midstores, tskconfig, list, out outstoreagequeue);
+                    if (issuccesstooutstore)
+                    {
+                        //将该批次保存下来
+                        return 2;
+                    }
+                    else cmd = 1;
                 }
-                else cmd = 1;
-            }
             if (cmd == 1)
             {
                 //全部入库

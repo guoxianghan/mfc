@@ -713,7 +713,7 @@ namespace SNTON.BusinessLogic
             MidStorageDetailResponse obj = new MidStorageDetailResponse();
             int hours = this.SystemParametersProvider.GetSystemParametersSpoolTimeOut(null);
             var item = this.MidStorageSpoolsProvider.GetMidStorageById(storageid, OriginalId, null);
-            var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageDetailDataUI() { InStoreageTime = item.Updated, Id = item.Id, StorageArea = item.StorageArea, Description = item.Description.Trim(), Barcodes = item.FdTagNo.Trim(), BobbinNo = item.BobbinNo, Cname = item.CName.Trim(), Length = item.Length, StructBarCode = item.StructBarCode.Trim() };
+            var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageDetailDataUI() { InStoreageTime = item.Updated, Id = item.Id, StorageArea = item.StorageArea, Description = item.Description?.Trim(), Barcodes = item.FdTagNo.Trim(), BobbinNo = item.BobbinNo, Cname = item.CName.Trim(), Length = item.Length, StructBarCode = item.StructBarCode.Trim() };
             //mid.Barcodes = item.IdsList;
             //mid.IsEnable = item.IsEnable;
             //mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));

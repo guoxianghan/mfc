@@ -301,6 +301,7 @@
         <FIELD Name="BARCODE1" Type="Int"  Length="1"  Value="D1101" SPLIT="" ></FIELD>
         <FIELD Name="BARCODE2" Type="Int"  Length="1"  Value="D1102" SPLIT="" ></FIELD>
         <FIELD Name="RobotArmTaskCount" Type="Int"  Length="1"  Value="D1035" SPLIT="" ></FIELD>
+        <FIELD Name="L130" Type="Int"  Length="1"  Value="L130" SPLIT="" ></FIELD>
       </FIELDDEFINITION>
       <TELEGRAMS>
         <TELEGRAMID Name="TELEGRAMID" Type="Custom" Pos="1" Length="20" Custom="^\s+[a-zA-Z0-9]*" Leadchar=" "></TELEGRAMID>
@@ -309,6 +310,7 @@
 
         <TELEGRAM TelegramId="ReadData" Length="0" Name="ReadData" MaxProcessingTimeInMs="120" FillCharacter="_">
           <FIELDS>
+            <FIELD Name="L130"></FIELD>
             <!--1：自动 2.手动 3.故障-->
             <FIELD Name="LINE_STATUS"></FIELD>
             <FIELD Name="BACKUP0"></FIELD>

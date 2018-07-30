@@ -843,5 +843,12 @@ namespace SNTON.Components.ComLogic
             }
             return cmd;
         }
+        public override void Exit()
+        {
+            this.thread_ReadDervice.Stop(1000);
+            this.thread_RuningRobotArmTask.Stop(1000);
+            this.thread_warninginfo.Stop(1000);
+            base.Exit();
+        }
     }
 }

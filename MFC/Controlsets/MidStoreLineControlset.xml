@@ -19,8 +19,9 @@
               BusinessLogicId="BusinessLogic"
               PlantNo="$PlantNo$"
               StorageArea= "$StorageArea$"
-              TaskNoSequencerId="TaskNoSequencer" 
+              TaskNoSequencerId="TaskNoSequencer"
               RobotArmID="$RobotArmID$"
+              ReReadTryCount="$ReReadTryCount$"
               >
       </CONFIG>
       <WATCHDOG Enabled="false" TimeoutInSecs="60" TelegramId="AliveReq"  RetriesBeforeDisconnection="3" ReplyTelegramId="AliveAck"></WATCHDOG>

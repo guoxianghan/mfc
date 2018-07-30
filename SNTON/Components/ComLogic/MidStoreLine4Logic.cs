@@ -59,6 +59,8 @@ namespace SNTON.Components.ComLogic
         private VIThreadEx thread_warninginfo;
         [ConfigBoundProperty("RobotArmID")]
         public string RobotArmID = "";
+        [ConfigBoundProperty("ReReadTryCount")]
+        public int ReReadTryCount = 6;
         /// <summary>
         /// 暂存库满
         /// </summary>
@@ -131,15 +133,14 @@ namespace SNTON.Components.ComLogic
         }
         void ReadWarningInfo()
         {
-            //var res = this.MXParser.ReadData("ExLine_BACK0", "ZHITONGXIANMAN");
             _WarnningCode = this.BusinessLogic.MachineWarnningCodeProvider.MachineWarnningCache.FindAll(x => x.MachineCode == 2 && x.MidStoreNo == this.StorageArea);
             if (_WarnningCode == null || _WarnningCode.Count == 0)
                 return;
-            _WarnningCode.ForEach(x => x.LastWarning = x.IsWarning);
+            _WarnningCode.ForEach(x => { x.LastWarning = x.IsWarning; x.IsWarning = false; });
             var enough = _WarnningCode.FirstOrDefault(x => x.Description.Contains("暂存库已满"));
             if (enough != null)
             {
-                enough.LastWarning = enough.IsWarning;
+                //enough.LastWarning = enough.IsWarning;
                 enough.IsWarning = IsStoreageEnough;
             }
             Neutrino ne = new Neutrino();
@@ -185,7 +186,7 @@ namespace SNTON.Components.ComLogic
             var realtimewarning = _WarnningCode.FindAll(x => x.LastWarning != x.IsWarning);
             if (realtimewarning != null && realtimewarning.Count != 0)
             {
-                realtimewarning.ForEach(x => {x.Updated = DateTime.Now; });
+                realtimewarning.ForEach(x => { x.Updated = DateTime.Now; });
                 this.BusinessLogic.MachineWarnningCodeProvider.UpdateWarning(realtimewarning, null);
             }
             if (_WarnningCode.Exists(x => x.IsWarning))
@@ -494,14 +495,15 @@ namespace SNTON.Components.ComLogic
             //To trace exception barcode
             //By Song@2018.01.24
             string barcodeReadingInfo = string.Empty;
-            if (barcode.Length < 6 && readbarcode <= 3)
+            if (barcode.Length < 6 && readbarcode <= ReReadTryCount)
             {
                 barcodeReadingInfo = string.Format("Barcode({0}) is read at Storage {1} after {2} reading attempt",
                                                    barcode,
                                                    StorageArea,
                                                    readbarcode);
                 File.AppendAllText("./barcode.log", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  " + barcodeReadingInfo + "\r\n");
-                this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "错误的二维码," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 6, MidStoreage = this.StorageArea });
+                //if (readbarcode >= 3)
+                //    this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = "错误的二维码," + barcode, Source = this.StorageArea + "号暂存库扫码异常", MsgLevel = 6, MidStoreage = this.StorageArea });
                 return;
             }
             //Add log to trace the spool to exception
@@ -1185,6 +1187,15 @@ namespace SNTON.Components.ComLogic
                 logger.WarnMethod("反序列化barcodeLRQueue失败", ex);
             }
             return obj;
+        }
+        public override void Exit()
+        {
+            this.thread_heartbeat.Stop(1000);
+            this.threadchecktask.Stop(1000);
+            this.thread_LineStatusCallAGV.Stop(1000);
+            this.thread_ReadBarCode.Stop(1000);
+            this.thread_warninginfo.Stop(1000);
+            base.Exit();
         }
     }
 

@@ -184,6 +184,7 @@
         <VARIABLE Name="$PlantNo$" Value="3"/>
         <VARIABLE Name="$RobotArmID$" Value="1"/>
         <VARIABLE Name="$StorageArea$" Value="1"/>
+        <VARIABLE Name="$ReReadTryCount$" Value="6"/>
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreLineLogic"/>
       </VARIABLES>
     </CONTROLSET>
@@ -210,6 +211,7 @@
         <VARIABLE Name="$PlantNo$" Value="3"/>
         <VARIABLE Name="$RobotArmID$" Value="2"/>
         <VARIABLE Name="$StorageArea$" Value="2"/>
+        <VARIABLE Name="$ReReadTryCount$" Value="6"/>
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreLineLogic"/>
       </VARIABLES>
     </CONTROLSET>
@@ -235,6 +237,7 @@
         <VARIABLE Name="$PlantNo$" Value="3"/>
         <VARIABLE Name="$RobotArmID$" Value="3"/>
         <VARIABLE Name="$StorageArea$" Value="3"/>
+        <VARIABLE Name="$ReReadTryCount$" Value="6"/>
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreLineLogic"/>
       </VARIABLES>
     </CONTROLSET>
@@ -261,6 +264,7 @@
         <VARIABLE Name="$PlantNo$" Value="4"/>
         <VARIABLE Name="$RobotArmID$" Value="4"/>
         <VARIABLE Name="$StorageArea$" Value="4"/>
+        <VARIABLE Name="$ReReadTryCount$" Value="6"/>
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.MidStoreLine4Logic"/>
       </VARIABLES>
     </CONTROLSET>
@@ -442,7 +446,7 @@
 
     </HIBERNATE>
     
-    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="true" Id="JK_InterfaceSQLDatabase" ResourceType="DB">
+    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="false" Id="JK_InterfaceSQLDatabase" ResourceType="DB">
       <CONFIG Configuration="SNTON.Resources.Hibernate.JK_InterfaceSQL.cfg.xml"
               ConfigAssembly="SNTON.dll"
               EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
@@ -582,7 +586,7 @@
     </WEBSERVICEHOSTER>
 
 
-    <WEBSERVICEHOSTER Type="SNTON.WebServices.UserInterfaceBackend.UserInterfaceBackend" Assembly="SNTON.dll" Id="UserInterfaceBackend" Enabled="true">
+    <WEBSERVICEHOSTER Type="SNTON.WebServices.UserInterfaceBackend.UserInterfaceBackend" Assembly="SNTON.dll" Id="UserInterfaceBackend" Enabled="false">
       <CONFIG WebServiceAddress="http://localhost:7070/SNTON" LocalizationId="$VISION.MFC_LOCALIZATION" WebServiceType="REST" BusinessLogicId="BusinessLogic"/>
     </WEBSERVICEHOSTER>
     <!--
@@ -665,7 +669,7 @@
     <EquipTaskProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipTask" Id="EquipTaskProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="" HousekeepingCleanupAfterMins="60"  HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
-              HousekeepingEnabled="false" CachingEnabled="false"/>
+              HousekeepingEnabled="true" CachingEnabled="false"/>
     </EquipTaskProvider>
 
     <MessageProvider Assembly="SNTON.DLL" Type="SNTON.Components.MessageInfo.MessageInfo" Id="MessageProvider" Enabled="true">

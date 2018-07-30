@@ -290,7 +290,7 @@
         <FIELD Name="OUTSTORE_BACK6" Type="Int"  Length="1"  Value="D1029" SPLIT="" ></FIELD>
         <FIELD Name="ExLine_ARM_SET" Type="Int"  Length="1"  Value="D1030" SPLIT="" ></FIELD>
         <FIELD Name="ExLine_ISENOUGH" Type="Int"  Length="1"  Value="D1031" SPLIT="" ></FIELD>
-        <FIELD Name="ExLine_SCANN_ISENOUGH" Type="Int"  Length="1"  Value="D1032" SPLIT="" ></FIELD>
+        <FIELD Name="ExLine_SCANN_ISENOUGH" Type="Int"  Length="1"  Value="D1031" SPLIT="" ></FIELD>
         <FIELD Name="ExLine_BACK0" Type="Int"  Length="1"  Value="D1033" SPLIT="" ></FIELD>
         <FIELD Name="ExLine_BACK1" Type="Int"  Length="1"  Value="D1034" SPLIT="" ></FIELD>
         <FIELD Name="ExLine_BACK2" Type="Int"  Length="1"  Value="D1035" SPLIT="" ></FIELD>

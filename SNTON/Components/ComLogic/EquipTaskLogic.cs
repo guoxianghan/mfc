@@ -794,6 +794,12 @@ namespace SNTON.Components.ComLogic
                 yield return item;
             }
         }
+        public override void Exit()
+        {
+            this.thread_InitOutStoreTask.Stop(1000);
+            this.thread_Init_JK_AGV_Task.Stop(1000);
+            base.Exit();    
+        }
     }
 
 }

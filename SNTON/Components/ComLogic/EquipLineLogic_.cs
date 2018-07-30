@@ -621,6 +621,13 @@ namespace SNTON.Components.ComLogic
             var group = machcodes.GroupBy(x => x.Substring(0, 4));
             return group;
         }
+        public override void Exit()
+        {
+            this.thread_heartbeat.Stop(1000);
+            this.thread_ReadEquipLineStatus.Stop(1000);
+            this.thread_SendCreateAGV.Stop(1000);
+            base.Exit();    
+        }
     }
 
 

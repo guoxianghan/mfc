@@ -5,7 +5,7 @@
     <NAME>Backup MFC</NAME>
     <TRAY>1</TRAY>
     <OPERATORID>2001</OPERATORID>
-    <INSTANCEID>130011251</INSTANCEID>
+    <INSTANCEID>130018342</INSTANCEID>
   </APPLICATION>
 
   <GLOBAL_DEFINITIONS>
@@ -294,11 +294,11 @@
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic_"/>
       </VARIABLES>
     </CONTROLSET>
-    
- 
-    <CONTROLSET Name ="EquipTaskLogic" Enabled ="false" path =".\Controlsets\EquipTaskControlset.xml">
+
+
+    <CONTROLSET Name ="EquipTaskLogic" Enabled ="true" path =".\Controlsets\EquipTaskControlset.xml">
       <VARIABLES>
-        <VARIABLE Name="$EXT$" Value="EquipTask"/> 
+        <VARIABLE Name="$EXT$" Value="EquipTask"/>
         <VARIABLE Name="$PlantNo$" Value="3"/>
         <VARIABLE Name="$PLCNo$" Value="2"/>
         <VARIABLE Name="$HOST$" Value="192.168.120.91"/>
@@ -445,7 +445,7 @@
 
 
     </HIBERNATE>
-    
+
     <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="false" Id="JK_InterfaceSQLDatabase" ResourceType="DB">
       <CONFIG Configuration="SNTON.Resources.Hibernate.JK_InterfaceSQL.cfg.xml"
               ConfigAssembly="SNTON.dll"
@@ -665,7 +665,7 @@
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </EquipStatusProvider>
- 
+
     <EquipTaskProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipTask" Id="EquipTaskProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="" HousekeepingCleanupAfterMins="60"  HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
@@ -872,7 +872,7 @@ SystemParametersConfigurationProviderId="SystemParametersConfigurationProvider"
               InStoreToOutStoreSpoolProviderId="InStoreToOutStoreSpoolProvider"
               ProductProviderId="ProductProvider"
               InStoreToOutStoreSpoolViewProviderId="InStoreToOutStoreSpoolViewProvider"
-              Agv_three_configProviderId="agv_three_configProvider"             
+              Agv_three_configProviderId="agv_three_configProvider"
               EquipTask5ProviderId="EquipTask5Provider"
               AGVBYSStatusProviderId="AGVBYSStatusProvider"
               SpoolsTaskProviderId="SpoolsTaskProvider"

@@ -36,7 +36,7 @@ namespace SNTON.Components.ComLogic
         protected override void StartInternal()
         {
             thread_InitOutStoreTask.Start();
-            thread_Init_JK_AGV_Task.Start();
+            //thread_Init_JK_AGV_Task.Start();
             base.StartInternal();
         }
         public EquipTaskLogic()
@@ -796,9 +796,11 @@ namespace SNTON.Components.ComLogic
         }
         public override void Exit()
         {
-            this.thread_InitOutStoreTask.Stop(1000);
-            this.thread_Init_JK_AGV_Task.Stop(1000);
-            base.Exit();    
+            if (thread_InitOutStoreTask != null)
+                this.thread_InitOutStoreTask.Stop(1000);
+            if (thread_Init_JK_AGV_Task != null)
+                this.thread_Init_JK_AGV_Task.Stop(1000);
+            base.Exit();
         }
     }
 

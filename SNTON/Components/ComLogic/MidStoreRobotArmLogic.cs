@@ -766,6 +766,10 @@ namespace SNTON.Components.ComLogic
                 ne.AddField("res_Warning3", alarm.ToString());
                 SendData(ne);
             }
+            catch (OutOfMemoryException ex)
+            {
+                 
+            }
             catch (Exception ex)
             {
                 logger.ErrorMethod("发送龙门线体报警信息出错", ex);

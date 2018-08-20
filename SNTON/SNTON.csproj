@@ -206,6 +206,10 @@
     <Compile Include="Components\InStoreToOutStore\IInStoreToOutStoreSpool.cs" />
     <Compile Include="Components\InStoreToOutStore\InStoreToOutStoreSpoolView.cs" />
     <Compile Include="Components\InStoreToOutStore\InStoreToOutStoreSpool.cs" />
+    <Compile Include="Components\LockManager\ILockManager.cs" />
+    <Compile Include="Components\LockManager\LockedObject.cs" />
+    <Compile Include="Components\LockManager\LockManager.cs" />
+    <Compile Include="Components\LockManager\LockRequests.cs" />
     <Compile Include="Components\MessageInfo\IMessageInfo.cs" />
     <Compile Include="Components\MessageInfo\MessageInfo.cs" />
     <Compile Include="Components\MES\IMESSystemSpools.cs" />

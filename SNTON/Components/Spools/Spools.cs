@@ -293,6 +293,7 @@ namespace SNTON.Components.Spools
 
             try
             {
+                protData.EnterWriteLock();
                 Insert<SpoolsEntity>(session, entity);
                 return 1;
             }
@@ -300,6 +301,10 @@ namespace SNTON.Components.Spools
             {
                 logger.ErrorMethod("Spool插入失败", ex);
                 return 0;
+            }
+            finally
+            {
+                protData.ExitWriteLock();
             }
         }
 

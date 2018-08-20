@@ -363,51 +363,6 @@ namespace SNTON.Components.ComLogic
             }
         }
 
-        [Obsolete("用LineCallAGV2代替")]
-        void LineCallAGV(int midline)
-        {
-            string line = "";
-            if (midline == MidStoreLine.InStoreLine)
-            {
-                line = "直通线";
-            }
-            else if (midline == MidStoreLine.OutStoreLine)
-            { line = "正常出库线"; }
-            List<RobotArmTaskEntity> list = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskStatus=9 AND ToWhere IN (1,2) AND RobotArmID='{RobotArmID}' AND [StorageArea]={StorageArea}", null);//找到该任务单元 1出库口,2直通线 常量值:MidStoreLine
-            if (list == null || list.Count == 0)
-                return;
-            var agvtsks = this.BusinessLogic.AGVTasksProvider.GetAGVTasks($"Status IN (16,17)  AND StorageLineNo={midline} AND StorageArea={StorageArea}", null);
-            {//
-                var online_armtsks = list.FindAll(x => x.ToWhere == midline);
-                var group_armtsks = online_armtsks.GroupBy(x => x.TaskGroupGUID);
-                var guids = from i in online_armtsks
-                            select i.TaskGroupGUID;
-                if (group_armtsks.Count() == 0)
-                {
-                    logger.ErrorMethod(line + "出库口等待AGV接收,但是没发现对应的龙门及AGV任务");
-                }
-                else if (group_armtsks.Count() > 1)
-                {
-                    logger.ErrorMethod(line + "出库口等待AGV接收,发现多个对应的龙门及AGV任务");
-                    logger.ErrorMethod(JsonConvert.SerializeObject(guids));
-                }
-                if (group_armtsks.Count() != 0)
-                {
-                    var guid = guids.First();
-                    var agvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTask($"TaskGuid in ('{ guid.ToString()}')");
-                    var armtsks = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskGroupGUID='{guid.ToString()}'", null);
-                    armtsks.ForEach(x => x.TaskStatus = 4);
-                    this.BusinessLogic.RobotArmTaskProvider.UpdateArmTaskStatus(guid, 4);
-                    //将armtask改成4
-                    if (agvtsk != null)
-                    {
-                        agvtsk.Status = 2;
-                        this.BusinessLogic.AGVTasksProvider.UpdateEntity(agvtsk);
-                    }
-                }
-
-            }
-        }
         void LineCallAGV2(int midline, int seqno = 0)
         {
             string line = "";
@@ -1353,9 +1308,26 @@ namespace SNTON.Components.ComLogic
                 spool.BobbinNo = messpool.BobbinNo.Trim().ToArray()[0];
                 spool.CName = messpool.CName.Trim();
             }
-            int result = this.BusinessLogic.SpoolsProvider.Add(spool, null);
+            int result = 2;
+            int retrycount = 0;
+
+            do
+            {
+                try
+                {
+                    result = this.BusinessLogic.SpoolsProvider.Add(spool, null);
+                }
+                catch (Exception ex)
+                {
+                    logger.ErrorFormat("单丝添加到数据库失败", ex);
+                }
+                retrycount++;
+            }
+            while (retrycount <= 3 && result != 1);
+
             if (result != 1)
-                return 2;
+                result = 2;
+
             return result;
         }
         /// <summary>

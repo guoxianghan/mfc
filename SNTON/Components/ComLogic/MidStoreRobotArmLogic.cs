@@ -768,7 +768,7 @@ namespace SNTON.Components.ComLogic
             }
             catch (OutOfMemoryException ex)
             {
-                 
+                logger.ErrorMethod("内存移除",ex);
             }
             catch (Exception ex)
             {

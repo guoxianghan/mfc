@@ -106,7 +106,7 @@ namespace SNTON.BusinessLogic
         ResponseBase CreateEquipTask(int id, int TaskType, int PlantNo);
         #endregion
 
-        ResponseBase TTT();
+        ResponseDataBase TTT();
         /// <summary>
         /// 异常口出库
         /// </summary>

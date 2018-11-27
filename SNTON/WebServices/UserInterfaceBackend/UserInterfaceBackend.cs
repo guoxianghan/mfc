@@ -657,8 +657,15 @@ namespace SNTON.WebServices.UserInterfaceBackend
         #region test
         public object TTT()
         {
-            BusinessLogic.TTT();
-            return null;
+            var b = BusinessLogic.TTT();
+            b.data.Add("test message");
+            return b;
+        }
+        public object PostTest(string str)
+        {
+            ResponseDataBase b = new ResponseDataBase();
+            b.data.Add(str);
+            return b;
         }
         #endregion
 
@@ -1015,10 +1022,12 @@ namespace SNTON.WebServices.UserInterfaceBackend
             ResponseDataBase obj = new ResponseDataBase();
             try
             {
+                if (string.IsNullOrEmpty(OriginalIds))
+                    OriginalIds = "";
                 logger.InfoMethod($"修改库位状态ClearMidStoreage,status:{status}, OriginalIds:{OriginalIds} time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                if (!string.IsNullOrEmpty(OriginalIds))
-                    obj = BusinessLogic.ClearMidStoreage(PlantNo, storageid, status, OriginalIds.Trim().Split(','));
-                else obj.data.Add("错误的库位信息");
+                //if (!string.IsNullOrEmpty(OriginalIds))
+                obj = BusinessLogic.ClearMidStoreage(PlantNo, storageid, status, OriginalIds.Trim().Split(','));
+                //else obj.data.Add("错误的库位信息");
             }
             catch (Exception ex)
             {
@@ -1081,6 +1090,21 @@ namespace SNTON.WebServices.UserInterfaceBackend
                 obj = ResponseBase.GetResponseByException<ResponseDataBase>(ex);
             }
             return obj;
+        }
+
+        public string Login(string uname, string pwd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetLocagion(string uname)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Remove(string id, string location, string cmd, string guid)
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

@@ -47,6 +47,7 @@ using SNTON.WebServices.UserInterfaceBackend.Responses.Spools;
 using SNTON.Com;
 using SNTON.WebServices.UserInterfaceBackend.Requests.ProductData;
 using SNTON.WebServices.UserInterfaceBackend.Responses.AGV_KJ_Interface;
+using SNTON.Components.LockManager;
 
 namespace SNTON.BusinessLogic
 {
@@ -427,28 +428,44 @@ namespace SNTON.BusinessLogic
             //Console.WriteLine("storagearea:" + storagearea);
             MidStorageBaseResponse obj = new MidStorageBaseResponse();
             List<MidStorageSpoolsEntity> list = new List<MidStorageSpoolsEntity>();
-            list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == storagearea);
-            if (list != null)
-                foreach (var item in list)
-                {
-                    var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageBaseDataUI() { Id = item.Id, StorageArea = item.StorageArea, X = item.HCoordinate, Y = item.VCoordinate };
-                    if (storagearea == 1 || storagearea == 2)
-                        mid.Id = ConvertLocation12(Convert.ToInt32(item.SeqNo));
-                    else
-                        mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
-                    mid.OriginalId = item.SeqNo;
-                    if (!string.IsNullOrEmpty(item.FdTagNo))
-                        mid.Barcodes = item.FdTagNo.Trim();
-                    int Status = 6;
-                    int IsOccupied = item.IsOccupied;
-                    if (item.IsVisible == -1)
-                        Status = 6;
 
-                    Status = MidStorageStatusToShow(Status, IsOccupied);
-                    mid.Status = Status;
-                    obj.data.Add(mid);
-                }
-            obj.data = obj.data.OrderBy(x => x.Id).ToList();
+            var lockHandler = LockManagerProvider.Lock("GetMidStorageInfo");
+
+            try
+            {
+                list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == storagearea);
+                if (list != null)
+                    foreach (var item in list)
+                    {
+                        #region MyRegion
+                        var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageBaseDataUI() { Id = item.Id, StorageArea = item.StorageArea, X = item.HCoordinate, Y = item.VCoordinate };
+                        if (storagearea == 1 || storagearea == 2)
+                            mid.Id = ConvertLocation12(Convert.ToInt32(item.SeqNo));
+                        else
+                            mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
+                        mid.OriginalId = item.SeqNo;
+                        if (!string.IsNullOrEmpty(item.FdTagNo))
+                            mid.Barcodes = item.FdTagNo.Trim();
+                        int Status = 6;
+                        int IsOccupied = item.IsOccupied;
+                        if (item.IsVisible == -1)
+                            Status = 6;
+
+                        Status = MidStorageStatusToShow(Status, IsOccupied);
+                        mid.Status = Status;
+                        #endregion
+                        obj.data.Add(mid);
+                    }
+                obj.data = obj.data.OrderBy(x => x.Id).ToList();
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("读取库位信息失败", ex);
+            }
+            finally
+            {
+                LockManagerProvider.Unlock(lockHandler);
+            }
             return obj;
         }
 
@@ -460,6 +477,7 @@ namespace SNTON.BusinessLogic
             list = list.OrderBy(x => x.SeqNo).ToList();
             foreach (var item in list)
             {
+                #region MyRegion
                 var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageDetailDataUI() { Id = item.Id, StorageArea = item.StorageArea, Description = item.Description, Barcodes = item.FdTagNo?.Trim(), BobbinNo = item.BobbinNo, Cname = item.CName, Length = item.Length, StructBarCode = item.StructBarCode?.Trim() };
                 //mid.Barcodes = item.IdsList;
                 if (storagearea == 1 || storagearea == 2)
@@ -489,6 +507,7 @@ namespace SNTON.BusinessLogic
                 mid.StructBarCode = item.StructBarCode;
                 Status = MidStorageStatusToShow(Status, IsOccupied);
                 mid.Status = Status;
+                #endregion
                 obj.data.Add(mid);
             }
             obj.data = obj.data.OrderBy(x => x.OriginalId).ToList();
@@ -537,82 +556,97 @@ namespace SNTON.BusinessLogic
             var midstorecount = this.MidStorageProvider.MidStorageCountCache;
             var products = this.ProductProvider.PruductCache;
             int hours = this.SystemParametersProvider.GetSystemParametersSpoolTimeOut(null);
-
-            midstorecount = midstorecount.FindAll(x => x.Length != 0 && !string.IsNullOrEmpty(x.StructBarCode) && !string.IsNullOrEmpty(x.Const));
-            var midstore = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.IsOccupied != -1 && x.StorageArea == storeageid);// "IsOccupied != -1 AND StorageArea=" + storeageid, null);
-            var p = from i in midstorecount
-                    group new MidStorageSpoolsCountEntity { StorageArea = i.StorageArea, StructBarCode = i.StructBarCode, Length = i.Length, BobbinNo = i.BobbinNo, Count = i.Count, CName = i.CName.Trim(), Const = i.Const?.Trim() }
-                    by new { i.StorageArea, i.Length, i.Const } into t
-                    select t;
-            foreach (var items in p)
+            var guid = LockManagerProvider.Lock("GetMidStorageDescription");
+            #region MyRegion
+            try
             {
-                try
+                if (midstorecount == null)
+                    midstorecount = new List<MidStorageSpoolsCountEntity>();
+                midstorecount = midstorecount.FindAll(x => x != null && x.Length != 0 && !string.IsNullOrEmpty(x.StructBarCode) && !string.IsNullOrEmpty(x.Const));
+                var midstore = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.IsOccupied != -1 && x.StorageArea == storeageid);// "IsOccupied != -1 AND StorageArea=" + storeageid, null);
+                var p = from i in midstorecount
+                        group new MidStorageSpoolsCountEntity { StorageArea = i.StorageArea, StructBarCode = i.StructBarCode, Length = i.Length, BobbinNo = i.BobbinNo, Count = i.Count, CName = i.CName.Trim(), Const = i.Const?.Trim() }
+                        by new { i.StorageArea, i.Length, i.Const } into t
+                        select t;
+                var ttt = p.Where(x => x != null);
+                foreach (var items in ttt)
                 {
-                    string Const = items.FirstOrDefault()?.Const;
-                    var item = items.FirstOrDefault();
-                    var product = products.FirstOrDefault(x => x.CName.Trim() == item.CName.Trim() && x.Const.Trim() == item.Const.Trim() && x.Length == item.Length);
-                    #region MyRegion
-                    var l = items.ToList().FindAll(x => !string.IsNullOrEmpty(x.BobbinNo) && x.BobbinNo.Trim() == "L");
-                    var r = items.ToList().FindAll(x => !string.IsNullOrEmpty(x.BobbinNo) && x.BobbinNo.Trim() == "R");
-                    var o = items.ToList().FindAll(x => string.IsNullOrEmpty(x.BobbinNo) || (x.BobbinNo.Trim() != "R" && x.BobbinNo.Trim() != "L"));
-                    int lc = 0, rc = 0, oc = 0;
-                    if (l.Count != 0)
+                    try
                     {
-                        l.ForEach(x => lc += x.Count);
-                    }
-                    if (r.Count != 0)
-                    {
-                        r.ForEach(x => rc += x.Count);
-                    }
-                    if (o.Count != 0)
-                    {
-                        o.ForEach(x => oc += x.Count);
-                    }
-
-                    bool iswarning = false;//配比报警
-                    #region 配比报警
-                    if (product != null && product.IsWarning == 1)
-                    {
-                        if (lc == 0 || rc == 0)
+                        string Const = items.FirstOrDefault()?.Const;
+                        var item = items.FirstOrDefault();
+                        var product = products.FirstOrDefault(x => x.CName.Trim() == item.CName.Trim() && x.Const.Trim() == item.Const.Trim() && x.Length == item.Length);
+                        #region MyRegion
+                        var l = items.ToList().FindAll(x => !string.IsNullOrEmpty(x.BobbinNo) && x.BobbinNo.Trim() == "L");
+                        var r = items.ToList().FindAll(x => !string.IsNullOrEmpty(x.BobbinNo) && x.BobbinNo.Trim() == "R");
+                        var o = items.ToList().FindAll(x => string.IsNullOrEmpty(x.BobbinNo) || (x.BobbinNo.Trim() != "R" && x.BobbinNo.Trim() != "L"));
+                        int lc = 0, rc = 0, oc = 0;
+                        if (l.Count != 0)
                         {
-                            if (Math.Abs(lc - rc) >= 12)
-                                iswarning = true;
+                            l.ForEach(x => lc += x.Count);
                         }
-                        else
+                        if (r.Count != 0)
                         {
-                            try
+                            r.ForEach(x => rc += x.Count);
+                        }
+                        if (o.Count != 0)
+                        {
+                            o.ForEach(x => oc += x.Count);
+                        }
+
+                        bool iswarning = false;//配比报警
+                        #region 配比报警
+                        if (product != null && product.IsWarning == 1)
+                        {
+                            if (lc == 0 || rc == 0)
                             {
-                                double mid = Math.Round((float)lc / (float)rc, 5);
-                                double warning = Math.Round(Convert.ToDouble(product.LRRatio.Split(':')[0]) / Convert.ToDouble(product.LRRatio.Split(':')[1]), 5);
-                                if (mid != warning)
+                                if (Math.Abs(lc - rc) >= 12)
                                     iswarning = true;
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                ex.ToString();
+                                try
+                                {
+                                    double mid = Math.Round((float)lc / (float)rc, 5);
+                                    double warning = Math.Round(Convert.ToDouble(product.LRRatio.Split(':')[0]) / Convert.ToDouble(product.LRRatio.Split(':')[1]), 5);
+                                    if (mid != warning)
+                                        iswarning = true;
+                                }
+                                catch (Exception ex)
+                                {
+                                    ex.ToString();
+                                }
                             }
                         }
-                    }
-                    #endregion
-                    if (storeageid == 0)
-                    {
-                        obj.TimeOutCount = midstore.FindAll(x => x.Updated != null && x.Updated.Value.AddHours(hours) <= DateTime.Now && x.IsOccupied == 1).Count;
-                        obj.data.Add(new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageCountDataUI() { L = lc, R = rc, other = oc, Count = lc + rc + oc, Cname = items.FirstOrDefault().CName, Length = items.FirstOrDefault().Length, StorageArea = items.FirstOrDefault().StorageArea, StructBarCode = items.FirstOrDefault().StructBarCode, Description = $"L:{lc}   R:{rc}  其他:{oc}", Const = Const, IsWarning = iswarning });
-                    }
-                    else if (items.Key.StorageArea == storeageid)
-                    {
-                        obj.TimeOutCount = midstore.FindAll(x => x.Updated != null && x.IsOccupied == 1 && (x.Updated.Value.AddHours(hours) <= DateTime.Now) && x.StorageArea == storeageid).Count;
-                        obj.data.Add(new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageCountDataUI() { L = lc, R = rc, other = oc, Count = lc + rc + oc, Cname = items.FirstOrDefault().CName, Length = items.FirstOrDefault().Length, StorageArea = items.FirstOrDefault().StorageArea, StructBarCode = items.FirstOrDefault().StructBarCode, Description = $"L:{lc}   R:{rc}  其他:{oc}", Const = Const });
-                    }
-                    #endregion
+                        #endregion
+                        if (storeageid == 0)
+                        {
+                            obj.TimeOutCount = midstore.FindAll(x => x.Updated != null && x.Updated.Value.AddHours(hours) <= DateTime.Now && x.IsOccupied == 1).Count;
+                            obj.data.Add(new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageCountDataUI() { L = lc, R = rc, other = oc, Count = lc + rc + oc, Cname = items.FirstOrDefault().CName, Length = items.FirstOrDefault().Length, StorageArea = items.FirstOrDefault().StorageArea, StructBarCode = items.FirstOrDefault().StructBarCode, Description = $"L:{lc}   R:{rc}  其他:{oc}", Const = Const, IsWarning = iswarning });
+                        }
+                        else if (items.Key.StorageArea == storeageid)
+                        {
+                            obj.TimeOutCount = midstore.FindAll(x => x.Updated != null && x.IsOccupied == 1 && (x.Updated.Value.AddHours(hours) <= DateTime.Now) && x.StorageArea == storeageid).Count;
+                            obj.data.Add(new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageCountDataUI() { L = lc, R = rc, other = oc, Count = lc + rc + oc, Cname = items.FirstOrDefault().CName, Length = items.FirstOrDefault().Length, StorageArea = items.FirstOrDefault().StorageArea, StructBarCode = items.FirstOrDefault().StructBarCode, Description = $"L:{lc}   R:{rc}  其他:{oc}", Const = Const });
+                        }
+                        #endregion
 
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.ErrorMethod("MidStorageDescription error,areaid is " + storeageid, ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    logger.ErrorMethod("MidStorageDescription error,areaid is " + storeageid, ex);
-                }
-
             }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("获取暂存库统计数据失败", ex);
+            }
+            finally
+            {
+                LockManagerProvider.Unlock(guid);
+            }
+            #endregion
             obj.allCount = obj.allCount;
             return obj;
         }
@@ -622,28 +656,40 @@ namespace SNTON.BusinessLogic
             MidStorageInfoResponse obj = new MidStorageInfoResponse();
             //var list = this.MidStorageProvider.GetMidStorageByArea((short)storagearea, null);
             var list = this.MidStorageSpoolsProvider.RealTimeMidStoreCache.FindAll(x => x.StorageArea == storagearea);
-            foreach (var item in list)
+            var guid = LockManagerProvider.Lock("GetMidStorageInfo");
+            try
             {
-                var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageInfoDataUI() { Id = item.Id };
-                if (storagearea == 1 || storagearea == 2)
-                    mid.Id = ConvertLocation12(Convert.ToInt32(item.SeqNo));
-                else
-                    mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
-                mid.Barcodes = item.FdTagNo;
+                foreach (var item in list)
+                {
+                    var mid = new WebServices.UserInterfaceBackend.Models.MidStorage.MidStorageInfoDataUI() { Id = item.Id };
+                    if (storagearea == 1 || storagearea == 2)
+                        mid.Id = ConvertLocation12(Convert.ToInt32(item.SeqNo));
+                    else
+                        mid.Id = ConvertLocation(Convert.ToInt32(item.SeqNo));
+                    mid.Barcodes = item.FdTagNo;
 
-                int Status = 6;
-                int IsOccupied = item.IsOccupied;
-                if (item.IsVisible == -1)
-                    Status = 6;
+                    int Status = 6;
+                    int IsOccupied = item.IsOccupied;
+                    if (item.IsVisible == -1)
+                        Status = 6;
 
-                //mid.InStoreageTime = item.Updated;
-                //if (item.Updated.Value.AddHours(hours) > DateTime.Now)
-                //    mid.IsTimeOut = false;
-                //else
-                //    mid.IsTimeOut = true;
-                Status = MidStorageStatusToShow(Status, IsOccupied);
-                mid.Status = Status;
-                obj.data.Add(mid);
+                    //mid.InStoreageTime = item.Updated;
+                    //if (item.Updated.Value.AddHours(hours) > DateTime.Now)
+                    //    mid.IsTimeOut = false;
+                    //else
+                    //    mid.IsTimeOut = true;
+                    Status = MidStorageStatusToShow(Status, IsOccupied);
+                    mid.Status = Status;
+                    obj.data.Add(mid);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("获取暂存库状态失败", ex);
+            }
+            finally
+            {
+                LockManagerProvider.Unlock(guid);
             }
             obj.data = obj.data.OrderBy(x => x.Id).ToList();
             return obj;
@@ -732,10 +778,11 @@ namespace SNTON.BusinessLogic
         }
 
 
-        public ResponseBase TTT()
+        public ResponseDataBase TTT()
         {
             //this.systemParametersConfigurationProvider
-            return null;
+            ResponseDataBase b = new ResponseDataBase();
+            return b;
         }
         /// <summary>
         /// 手动异常口出库
@@ -1650,11 +1697,23 @@ namespace SNTON.BusinessLogic
         public ResponseDataBase WarningInfo(byte midstoreno)
         {
             ResponseDataBase obj = new ResponseDataBase();
-            var messages = this.MachineWarnningCodeProvider.GetAllMachineWarnningCodeEntity(null);
-            if (messages == null) messages = new List<Entities.DBTables.PLCAddressCode.MachineWarnningCodeEntity>();
-            if (midstoreno != 0)
-                messages = messages.FindAll(x => x.IsWarning && x.MidStoreNo == midstoreno);
-            messages.ForEach(x => { obj.data.Add(midstoreno + "号库" + (x.MachineCode == 1 ? "龙门" : "线体") + x.Description); });
+            var guid = LockManagerProvider.Lock("ReadMachineWarnningCode");
+            try
+            {
+                var messages = this.MachineWarnningCodeProvider.GetAllMachineWarnningCodeEntity(null);
+                if (messages == null) messages = new List<Entities.DBTables.PLCAddressCode.MachineWarnningCodeEntity>();
+                if (midstoreno != 0)
+                    messages = messages.FindAll(x => x.IsWarning && x.MidStoreNo == midstoreno);
+                messages.ForEach(x => { obj.data.Add(midstoreno + "号库" + (x.MachineCode == 1 ? "龙门" : "线体") + x.Description); });
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("获取报警信息失败", ex);
+            }
+            finally
+            {
+                LockManagerProvider.Unlock(guid);
+            }
             return obj;
         }
 

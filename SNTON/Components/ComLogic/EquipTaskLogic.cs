@@ -17,15 +17,21 @@ using System.Xml;
 using VI.MFC.Logging;
 using VI.MFC.Utils;
 using static SNTON.Constants.SNTONConstants;
+using VI.MFC.Components;
+using log4net;
+using System.Reflection;
+using VI.MFC.Utils.ConfigBinder;
+using VI.MFC;
 
 namespace SNTON.Components.ComLogic
 {
     /// <summary>
     /// 根据地面滚筒请求，创建AGV任务
     /// </summary>
-    public class EquipTaskLogic : ComLogic
+    public class EquipTaskLogic : VIRuntimeComponent, IViSupportingComponent
     {
-        public new static EquipTaskLogic Create(XmlNode configNode)
+        private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public static EquipTaskLogic Create(XmlNode configNode)
         {
             EquipTaskLogic equip = new EquipTaskLogic();
             equip.Init(configNode);
@@ -33,19 +39,46 @@ namespace SNTON.Components.ComLogic
         }
         private VIThreadEx thread_InitOutStoreTask;
         private VIThreadEx thread_Init_JK_AGV_Task;
+        //protected override void StartInternal()
+        //{
+        //    thread_InitOutStoreTask.Start();
+        //    //thread_Init_JK_AGV_Task.Start();
+        //    base.StartInternal();
+        //}
         protected override void StartInternal()
         {
-            thread_InitOutStoreTask.Start();
+            thread_InitOutStoreTask?.Start();
             //thread_Init_JK_AGV_Task.Start();
             base.StartInternal();
+        }
+        public override void Init(XmlNode configNode)
+        {
+            base.Init(configNode);
+            thread_InitOutStoreTask = new VIThreadEx(RunCreateTask, null, "thread for InitRobotAGVTask", 8000);
+            thread_Init_JK_AGV_Task = new VIThreadEx(Init_JK_AGV_Task, null, "thread for InitRobotAGVTask", 8000);
+
         }
         public EquipTaskLogic()
         {
             //thread_ReadDervice = new VIThreadEx(InitRobotAGVTask, null, "thread for InitRobotAGVTask", 3000);
-            thread_InitOutStoreTask = new VIThreadEx(RunCreateTask, null, "thread for InitRobotAGVTask", 8000);
-            thread_Init_JK_AGV_Task = new VIThreadEx(Init_JK_AGV_Task, null, "thread for InitRobotAGVTask", 8000);
         }
+        /// <summary>
+        /// The Business Logic Component responsible for giving us the data we need.
+        /// </summary>
+        [ConfigBoundProperty("BusinessLogicId")]
+#pragma warning disable 649
+        private string businessLogicId;
+#pragma warning restore 649
+        private BusinessLogic.BusinessLogic businessLogic;
 
+        public BusinessLogic.BusinessLogic BusinessLogic
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref businessLogic, businessLogicId);
+                return businessLogic;
+            }
+        }
         void RunCreateTask()
         {
             try
@@ -62,7 +95,6 @@ namespace SNTON.Components.ComLogic
             }
             catch (Exception ex)
             {
-
                 logger.ErrorMethod("执行InitRobotAGVTask出错", ex);
             }
         }
@@ -102,7 +134,7 @@ namespace SNTON.Components.ComLogic
                 agvout = new AGVTasksEntity() { Created = DateTime.Now, TaskType = 1, PlantNo = 3, Status = 2, TaskLevel = 6, TaskGuid = g, IsDeleted = 0, ProductType = equiptsk[0].ProductType };
                 agvout.EquipIdListActual = equiptsk[0].EquipContollerId.ToString() + ";" + equiptsk[1].EquipContollerId.ToString();
                 agvout.EquipIdListTarget = "";
-                agvout.StorageArea = StorageArea;
+                agvout.StorageArea = 0;
                 agvout.StorageLineNo = 0;
                 equiptsk[0].Status = 1;
                 equiptsk[0].TaskGuid = g;
@@ -204,53 +236,7 @@ namespace SNTON.Components.ComLogic
 
             }
         }
-        /// <summary>
-        /// 直通口是否有准备好待接收的单丝
-        /// </summary>
-        /// <param name="equiptsk"></param>
-        /// <param name="storeageno"></param>
-        /// <returns></returns>
-        [Obsolete("弃用的方法,此方法未封装事务,用另一个重载方法代替,")]
-        bool InStoreHasSpools(List<EquipTaskViewEntity> equiptsks, int storeageno)
-        {
-            equiptsks = equiptsks.OrderBy(x => x.AStation).ToList();
-            var equiptsk = equiptsks[0];
-            var list = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpoolEntity($"StoreageNo={storeageno} AND PlantNo={PlantNo} AND Status=3", null);
-            if (list == null || list.Count == 0)
-                return false;
-            //var outstore = list.FirstOrDefault(x => x.Status == 3);
-            //if (outstore == null)
-            //    return false;
-            var equip = this.BusinessLogic.EquipConfigerProvider.EquipConfigers.FirstOrDefault(x => x.ControlID == equiptsk.EquipContollerId);
-            var machstructcode = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, equip.MachCode.Trim());
-            if (machstructcode == null || machstructcode.Count == 0)
-                return false;
-            tblProdCodeStructMachEntity prod = machstructcode[0];
-            if (prod.ProdCodeStructMark4 == null)
-            {
-                return false;
-            }
-            var instore = list.FindAll(x => x.Status == 3 && x.StructBarCode.Trim() == prod.ProdCodeStructMark4.StructBarCode.Trim());
-            if (instore == null || instore.Count == 0)
-                return false;
-            instore.ForEach(x => x.Status = 8);//等待申请调度AGV
-            int count = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.UpdateEntity(null, instore.ToArray());
-            var agvtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTask($"TaskGuid in ('{instore[0].Guid.ToString()}')");
-            if (agvtsk != null)
-            {
-                agvtsk.Status = 2;
-                agvtsk.PLCNo = equiptsks[0].PLCNo;
-                agvtsk.StorageLineNo = 2;
-                agvtsk.EquipIdListActual = equiptsks[0].EquipContollerId.ToString() + ";" + equiptsks[1].EquipContollerId.ToString();
-                //agvtsk.EquipIdListTarget = TaskConfig.AGVStation(storeageno, 2);
-                agvtsk.Updated = DateTime.Now;
-                equiptsks.ForEach(x => x.TaskGuid = agvtsk.TaskGuid);
-                equiptsks.ForEach(x => x.Status = 4);
-                bool r = this.BusinessLogic.AGVTasksProvider.UpdateEntity(agvtsk);
-                return r;
-            }
-            else return false;
-        }
+
         /// <summary>
         /// 直通口是否有准备好待接收的单丝
         /// </summary>
@@ -259,7 +245,7 @@ namespace SNTON.Components.ComLogic
         /// <returns></returns>
         Tuple<AGVTasksEntity, List<InStoreToOutStoreSpoolViewEntity>> InStoreHasSpools(EquipTaskViewEntity equiptsk, int storeageno)
         {
-            var list = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpool(storeageno, this.PlantNo, null);
+            var list = this.BusinessLogic.InStoreToOutStoreSpoolViewProvider.GetInStoreToOutStoreSpool(storeageno, PlantNo.PlantNo3, null);
             if (list == null || list.Count == 0)
                 return null;
             var equip = this.BusinessLogic.EquipConfigerProvider.EquipConfigers.FirstOrDefault(x => x.ControlID == equiptsk.EquipContollerId);
@@ -405,7 +391,7 @@ namespace SNTON.Components.ComLogic
             DateTime createtime = DateTime.Now;
             RobotArmTaskEntity armtsk = null;
             List<RobotArmTaskEntity> listarmtsk = new List<RobotArmTaskEntity>();
-            var agvtsk = new AGVTasksEntity() { Created = createtime, SeqNo = seq, TaskGuid = guid, PlantNo = PlantNo, ProductType = exequiptsk.ProductType, Status = 0, TaskLevel = 5 };
+            var agvtsk = new AGVTasksEntity() { Created = createtime, SeqNo = seq, TaskGuid = guid, PlantNo = byte.Parse(PlantNo.PlantNo3.ToString()), ProductType = exequiptsk.ProductType, Status = 0, TaskLevel = 5 };
             int seqno = 1;
             foreach (var item in needlspools)
             {
@@ -470,7 +456,7 @@ namespace SNTON.Components.ComLogic
             armtsk.Created = createtime;
             armtsk.TaskGroupGUID = guid;
             armtsk.FromWhere = spool.SeqNo;
-            armtsk.PlantNo = PlantNo;
+            armtsk.PlantNo = byte.Parse(PlantNo.PlantNo3.ToString());
             armtsk.RobotArmID = storageno.ToString();
             armtsk.TaskLevel = 5;
             armtsk.TaskType = 0;

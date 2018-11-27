@@ -35,6 +35,7 @@ using SNTON.Components.SQLCommand;
 using SNTON.Components.PLCAddressCode;
 using SNTON.Components.InStoreToOutStore;
 using SNTON.Components.AGV_KJ_Interface;
+using SNTON.Components.LockManager;
 
 namespace SNTON.BusinessLogic
 {
@@ -202,6 +203,26 @@ namespace SNTON.BusinessLogic
 
 
 
+#pragma warning disable 649
+        [ConfigBoundProperty("LockManagerId")]
+        private string lockManagerId;
+#pragma warning restore 649
+
+        private ILockManager lockManagerIdProvider;
+
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public ILockManager LockManagerProvider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref lockManagerIdProvider, lockManagerId, this);
+
+                return lockManagerIdProvider;
+            }
+            set { lockManagerIdProvider = value; }
+        }
 
 
 

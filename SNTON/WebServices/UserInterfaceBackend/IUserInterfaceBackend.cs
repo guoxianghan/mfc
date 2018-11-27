@@ -292,7 +292,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
         [WebInvoke(UriTemplate = "AGVTask/SetJiKeAGVTask", Method = "POST",
         ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
         [ServiceKnownType(typeof(ResponseDataBase))]
-        ResponseDataBase SetJiKeAGVTaskStatus(int storeage,int id,int status);
+        ResponseDataBase SetJiKeAGVTaskStatus(int storeage, int id, int status);
 
 
 
@@ -421,8 +421,12 @@ namespace SNTON.WebServices.UserInterfaceBackend
         #region test 
         [WebInvoke(UriTemplate = "MIT/TTT", Method = "GET",
        ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
-        [ServiceKnownType(typeof(ResponseBase))]
+        [ServiceKnownType(typeof(ResponseDataBase))]
         object TTT();
+        [WebInvoke(UriTemplate = "MIT/PostTest", Method = "POST",
+       ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped)]
+        [ServiceKnownType(typeof(ResponseDataBase))]
+        object PostTest(string str);
         #endregion
 
         #region Product
@@ -447,6 +451,25 @@ namespace SNTON.WebServices.UserInterfaceBackend
         [ServiceKnownType(typeof(ResponseDataBase))]
         object SaveProductLRRadio(int id, string lrratio, int seqno, byte iswarning);
 
+        #endregion
+        #region PDA
+        [WebInvoke(UriTemplate = "PDA/Login", Method = "POST",
+        ResponseFormat = WebMessageFormat.Xml, RequestFormat = WebMessageFormat.Xml, BodyStyle = WebMessageBodyStyle.Wrapped)]
+        string Login(string uname, string pwd);
+        [WebInvoke(UriTemplate = "PDA/GetLocagion?uname={uname}", Method = "GET",
+       ResponseFormat = WebMessageFormat.Xml, RequestFormat = WebMessageFormat.Xml, BodyStyle = WebMessageBodyStyle.Wrapped)]
+        string GetLocagion(string uname);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">物流ID</param>
+        /// <param name="location">位置</param>
+        /// <param name="cmd">指令:1吊入,2吊出</param>
+        /// <param name="guid">位置版本标记</param>
+        /// <returns></returns>
+        [WebInvoke(UriTemplate = "PDA/Remove", Method = "POST",
+        ResponseFormat = WebMessageFormat.Xml, RequestFormat = WebMessageFormat.Xml, BodyStyle = WebMessageBodyStyle.Wrapped)]
+        string Remove(string id, string location,string cmd,string guid);
         #endregion
     }
 }

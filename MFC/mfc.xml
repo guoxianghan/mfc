@@ -150,7 +150,7 @@
   <CONTROLSETS>
     <CONTROLSET Name ="TelegramDescriptions" Enabled ="true" path =".\Controlsets\TelDescControlset.xml"/>
     <!--AGV Configuration-->
-    <CONTROLSET Name ="PLC_AGV" Enabled ="true" path =".\Controlsets\AGVControlset.xml">
+    <CONTROLSET Name ="PLC_AGV" Enabled ="false" path =".\Controlsets\AGVControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="AGV"/>
         <VARIABLE Name="$HOST$" Value="127.0.0.1"/>
@@ -158,6 +158,16 @@
         <VARIABLE Name="$PORT$" Value="9999"/>
         <VARIABLE Name="$PlantNo$" Value="003"/>
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.AGVLogic"/>
+      </VARIABLES>
+    </CONTROLSET>
+    <CONTROLSET Name ="PropelWebSocketLogic" Enabled ="true" path =".\Controlsets\PropelWebSocketControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$AGVStatusUrl$" Value="ws://127.0.0.1:20000"/>
+        <VARIABLE Name="$StorageInfoUrl1$" Value="ws://127.0.0.1:20001"/>
+        <VARIABLE Name="$StorageInfoUrl2$" Value="ws://127.0.0.1:20002"/>
+        <VARIABLE Name="$StorageInfoUrl3$" Value="ws://127.0.0.1:20003"/>
+        <VARIABLE Name="$StorageInfoUrl4$" Value="ws://127.0.0.1:20004"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.PropelWebSocketLogic"/>
       </VARIABLES>
     </CONTROLSET>
 
@@ -345,7 +355,7 @@
 
          -->
 
-    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="false" Id="SQLServerDatabase" ResourceType="DB">
+    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="true" Id="SQLServerDatabase" ResourceType="DB">
       <CONFIG Configuration="SNTON.Resources.Hibernate.MSSQL.cfg.xml"
               ConfigAssembly="SNTON.dll"
               EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
@@ -600,7 +610,7 @@
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </AGVMagMarkerMapConfigProvider>
 
-    <AGVRouteProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVRoute" Id="AGVRouteProvider" Enabled="false">
+    <AGVRouteProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVRoute" Id="AGVRouteProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>

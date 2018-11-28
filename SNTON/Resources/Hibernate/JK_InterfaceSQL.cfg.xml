@@ -12,7 +12,7 @@ for your own use before compile tests in VisualStudio.
   <session-factory name="NHibernate">
     <property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
     <property name="connection.connection_string">
-      Server=192.168.121.50;User Id=KJ_Interface;Password=KJ_Interface;Database=DYST;
+      Server=192.168.120.227;User Id=sa;Password=!@#123qwe;Database=SNTON;
     </property>
     <property name="connection.isolation">ReadCommitted</property>
 		<property name="adonet.batch_size">1</property>

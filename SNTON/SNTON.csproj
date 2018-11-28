@@ -137,6 +137,9 @@
     <Reference Include="TIBCO.EMS">
       <HintPath>..\dll\TIBCO.EMS.dll</HintPath>
     </Reference>
+    <Reference Include="websocket-sharp">
+      <HintPath>..\dll\websocket-sharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessLogic\BusinessLogic.cs" />
@@ -171,6 +174,7 @@
     <Compile Include="Components\ComLogic\MidStoreLineLogic.cs" />
     <Compile Include="Components\ComLogic\MidStoreRobotArm4Logic.cs" />
     <Compile Include="Components\ComLogic\MidStoreRobotArmLogic.cs" />
+    <Compile Include="Components\ComLogic\PropelWebSocketLogic.cs" />
     <Compile Include="Components\Config\ButtonLocationConfig.cs" />
     <Compile Include="Components\Config\IButtonLocationConfig.cs" />
     <Compile Include="Components\Equipment\EquipCommand.cs" />
@@ -247,6 +251,7 @@
     <Compile Include="Com\MXDataBlock.cs" />
     <Compile Include="Com\MXPLCClient.cs" />
     <Compile Include="Com\MXQPLCClient.cs" />
+    <Compile Include="Components\ComLogic\WebSocketEx.cs" />
     <Compile Include="Constants\PermutationAndCombination.cs" />
     <Compile Include="Constants\SNTONCommConstants.cs" />
     <Compile Include="Constants\SNTONConstants.cs" />

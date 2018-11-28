@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MFC.NET>
+  <CONTROLSET>
+    <LOGIC Assembly=".\SNTON.DLL" Type="$LOGIC$" Id="PropelWebSocketLogic" Enabled="true">
+      <CONFIG
+           BusinessLogicId="BusinessLogic"
+              AGVStatusUrl="$AGVStatusUrl$"
+              StorageInfoUrl1="$StorageInfoUrl1$"
+              StorageInfoUrl2="$StorageInfoUrl2$"
+              StorageInfoUrl3="$StorageInfoUrl3$"
+              StorageInfoUrl4="$StorageInfoUrl4$">
+      </CONFIG>
+      <WATCHDOG Enabled="false" TimeoutInSecs="60" TelegramId="AliveReq"  RetriesBeforeDisconnection="3" ReplyTelegramId="AliveAck"></WATCHDOG>
+    </LOGIC>
+
+  </CONTROLSET>
+</MFC.NET>

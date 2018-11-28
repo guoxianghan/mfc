@@ -260,11 +260,11 @@ namespace SNTON.Components.ComLogic
                 //    act = this.BusinessLogic.Agv_three_configProvider._originLocation;
                 if (this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.ContainsKey(item.AGVID))
                 {
-                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute[item.AGVID] = new AGVRouteEntity() { AGVId = item.AGVID, agv_id = item.AGVID, Created = DateTime.Now, fac_x = act.fac_x, fac_y = act.fac_y, X = x, Y = y };
+                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute[item.AGVID] = new AGVRouteEntity() { AGVId = item.AGVID, agv_id = item.AGVID, Created = DateTime.Now, fac_x = act.fac_x, fac_y = act.fac_y, X = x, Y = y, Status = item.Status };
                 }
                 else
                 {
-                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.Add(item.AGVID, new AGVRouteEntity() { AGVId = item.AGVID, agv_id = act.agv_id, Created = DateTime.Now, fac_x = act.fac_x, fac_y = act.fac_y, X = x, Y = y });
+                    this.BusinessLogic.AGVRouteProvider.RealTimeAGVRute.Add(item.AGVID, new AGVRouteEntity() { AGVId = item.AGVID, agv_id = act.agv_id, Created = DateTime.Now, fac_x = act.fac_x, fac_y = act.fac_y, X = x, Y = y, Status= item.Status });
                 }
             }
         }

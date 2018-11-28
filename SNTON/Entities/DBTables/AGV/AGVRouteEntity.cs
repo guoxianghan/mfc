@@ -46,7 +46,7 @@ namespace SNTON.Entities.DBTables.AGV
         /// 3=AGV处于故障状态
         /// </summary>
         [DataMember]
-        public virtual byte Status { get; set; }
+        public virtual int Status { get; set; }
 
         /// <summary>
         /// 实时坐标 毫米

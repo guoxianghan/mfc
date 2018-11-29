@@ -10,22 +10,18 @@ using System.Reflection;
 using log4net;
 using System.Xml;
 using VI.MFC.Logging;
-using SNTON.Entities.DBTables.AGV;
-using VI.MFC.Utils;
+using SNTON.Entities.DBTables.Equipments;
 
-namespace SNTON.Components.AGV
+namespace SNTON.Components.Equipment
 {
-    public class AGVBYSStatus : CleanUpBrokerBase, IAGVBYSStatus
+    public class MachineStatus : CleanUpBrokerBase, IMachineStatus
     {
 
 
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private const string EntityDbTable = "AGVBYSStatusEntity";
-        private const string DatabaseDbTable = "dbo.AGVBYSStatus";
-        public List<AGVBYSStatusEntity> _AGVBYSStatusCache { get; set; }
+        private const string EntityDbTable = "MachineStatusEntity";
+        private const string DatabaseDbTable = "SNTON.MachineStatus";
 
-        public Dictionary<short, AGVBYSStatusEntity> RealTimeAGVRute { get; set; } = new Dictionary<short, AGVBYSStatusEntity>();
-        private VIThreadEx thread_AGVSystemRoute;
         // only for unittest
         //private readonly Dictionary<long, EmployeeEnt> employeeList = new Dictionary<long, EmployeeEnt>();
 
@@ -35,18 +31,18 @@ namespace SNTON.Components.AGV
         /// </summary>
         /// <param name="configNode"></param>
         /// <returns></returns>
-        public static AGVBYSStatus Create(XmlNode configNode)
+        public static MachineStatus Create(XmlNode configNode)
         {
-            var broker = new AGVBYSStatus();
+            var broker = new MachineStatus();
             broker.Init(configNode);
             return broker;
         }
         /// <summary>
         /// Constructor called by bootstrap loader. 
         /// </summary>
-        public AGVBYSStatus()
+        public MachineStatus()
         {
-            thread_AGVSystemRoute = new VIThreadEx(ReadAGV_X_YStatus, null, "thread for reading AGV System AGVStatus", 2000);
+
         }
         /// <summary>
         /// PLACEHOLDER: Please extend if required.
@@ -55,7 +51,7 @@ namespace SNTON.Components.AGV
         /// It is only for Unit Test.
         /// </summary>
         /// <param name="dependency"></param>
-        public AGVBYSStatus(object dependency)
+        public MachineStatus(object dependency)
         {
             if (dependency == null) // Not called by unittest. We have to instantiate the real object.
             {
@@ -79,7 +75,6 @@ namespace SNTON.Components.AGV
         /// </summary>
         protected override void StartInternal()
         {
-            thread_AGVSystemRoute.Start();
             base.StartInternal();//start the cleanup thread
             logger.InfoMethod(EntityDbTable + " broker started.");
         }
@@ -93,36 +88,20 @@ namespace SNTON.Components.AGV
         }
         #endregion
 
+     
 
-        void ReadAGV_X_YStatus()
+        public MachineStatusEntity GetMachineStatusEntityByID(long Id, IStatelessSession session)
         {
-            _AGVBYSStatusCache = GetAllAGVBYSStatusEntity(null);
-            if (_AGVBYSStatusCache == null)
-                _AGVBYSStatusCache = new List<AGVBYSStatusEntity>();
-            else
-            {
-                _AGVBYSStatusCache = _AGVBYSStatusCache.OrderBy(x => x.AGVID).ToList();
-                foreach (var item in _AGVBYSStatusCache)
-                {
-                    if (RealTimeAGVRute.Keys.Contains(item.AGVID))
-                        RealTimeAGVRute[item.AGVID] = item;
-                    else RealTimeAGVRute.Add(item.AGVID, item);
-                }
-            }
-        }
-
-        public AGVBYSStatusEntity GetAGVBYSStatusEntityByID(long Id, IStatelessSession session)
-        {
-            AGVBYSStatusEntity ret = null;
+            MachineStatusEntity ret = null;
 
             if (session == null)
             {
-                ret = BrokerDelegate(() => GetAGVBYSStatusEntityByID(Id, session), ref session);
+                ret = BrokerDelegate(() => GetMachineStatusEntityByID(Id, session), ref session);
                 return ret;
             }
             try
             {
-                var tmp = ReadSqlList<AGVBYSStatusEntity>(session, "SELECT * FROM dbo.AGVBYSStatus");
+                var tmp = ReadList<MachineStatusEntity>(session, string.Format("FROM {0} where  ID = {1} AND ISDELETED={2} order by ID desc", EntityDbTable, Id, Constants.SNTONConstants.DeletedTag.NotDeleted));
                 if (tmp.Any())
                 {
                     ret = tmp.FirstOrDefault();
@@ -133,21 +112,21 @@ namespace SNTON.Components.AGV
                 logger.ErrorMethod("Failed to get " + EntityDbTable, e);
             }
             return ret;
-        }
+        }       
 
-        public List<AGVBYSStatusEntity> GetAllAGVBYSStatusEntity(IStatelessSession session)
+        public List<MachineStatusEntity> GetAllMachineStatusEntity(IStatelessSession session)
         {
 
-            List<AGVBYSStatusEntity> ret = null;
+            List<MachineStatusEntity> ret = null;
 
             if (session == null)
             {
-                ret = BrokerDelegate(() => GetAllAGVBYSStatusEntity(session), ref session);
+                ret = BrokerDelegate(() => GetAllMachineStatusEntity(session), ref session);
                 return ret;
             }
             try
             {
-                var tmp = ReadSqlList<AGVBYSStatusEntity>(session, $"SELECT * FROM {DatabaseDbTable}");
+                var tmp = ReadSqlList<MachineStatusEntity>(session, $"SELECT * FROM {DatabaseDbTable} WHERE ISDELETED=" + Constants.SNTONConstants.DeletedTag.NotDeleted);
                 if (tmp.Any())
                 {
                     ret = tmp.ToList();
@@ -155,7 +134,7 @@ namespace SNTON.Components.AGV
             }
             catch (Exception e)
             {
-                logger.ErrorMethod("Failed to get AGVBYSStatusEntityList", e);
+                logger.ErrorMethod("Failed to get MachineStatusEntityList", e);
             }
             return ret;
         }

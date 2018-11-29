@@ -13,6 +13,7 @@ namespace SNTON.Components.AGV
         AGVBYSStatusEntity GetAGVBYSStatusEntityByID(long id, IStatelessSession session = null);
         List<AGVBYSStatusEntity> GetAllAGVBYSStatusEntity(IStatelessSession session = null);
         List<AGVBYSStatusEntity> _AGVBYSStatusCache { get; set; }
+        Dictionary<short, AGVBYSStatusEntity> RealTimeAGVRute { get; set; }
     }
 }
 

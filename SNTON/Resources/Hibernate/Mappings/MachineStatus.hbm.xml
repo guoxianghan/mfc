@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" schema="SNTON" namespace="SNTON.Entities.DBTables" assembly="SNTON">
+  <class name="SNTON.Entities.DBTables.Equipments.MachineStatusEntity" schema="SNTON" table="SNTON.MachineStatus" xmlns="urn:nhibernate-mapping-2.2">
+    
+    <id name="Id">
+      <column name="ID" not-null="true" />
+      <generator class="identity" />
+    </id>
+    
+    <property name="MachineID" column="MachineID" />
+    <property name="Pruduct" column="Pruduct" />
+    <property name="Status" column="Status" /> 
+    
+    <property name="Created" column="Created" />
+    <property name="Updated" column="Updated" />
+    <property name="Deleted" column="Deleted" />
+    <property name="IsDeleted" column="IsDeleted" />
+  </class>
+</hibernate-mapping>

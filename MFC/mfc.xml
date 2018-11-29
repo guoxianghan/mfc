@@ -162,7 +162,7 @@
     </CONTROLSET>
     <CONTROLSET Name ="PropelWebSocketLogic" Enabled ="true" path =".\Controlsets\PropelWebSocketControlset.xml">
       <VARIABLES>
-        <VARIABLE Name="$AGVStatusUrl$" Value="ws://127.0.0.1:20000"/>
+        <VARIABLE Name="$AGVStatusUrl$" Value="ws://192.168.1.138:20000"/>
         <VARIABLE Name="$StorageInfoUrl1$" Value="ws://127.0.0.1:20001"/>
         <VARIABLE Name="$StorageInfoUrl2$" Value="ws://127.0.0.1:20002"/>
         <VARIABLE Name="$StorageInfoUrl3$" Value="ws://127.0.0.1:20003"/>
@@ -413,7 +413,7 @@
 
 
     </HIBERNATE>
-    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="false" Id="AGVSQLServerDatabase" ResourceType="DB">
+    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="true" Id="AGVSQLServerDatabase" ResourceType="DB">
       <CONFIG Configuration="SNTON.Resources.Hibernate.AGVSystemSQL.cfg.xml"
               ConfigAssembly="SNTON.dll"
               EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
@@ -811,7 +811,7 @@
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </EquipTask5Provider>
 
-    <AGVBYSStatusProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVBYSStatus" Id="AGVBYSStatusProvider" Enabled="false">
+    <AGVBYSStatusProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVBYSStatus" Id="AGVBYSStatusProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="AGVSQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
@@ -822,6 +822,12 @@
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </T_AGV_KJ_InterfaceProvider>
+    
+    <MachineStatusProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.MachineStatus" Id="MachineStatusProvider" Enabled="true">
+      <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
+              HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
+              HousekeepingEnabled="false" CachingEnabled="false"/>
+    </MachineStatusProvider>
 
     <EquipTaskLogic Assembly="SNTON.DLL" Type="SNTON.Components.ComLogic.EquipTaskLogic" Id="EquipTaskLogicProvider" Enabled="true">
       <CONFIG />
@@ -899,6 +905,7 @@ SystemParametersConfigurationProviderId="SystemParametersConfigurationProvider"
               SpoolsTaskProviderId="SpoolsTaskProvider"
               T_AGV_KJ_InterfaceProviderId="T_AGV_KJ_InterfaceProvider"
               LockManagerId="LockManager"
+              MachineStatusProviderId="MachineStatusProvider"
        />
     </BusinessLogic>
 

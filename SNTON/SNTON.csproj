@@ -201,7 +201,9 @@
     <Compile Include="Components\Equipment\IEquipTaskProduct.cs" />
     <Compile Include="Components\Equipment\IEquipTaskView.cs" />
     <Compile Include="Components\Equipment\IEquipTaskView2.cs" />
+    <Compile Include="Components\Equipment\IMachineStatus.cs" />
     <Compile Include="Components\Equipment\IProduct.cs" />
+    <Compile Include="Components\Equipment\MachineStatus.cs" />
     <Compile Include="Components\Equipment\Product.cs" />
     <Compile Include="Components\FieldsDescription\MXFieldsDescription.cs" />
     <Compile Include="Components\FieldsDescription\IMXFieldsDescription.cs" />
@@ -282,6 +284,7 @@
     <Compile Include="Entities\DBTables\Equipments\EquipTaskEntity.cs" />
     <Compile Include="Entities\DBTables\Equipments\EquipTaskProductEntity.cs" />
     <Compile Include="Entities\DBTables\Equipments\EquipCommandEntity.cs" />
+    <Compile Include="Entities\DBTables\Equipments\MachineStatusEntity.cs" />
     <Compile Include="Entities\DBTables\Equipments\ProductEntity.cs" />
     <Compile Include="Entities\DBTables\InStoreToOutStore\InStoreToOutStoreSpoolViewEntity.cs" />
     <Compile Include="Entities\DBTables\InStoreToOutStore\InStoreToOutStoreSpoolEntity.cs" />
@@ -521,6 +524,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Hibernate\JK_InterfaceSQL.cfg.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Hibernate\Mappings\MachineStatus.hbm.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>

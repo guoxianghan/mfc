@@ -1145,6 +1145,30 @@ namespace SNTON.BusinessLogic
 
         #endregion
         #endregion Dependencies
+        #region MachineStatus
+#pragma warning disable 649
+        [ConfigBoundProperty("MachineStatusProviderId")]
+        private string machineStatusProviderId;
+#pragma warning restore 649
+
+        private IMachineStatus machineStatusProvider;
+        /* brokerNode
+
+		*/
+        /// <summary>
+        /// Instance of the configValues
+        /// </summary>
+        public IMachineStatus MachineStatusProvider
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref machineStatusProvider, machineStatusProviderId, this);
+
+                return machineStatusProvider;
+            }
+            set { machineStatusProvider = value; }
+        }
+        #endregion
 
 
 

@@ -1258,15 +1258,17 @@ namespace SNTON.BusinessLogic
         public AGVRouteResponse RealTimeAGVRoute()
         {
             AGVRouteResponse obj = new AGVRouteResponse();
-            var tmp = this.AGVRouteProvider.RealTimeAGVRute;
+            //var tmp = this.AGVRouteProvider.RealTimeAGVRute;
+            var tmp = this.AGVBYSStatusProvider.RealTimeAGVRute;
             for (byte i = 1; i <= 30; i++)
             {
                 if (tmp.ContainsKey(i))
-                    obj.data.Add(new AGVRouteDataUI() { agvid = tmp[i].AGVId, id = tmp[i].Id, x = tmp[i].X, y = tmp[i].Y, Status = tmp[i].Status, CreateTime = tmp[i].Created, agv_id = tmp[i].agv_id, fac_x = tmp[i].fac_x, fac_y = tmp[i].fac_y });
+                obj.data.Add(new AGVRouteDataUI() { agvid = tmp[i].AGVID, id = tmp[i].AGVID, x = tmp[i].LocationX, y = tmp[i].LocationY, Status = tmp[i].Status, CreateTime = DateTime.Now, agv_id = tmp[i].AGVID});
                 else
                     obj.data.Add(new AGVRouteDataUI { agvid = i, CreateTime = DateTime.Now, x = 0, y = 0 });
             }
             obj.data = obj.data.OrderBy(x => x.agvid).ToList();
+            //obj.data = new List<AGVRouteDataUI>();
             return obj;
         }
 

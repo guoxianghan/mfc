@@ -38,10 +38,22 @@ namespace SNTON.Entities.DBTables.AGV
         public virtual int LastStatus { get; set; }
 
         /// <summary>
-        /// Status
+        /// 未知 = 0,
+        ///行驶中 = 1,
+        ///故障已清 = 2,
+        ///故障中 = 3,
+        ///待机 = 4,
+        ///排队中 = 5,
+        ///手动运行中 = 6,
+        ///矫正位姿中 = 7,
+        ///准备 = 8,
+        ///关机 = 9,
+        ///暂停 = 10,
+        ///开机 = 11,
+        ///接收中 = 12,
         /// </summary>
         [DataMember]
-        public virtual int Status { get; set; }
+        public virtual byte Status { get; set; }
 
         /// <summary>
         /// LastLandMark

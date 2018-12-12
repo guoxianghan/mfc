@@ -116,6 +116,49 @@ namespace SNTON.Components.AGV
             }
             return ret;
         }
+        public override long DeleteRecordsOlderThan(DateTime theDate, long maxRecords)
+        {
+            int result = 0;
+            try
+            {
+                string sql = $"DELETE {DatabaseDbTable} WHERE ISDELETED=1 AND  CREATED<='{theDate.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss")}";
+                result = RunSqlStatement(null, sql);
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("faild to delete", ex);
+            }
+            return result;
+        }
+        /// <summary>
+        /// Mark the data with the deleted tag
+        /// </summary>
+        /// <param name="olderThan"></param>
+        /// <param name="threadDeleteMaxRecords"></param>
+        /// <param name="theSession"></param>
+        protected override void MarkDataForDeletion(DateTime olderThan, int threadDeleteMaxRecords, IStatelessSession theSession)
+        {
+
+            if (theSession == null)
+            {
+                BrokerDelegate(() => MarkDataForDeletion(olderThan, threadDeleteMaxRecords, theSession), ref theSession);
+                return;
+            }
+            try
+            {
+                protData.EnterWriteLock();
+                string sql = $"UPDATE {DatabaseDbTable} SET ISDELETED=1 WHERE CREATED<='{olderThan.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss")}'  AND  ISDELETED=0";
+                int result = RunSqlStatement(theSession, sql);
+            }
+            catch (Exception e)
+            {
+                logger.ErrorMethod("Failed to mark data for the deletion " + DatabaseDbTable, e);
+            }
+            finally
+            {
+                protData.ExitWriteLock();
+            }
+        }
         public List<AGVTasksEntity> GetAllAGVTaskEntity(IStatelessSession session = null)
         {
             List<AGVTasksEntity> ret = null;

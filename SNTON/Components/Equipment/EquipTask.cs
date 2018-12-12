@@ -222,6 +222,20 @@ namespace SNTON.Components.Equipment
                 protData.ExitWriteLock();
             }
         }
+        public override long DeleteRecordsOlderThan(DateTime theDate, long maxRecords)
+        {
+            int result = 0;
+            try
+            {
+                string sql = $"DELETE {DatabaseDbTable} WHERE ISDELETED=1 AND  CREATED<='{theDate.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss")}";
+                result = RunSqlStatement(null, sql);
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("faild to delete", ex);
+            }
+            return result;
+        }
         protected override int DeleteDataMarkedDeleted(IStatelessSession session = null)
         {
             return 0;

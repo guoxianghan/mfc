@@ -162,11 +162,11 @@
     </CONTROLSET>
     <CONTROLSET Name ="PropelWebSocketLogic" Enabled ="true" path =".\Controlsets\PropelWebSocketControlset.xml">
       <VARIABLES>
-        <VARIABLE Name="$AGVStatusUrl$" Value="ws://192.168.1.138:20000"/>
-        <VARIABLE Name="$StorageInfoUrl1$" Value="ws://127.0.0.1:20001"/>
-        <VARIABLE Name="$StorageInfoUrl2$" Value="ws://127.0.0.1:20002"/>
-        <VARIABLE Name="$StorageInfoUrl3$" Value="ws://127.0.0.1:20003"/>
-        <VARIABLE Name="$StorageInfoUrl4$" Value="ws://127.0.0.1:20004"/>
+        <VARIABLE Name="$AGVStatusUrl$" Value="ws://192.168.2.100:8899"/>
+        <VARIABLE Name="$StorageInfoUrl1$" Value="ws://192.168.2.100:20001"/>
+        <VARIABLE Name="$StorageInfoUrl2$" Value="ws://192.168.2.100:20002"/>
+        <VARIABLE Name="$StorageInfoUrl3$" Value="ws://192.168.2.100:20003"/>
+        <VARIABLE Name="$StorageInfoUrl4$" Value="ws://192.168.2.100:20004"/>
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.PropelWebSocketLogic"/>
       </VARIABLES>
     </CONTROLSET>
@@ -675,7 +675,7 @@
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </MessageProvider>
 
-    <MidStorageProvider Assembly="SNTON.DLL" Type="SNTON.Components.MidStorage.MidStorage" Id="MidStorageProvider" Enabled="false">
+    <MidStorageProvider Assembly="SNTON.DLL" Type="SNTON.Components.MidStorage.MidStorage" Id="MidStorageProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>

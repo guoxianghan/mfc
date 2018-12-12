@@ -33,6 +33,20 @@ namespace SNTON.Components.MessageInfo
         public override void ReadBrokerData()
         {
         }
+        public override long DeleteRecordsOlderThan(DateTime theDate, long maxRecords)
+        {
+            int result = 0;
+            try
+            {
+                string sql = $"DELETE {DatabaseDbTable} WHERE ISDELETED=1 AND  CREATED<='{theDate.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss")}";
+                result = RunSqlStatement(null, sql);
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("faild to delete", ex);
+            }
+            return result;
+        }
         /// <summary>
         /// Mark the data with the deleted tag
         /// </summary>

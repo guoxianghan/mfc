@@ -5,14 +5,14 @@ Copy the template to your NHibernate.Test project folder and rename it in hibern
 for your own use before compile tests in VisualStudio.
 -->
 <!-- This is the System.Data.dll provider for SQL Server 
-      Server=192.168.1.251;User Id=sa;Password=123456;Database=JoinAll;
+      Server=192.168.1.89;User Id=sa;Password=123456;Database=JoinAll;
       Server=.;User Id=sa;Password=123;Database=SNTON;
 -->
 <hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
   <session-factory name="NHibernate">
     <property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
     <property name="connection.connection_string">
-      Server=.;User Id=sa;Password=123;Database=SNTON;
+      Server=192.168.1.89;User Id=sa;Password=123456;Database=JoinAll;
     </property>
     <property name="connection.isolation">ReadCommitted</property>
     <property name="adonet.batch_size">1</property>

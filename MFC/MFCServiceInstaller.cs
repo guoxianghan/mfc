@@ -29,7 +29,7 @@ namespace MFC
     public class MFCServiceInstaller : Installer
     {
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+        public static string ServiceName = "VISION.MFC";
         /// <summary>
         /// Default constructor. Will be called by an installer.
         /// </summary>
@@ -46,10 +46,7 @@ namespace MFC
 
             // Service properties
             serviceInstaller.StartType = ServiceStartMode.Automatic;
-            string name = "VISION.MFC";
-            //name = "VISION.MFC2";
-            //name = "VISION.MFC3";
-            //name = "VISION.MFCEquipLine";
+            string name = ServiceName;
             serviceInstaller.DisplayName = name;
             serviceInstaller.ServiceName = name;
             serviceInstaller.Description = "Ni Technology Genuine Material Flow Controller";
@@ -114,7 +111,7 @@ namespace MFC
             bool success = false;
             try
             {
-                ServiceController service = new ServiceController("VISION.MFC");
+                ServiceController service = new ServiceController(ServiceName);
 
                 if ((service.Status == ServiceControllerStatus.Stopped && start) ||
                     (service.Status == ServiceControllerStatus.Running && !start))

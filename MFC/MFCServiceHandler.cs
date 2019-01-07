@@ -53,7 +53,7 @@ namespace MFC
         private void InitializeComponent()
         {
             components = new Container();
-            ServiceName = "VISION.MFC";
+            ServiceName = MFCServiceInstaller.ServiceName;
         }
 
         /// <summary>

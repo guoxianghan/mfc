@@ -35,7 +35,7 @@ namespace MFC
         [STAThread]
         public static void Main(string[] args)
         {
-            Thread.CurrentThread.Name = "VISION.MFC";
+            Thread.CurrentThread.Name = MFCServiceInstaller.ServiceName;
             bool normalStartup = false;
 
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -50,7 +50,7 @@ namespace MFC
                     {
                         logger.DebugMethod("Install service");
                         MFCServiceInstaller.InstallService();
-                        MessageBox.Show("VISION.MFC service was installed");
+                        MessageBox.Show(MFCServiceInstaller.ServiceName+" service was installed");
                     }
                     else
                     {
@@ -58,7 +58,7 @@ namespace MFC
                         {
                             logger.DebugMethod("UnInstall service");
                             MFCServiceInstaller.UninstallService();
-                            MessageBox.Show("VISION.MFC service was uninstalled");
+                            MessageBox.Show(MFCServiceInstaller.ServiceName+" service was uninstalled");
                         }
                         else
                         {
@@ -66,11 +66,11 @@ namespace MFC
                             {
                                 if (MFCServiceInstaller.SetServiceRunning(true))
                                 {
-                                    MessageBox.Show("VISION.MFC service was started");
+                                    MessageBox.Show(MFCServiceInstaller.ServiceName+" service was started");
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Cannot find VISION.MFC Service. Please install with mfc.exe -install");
+                                    MessageBox.Show($"Cannot find {MFCServiceInstaller.ServiceName} Service. Please install with mfc.exe -install");
                                 }
                             }
                             else
@@ -79,11 +79,11 @@ namespace MFC
                                 {
                                     if (MFCServiceInstaller.SetServiceRunning(false))
                                     {
-                                        MessageBox.Show("VISION.MFC service was stopped");
+                                        MessageBox.Show(MFCServiceInstaller.ServiceName+" service was stopped");
                                     }
                                     else
                                     {
-                                        MessageBox.Show("Cannot find VISION.MFC Service. Please install with mfc.exe -install");
+                                        MessageBox.Show($"Cannot find {MFCServiceInstaller.ServiceName} Service. Please install with mfc.exe -install");
                                     }
                                 }
                                 else

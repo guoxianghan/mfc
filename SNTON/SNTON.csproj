@@ -230,6 +230,7 @@
     <Compile Include="Components\MidStorage\MidStorageSpools.cs" />
     <Compile Include="Components\Parser\IMXParser.cs" />
     <Compile Include="Components\Parser\MXParser.cs" />
+    <Compile Include="Components\Parser\OPCUAParser.cs" />
     <Compile Include="Components\PLCAddressCode\IMachineWarnningCode.cs" />
     <Compile Include="Components\PLCAddressCode\MachineWarnningCode.cs" />
     <Compile Include="Components\RobotArm\IRobotArmTaskSpool.cs" />
@@ -254,9 +255,15 @@
     <Compile Include="Com\MXPLCClient.cs" />
     <Compile Include="Com\MXQPLCClient.cs" />
     <Compile Include="Components\ComLogic\WebSocketEx.cs" />
+    <Compile Include="Com\OPC\IOPCUACommModule.cs" />
+    <Compile Include="Com\OPC\OPCCom.cs" />
+    <Compile Include="Com\OPC\OPCUAClient.cs" />
+    <Compile Include="Com\OPC\OPCUADataBlock.cs" />
+    <Compile Include="Com\OPC\OPCUAField.cs" />
     <Compile Include="Constants\PermutationAndCombination.cs" />
     <Compile Include="Constants\SNTONCommConstants.cs" />
     <Compile Include="Constants\SNTONConstants.cs" />
+    <Compile Include="Constants\SNTONMath.cs" />
     <Compile Include="Constants\SNTONTelegram.cs" />
     <Compile Include="Entities\Business\FedExException.cs" />
     <Compile Include="Entities\Business\SortationChuteTransient.cs" />

@@ -26,7 +26,7 @@ namespace SNTON.Components.ComLogic
         {
 
         }
-        private IMXCommModule com { get; set; }
+        private IOPCUACommModule com { get; set; }
         public ComLogic() : base(null)
         {
 

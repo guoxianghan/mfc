@@ -61,7 +61,7 @@ namespace SNTON.Components.ComLogic
             //re.AddField("TaskNo", "123");
             //Send(re);
             //return;
-            var tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks($" (Status in (2) and isdeleted=0 ) OR (IsDeleted=0 AND [Status]=4 AND id>=23970 AND Updated<='{DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss")}')");
+            var tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks($" (Status in (2) and isdeleted=0 ) OR (IsDeleted=0 AND [Status]=4 AND Updated<='{DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss")}')");
             //tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks("ID=32813");
             //HLCallCmd(tmp[0]);
             //return;

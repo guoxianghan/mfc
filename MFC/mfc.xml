@@ -5,7 +5,7 @@
     <NAME>Backup MFC</NAME>
     <TRAY>1</TRAY>
     <OPERATORID>2001</OPERATORID>
-    <INSTANCEID>130018342</INSTANCEID>
+    <INSTANCEID>130018346</INSTANCEID>
   </APPLICATION>
 
   <GLOBAL_DEFINITIONS>
@@ -160,7 +160,7 @@
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.AGVLogic"/>
       </VARIABLES>
     </CONTROLSET>
-    <CONTROLSET Name ="PropelWebSocketLogic" Enabled ="true" path =".\Controlsets\PropelWebSocketControlset.xml">
+    <CONTROLSET Name ="PropelWebSocketLogic" Enabled ="false" path =".\Controlsets\PropelWebSocketControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$AGVStatusUrl$" Value="ws://192.168.2.100:8899"/>
         <VARIABLE Name="$StorageInfoUrl1$" Value="ws://192.168.2.100:20001"/>
@@ -238,7 +238,7 @@
       </VARIABLES>
     </CONTROLSET>
 
-    <CONTROLSET Name ="PLC_MidStoreLine3" Enabled ="false" path =".\Controlsets\MidStoreLineControlset.xml">
+    <CONTROLSET Name ="PLC_MidStoreLine3" Enabled ="true" path =".\Controlsets\MidStoreLineControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="MidStoreLine3"/>
         <VARIABLE Name="$HOST$" Value="192.168.120.75"/>
@@ -302,6 +302,18 @@
         <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
         <VARIABLE Name="$PORT$" Value="6000"/>
         <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipLineLogic_"/>
+      </VARIABLES>
+    </CONTROLSET>
+	
+    <CONTROLSET Name ="EquipTaskLogic" Enabled ="false" path =".\Controlsets\EquipTaskControlset.xml">
+      <VARIABLES>
+        <VARIABLE Name="$EXT$" Value="EquipTask"/> 
+        <VARIABLE Name="$PlantNo$" Value="3"/>
+        <VARIABLE Name="$PLCNo$" Value="2"/>
+        <VARIABLE Name="$HOST$" Value="192.168.120.91"/>
+        <VARIABLE Name="$LOCALENDPOINT$" Value=""/>
+        <VARIABLE Name="$PORT$" Value="6000"/>
+        <VARIABLE Name="$LOGIC$" Value="SNTON.Components.ComLogic.EquipTaskLogic"/>
       </VARIABLES>
     </CONTROLSET>
   </CONTROLSETS>
@@ -384,7 +396,7 @@
 
 
     </HIBERNATE>
-    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="false" Id="MESSQLServerDatabase" ResourceType="DB">
+    <HIBERNATE Type="VI.MFC.Components.Hibernate.HibernateSessionPool" Enabled="true" Id="MESSQLServerDatabase" ResourceType="DB">
       <CONFIG Configuration="SNTON.Resources.Hibernate.MESSQL.cfg.xml"
               ConfigAssembly="SNTON.dll"
               EmbeddedConfiguration="true" InitialNumberOfSessions="80" MaxBusyTimeoutInMs="1000"
@@ -583,7 +595,7 @@
     </WEBSERVICEHOSTER>
 
 
-    <WEBSERVICEHOSTER Type="SNTON.WebServices.UserInterfaceBackend.UserInterfaceBackend" Assembly="SNTON.dll" Id="UserInterfaceBackend" Enabled="true">
+    <WEBSERVICEHOSTER Type="SNTON.WebServices.UserInterfaceBackend.UserInterfaceBackend" Assembly="SNTON.dll" Id="UserInterfaceBackend" Enabled="false">
       <CONFIG WebServiceAddress="http://localhost:7070/SNTON" LocalizationId="$VISION.MFC_LOCALIZATION" WebServiceType="REST" BusinessLogicId="BusinessLogic"/>
     </WEBSERVICEHOSTER>
     <!--
@@ -628,19 +640,19 @@
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </AGVStatusProvider>
 
-    <AGVTasksProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVTasks" Id="AGVTasksProvider" Enabled="false">
+    <AGVTasksProvider Assembly="SNTON.DLL" Type="SNTON.Components.AGV.AGVTasks" Id="AGVTasksProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </AGVTasksProvider>
 
-    <EquipConfigProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipConfig" Id="EquipConfigProvider" Enabled="false">
+    <EquipConfigProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipConfig" Id="EquipConfigProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </EquipConfigProvider>
 
-    <EquipControllerConfigProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipControllerConfig" Id="EquipControllerConfigProvider" Enabled="false">
+    <EquipControllerConfigProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipControllerConfig" Id="EquipControllerConfigProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
@@ -669,7 +681,7 @@
               HousekeepingEnabled="true" CachingEnabled="false"/>
     </EquipTaskProvider>
 
-    <MessageProvider Assembly="SNTON.DLL" Type="SNTON.Components.MessageInfo.MessageInfo" Id="MessageProvider" Enabled="false">
+    <MessageProvider Assembly="SNTON.DLL" Type="SNTON.Components.MessageInfo.MessageInfo" Id="MessageProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="3" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
@@ -681,7 +693,7 @@
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </MidStorageProvider>
 
-    <MidStorageSpoolsProvider Assembly="SNTON.DLL" Type="SNTON.Components.MidStorage.MidStorageSpools" Id="MidStorageSpoolsProviderId" Enabled="false">
+    <MidStorageSpoolsProvider Assembly="SNTON.DLL" Type="SNTON.Components.MidStorage.MidStorageSpools" Id="MidStorageSpoolsProviderId" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
@@ -698,7 +710,7 @@
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </SpoolsTaskProvider>
 
-    <SystemParametersProvider Assembly="SNTON.DLL" Type="SNTON.Components.SystemParameters.SystemParameters" Id="SystemParametersProvider" Enabled="false">
+    <SystemParametersProvider Assembly="SNTON.DLL" Type="SNTON.Components.SystemParameters.SystemParameters" Id="SystemParametersProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
@@ -722,7 +734,7 @@
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </EquipCommandProvider>
 
-    <EquipConfigerProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipConfiger" Id="EquipConfigerProviderid" Enabled="false">
+    <EquipConfigerProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipConfiger" Id="EquipConfigerProviderid" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
@@ -735,13 +747,13 @@
     </EquipConfiger2Provider>
 
 
-    <MESSystemProvider Assembly="SNTON.DLL" Type="SNTON.Components.MES.MESSystemSpools" Id="MESSystemProvider" Enabled="false">
+    <MESSystemProvider Assembly="SNTON.DLL" Type="SNTON.Components.MES.MESSystemSpools" Id="MESSystemProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="MESSQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </MESSystemProvider>
 
-    <RobotArmTaskProvider Assembly="SNTON.DLL" Type="SNTON.Components.RobotArm.RobotArmTask" Id="RobotArmTaskProviderid" Enabled="false">
+    <RobotArmTaskProvider Assembly="SNTON.DLL" Type="SNTON.Components.RobotArm.RobotArmTask" Id="RobotArmTaskProviderid" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
@@ -751,19 +763,19 @@
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </SQLCommandProvider>
-    <EquipTaskViewProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipTaskView" Id="EquipTaskViewProviderid" Enabled="false">
+    <EquipTaskViewProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.EquipTaskView" Id="EquipTaskViewProviderid" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </EquipTaskViewProvider>
 
-    <tblProdCodeStructMachProvider Assembly="SNTON.DLL" Type="SNTON.Components.MES.tblProdCodeStructMach" Id="tblProdCodeStructMachProviderId" Enabled="false">
+    <tblProdCodeStructMachProvider Assembly="SNTON.DLL" Type="SNTON.Components.MES.tblProdCodeStructMach" Id="tblProdCodeStructMachProviderId" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="MESSQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </tblProdCodeStructMachProvider>
 
-    <tblProdCodeStructMarkProvider Assembly="SNTON.DLL" Type="SNTON.Components.MES.tblProdCodeStructMark" Id="tblProdCodeStructMarkProviderId" Enabled="false">
+    <tblProdCodeStructMarkProvider Assembly="SNTON.DLL" Type="SNTON.Components.MES.tblProdCodeStructMark" Id="tblProdCodeStructMarkProviderId" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="MESSQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
@@ -779,7 +791,7 @@
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </RobotArmTaskSpoolProvider>
-    <MachineWarnningCodeProvider Assembly="SNTON.DLL" Type="SNTON.Components.PLCAddressCode.MachineWarnningCode" Id="MachineWarnningCodeProvider" Enabled="false">
+    <MachineWarnningCodeProvider Assembly="SNTON.DLL" Type="SNTON.Components.PLCAddressCode.MachineWarnningCode" Id="MachineWarnningCodeProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
@@ -789,7 +801,7 @@
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </InStoreToOutStoreSpoolProvider>
-    <ProductProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.Product" Id="ProductProvider" Enabled="false">
+    <ProductProvider Assembly="SNTON.DLL" Type="SNTON.Components.Equipment.Product" Id="ProductProvider" Enabled="true">
       <CONFIG HibernateSessionPoolToUse="SQLServerDatabase"
               HousekeepingCleanupAfterDays="7" HousekeepingFrequencyInMs="3600000" HousekeepingCleanupMaxRecords="500"
               HousekeepingEnabled="false" CachingEnabled="false"/>
@@ -829,7 +841,7 @@
               HousekeepingEnabled="false" CachingEnabled="false"/>
     </MachineStatusProvider>
 
-    <EquipTaskLogic Assembly="SNTON.DLL" Type="SNTON.Components.ComLogic.EquipTaskLogic" Id="EquipTaskLogicProvider" Enabled="true">
+    <EquipTaskLogic Assembly="SNTON.DLL" Type="SNTON.Components.ComLogic.EquipTaskLogic" Id="EquipTaskLogicProvider" Enabled="false">
       <CONFIG />
     </EquipTaskLogic>
     <LockManager Assembly="SNTON.DLL" Type="SNTON.Components.LockManager.LockManager" Id="LockManager" Enabled="true">

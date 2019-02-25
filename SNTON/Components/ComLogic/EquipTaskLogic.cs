@@ -207,6 +207,10 @@ namespace SNTON.Components.ComLogic
                         armtsks = this.BusinessLogic.RobotArmTaskProvider.GetRobotArmTasks($"TaskStatus in(0,1,2,3)");//找到正在执行的ArmTask
                         agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8,9)", null);
                         #region MyRegion
+                        if (armtsks == null)
+                            armtsks = new List<RobotArmTaskEntity>();
+                        if (agvrunningtsk == null)
+                            agvrunningtsk = new List<AGVTasksEntity>();
                         if (armtsks.FindAll(x => x.StorageArea == storeno).Count >= 3)
                             continue;//有正在执行的龙门任务
                         if (agvrunningtsk.FindAll(x => x.StorageArea == storeno && x.StorageLineNo == 1).Count >= 3)

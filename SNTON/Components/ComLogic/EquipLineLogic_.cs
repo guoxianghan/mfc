@@ -70,7 +70,7 @@ namespace SNTON.Components.ComLogic
                 _EquipCmdList = this.BusinessLogic.EquipConfigerProvider.EquipConfigers.FindAll(x => x.PLCNo == PLCNo);
             //var equiptsk = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"[STATUS]=1 AND PlantNo={PlantNo} AND PLCNo={PLCNo}", null);
             //16收到中控系统的调车指令,小车分配成功
-            var agvtsks = this.BusinessLogic.AGVTasksProvider.GetAGVTasks($"[STATUS] IN(8,16,19) AND [PlantNo]={PlantNo} and id>=15008 ", null);//AND PLCNo={PLCNo}36745
+            var agvtsks = this.BusinessLogic.AGVTasksProvider.GetAGVTasks($"[STATUS] IN(8,16,19) AND [PlantNo]={PlantNo} ", null);//AND PLCNo={PLCNo}36745
             //agvtsks = this.BusinessLogic.AGVTasksProvider.GetAGVTasks($"id =36745 ", null);//AND PLCNo={PLCNo}36745
             if (agvtsks == null || agvtsks.Count == 0)
                 return;
@@ -408,6 +408,8 @@ namespace SNTON.Components.ComLogic
             // AGVDisStatus_1 AGV调度状态 1未调度;2已调度
             if (_EquipCmdList == null)
                 _EquipCmdList = this.BusinessLogic.EquipConfigerProvider.EquipConfigers.FindAll(x => x.PLCNo == PLCNo);
+            //_EquipCmdList = _EquipCmdList.FindAll(x=>x.EquipName.Contains("ST-3A-11"));
+
             #region 绑定作业标准书
             if (machcodes.Count == 0)
                 foreach (var item in _EquipCmdList)
@@ -442,11 +444,14 @@ namespace SNTON.Components.ComLogic
             {
                 Neutrino ne = new Neutrino();
                 ne.TheName = "ReadEquipLine";
-
+                if (items.Key == "ST-3A-06")
+                {
+                }
                 foreach (var item in items)
                 {
-                    //if (!item.EquipName.Contains("ST-3A-04-11"))
-                    //    continue;
+                    if (item.EquipName.Contains("ST-3A-06") || item.EquipName.Contains("ST-3A-06-04"))
+                    {
+                    }
                     #region MyRegion
                     ne.AddField(item.LWCS.Trim(), "0");// 1出拉空轮; 2入拉满轮 W00
                     ne.AddField(item.WAStatus.Trim(), "0");//是否已调度AGV 1，已接收滚筒出料请求；2，已接收入料至滚筒请求 光电 W400
@@ -485,7 +490,7 @@ namespace SNTON.Components.ComLogic
                 agvrunning = plcNeutrino.GetInt(item.WAStatus.Trim());//是否已调度AGV 1，已接收滚筒出料请求；2，已接收入料至滚筒请求 光电
                 recive = Convert.ToByte(plcNeutrino.GetInt(item.AGVDisStatus.Trim()));//地面滚筒请求 AGVDisStatus
                 #region 创建equiptsk
-               if (inOrout != 0 || recive != 0)
+                if (inOrout != 0 || recive != 0)
                 {//未调度
                     if (recive != 0)
                         inOrout = recive;
@@ -626,7 +631,7 @@ namespace SNTON.Components.ComLogic
             this.thread_heartbeat.Stop(1000);
             this.thread_ReadEquipLineStatus.Stop(1000);
             this.thread_SendCreateAGV.Stop(1000);
-            base.Exit();    
+            base.Exit();
         }
     }
 

@@ -43,7 +43,7 @@ namespace SNTON.Components.ComLogic
         {
             base.StartInternal();
             thread_AliveReq.Start();
-            thread_AGVStatusReq.Start();
+            //thread_AGVStatusReq.Start();
             thread_CheckAGVTaskSend.Start();
             //thread_CreateAGVTask.Start(); 
         }
@@ -59,12 +59,10 @@ namespace SNTON.Components.ComLogic
             //re.AddField("TELEGRAMID", SNTONAGVCommunicationProtocol.AGVCmdExeReportAck.PadRight(20).ToString());
             //re.AddField("Action", "1");
             //re.AddField("TaskNo", "123");
-            ////Send(re);
-            ////return;
-            //var tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks($" (Status in (2) and isdeleted=0 ) OR (IsDeleted=0 AND [Status]=4 AND Updated<='{DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss")}')");
-            var tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks($" (Status in (2) ) OR ( [Status]=4 AND Updated<='{DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss")}')");
-
-            tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks("ID=3");
+            //Send(re);
+            //return;
+            var tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks($" (Status in (2) and isdeleted=0 ) OR (IsDeleted=0 AND [Status]=4 AND Updated<='{DateTime.Now.AddMinutes(-5).ToString("yyyy-MM-dd HH:mm:ss")}')");
+            //tmp = BusinessLogic.AGVTasksProvider.GetAGVTasks("ID=32813");
             //HLCallCmd(tmp[0]);
             //return;
             if (tmp == null)

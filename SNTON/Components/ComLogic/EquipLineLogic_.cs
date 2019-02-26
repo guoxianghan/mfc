@@ -28,15 +28,22 @@ namespace SNTON.Components.ComLogic
         private VIThreadEx thread_ReadEquipLineStatus;
         private VIThreadEx thread_SendCreateAGV;
         private VIThreadEx thread_heartbeat;
-        //private VIThreadEx thread_plctest;
 
         public EquipLineLogic_()
-        {
-            //threadequiptask = new VIThreadEx(CheckEquipTask, null, "Check AGV task Ready", 1000);
+        {;
             thread_ReadEquipLineStatus = new VIThreadEx(ReadEquipLine, null, "Check EquipLine Status", 3000);
             thread_SendCreateAGV = new VIThreadEx(SendCreateAGV, null, "thread for SendCreateAGV", 3000);
             thread_heartbeat = new VIThreadEx(heartbeat, null, "heartbeat", 1000);
-            //thread_plctest = new VIThreadEx(PLCTest, null, "PLCTest", 4000);
+            this.SubscribeEvent("Heart", (x,y)=> {
+                if (x)
+                {
+
+                }
+                else
+                {
+
+                }
+            });
         }
         protected override void StartInternal()
         {
@@ -107,7 +114,7 @@ namespace SNTON.Components.ComLogic
         {
             
             BACKUP3 = BACKUP3 == 0 ? 1 : 0;
-            
+            //this.
             var result =this.ReadData("Heart");
             
         }

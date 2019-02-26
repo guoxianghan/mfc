@@ -151,7 +151,7 @@ namespace SNTON.Components.ComLogic
         public bool SendData(Dictionary<string, dynamic> list)
         {
             var li = Trans2DataBlock(list.ToArray());
-            bool r = CommModule.Try2SendData(li);
+            bool r = CommModule.Try2SendData(li); 
             return r;
         }
         public Tuple<bool, Dictionary<string, dynamic>> ReadData(params string[] keys)
@@ -167,7 +167,8 @@ namespace SNTON.Components.ComLogic
         }
         public void SubscribeEvent(string tag, Action<bool, dynamic> action)
         {
-            CommModule.SubscribeEvent(tag, action); 
+            var db = FieldsDescription.GetOPCUAField(tag);
+            CommModule.SubscribeEvent(db.Value, action); 
         }
         public virtual void OnConnectExecution()
         {

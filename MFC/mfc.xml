@@ -295,7 +295,7 @@
     <CONTROLSET Name ="PLC_EquipLine2" Enabled ="true" path =".\Controlsets\EquipLineControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="EquipLine2"/>
-        <VARIABLE Name="$TelegramDescriptionsId$" Value="EquipLine2Descriptions"/>
+        <VARIABLE Name="$TelegramDescriptionsId$" Value="OPCUADescriptions"/>
         <VARIABLE Name="$PlantNo$" Value="3"/>
         <VARIABLE Name="$PLCNo$" Value="2"/>
         <VARIABLE Name="$HOST$" Value="opc.tcp://127.0.0.1:49320"/>

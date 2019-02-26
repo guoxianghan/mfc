@@ -181,7 +181,6 @@
     <Compile Include="Components\LockManager\LockRequests.cs" />
     <Compile Include="Components\Parser\IMXParser.cs" />
     <Compile Include="Components\Parser\MXParser.cs" />
-    <Compile Include="Components\Parser\OPCUAParser.cs" />
     <Compile Include="Components\Textkeys\ITextKeysReadIn.cs" />
     <Compile Include="Components\Textkeys\TextKeysReadIn.cs" />
     <Compile Include="Com\IMXCommModule.cs" />

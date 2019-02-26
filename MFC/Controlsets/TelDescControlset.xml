@@ -84,7 +84,7 @@
         <FIELD Name="StatusAGVRoute" Type="Alphanumeric" Pos="66" Length="2" Leadchar=" "></FIELD>
         <FIELD Name="TaskNoAGVRoute" Type="Custom" Pos="69" Length="15" Custom="[a-zA-Z0-9]*" Leadchar=" "></FIELD>
 
-<!--Custom="^[0-9]*\s+" -->
+        <!--Custom="^[0-9]*\s+" -->
 
         <!-- IsStatus="true" - Field will be treated as a status telegram and being cached by the MFC.
                                            In case it is received for the first time, the whole contents will be
@@ -3241,6 +3241,16 @@
           <FIELD	Name="requestPLC"> </FIELD>
           <FIELD	Name="responsePLC"> </FIELD>
         </TELEGRAM>
+      </TELEGRAMS>
+    </TelegramDescriptionHandler>
+
+    <TelegramDescriptionHandler Type="SNTON.Components.FieldsDescription.OPCUAFieldsDescription" Id="OPCUADescriptions" Assembly="SNTON.DLL" Enabled="true">
+      <FIELDDEFINITION>
+        <FIELD Name="Heart" Type="Int" Value="ch1.dev1.Tag1"></FIELD>
+      </FIELDDEFINITION>
+      <TELEGRAMS>
+        <TELEGRAMID Name="TELEGRAMID" Type="Custom" Pos="1" Length="20" Custom="^\s+[a-zA-Z0-9]*" Leadchar=" "></TELEGRAMID>
+        <SEQUENCE Name="SEQUENCE" Type="Alphanumeric" Pos="21" Length="10"></SEQUENCE>
       </TELEGRAMS>
     </TelegramDescriptionHandler>
   </CONTROLSET>

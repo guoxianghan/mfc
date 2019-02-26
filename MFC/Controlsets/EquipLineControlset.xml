@@ -18,6 +18,7 @@
               Parser="PLC$EXT$Parser"
               DatabaseLayer="PLC$EXT$Database"
               HibernateSessionPoolToUse="SQLServerDatabase"
+              TelegramDescriptions="$TelegramDescriptionsId$"
               BusinessLogicId="BusinessLogic"
               PlantNo="$PlantNo$"
               PLCNo="$PLCNo$"

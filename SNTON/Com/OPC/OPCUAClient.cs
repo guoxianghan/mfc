@@ -152,35 +152,8 @@ namespace SNTON.Com
 
             base.OnDisconnect();
         }
-        //主动写PLC设备的数据的方法  启动Client时候,启动一个线程检测变量,如果有变化,则进行处理,
-        //
-        [Obsolete("Please use Try2SendData method to write to data block", true)]
-        public bool SendData(List<OPCUADataBlock> data)
-        {
-            //string szdevice = "D1004";
-            //int length = 1;
-            //short[] value = { 2 };
-            //int result = actProgProvider.WriteDeviceBlock2(szdevice, length, ref value[0]);
-            //调用三菱发送的方法,发送失败的处理方式
-            foreach (var item in data)
-            {
-                string szlabel = item.DBName;
-                if (item.DBDataInIn4Bytes != null)
-                {
 
-                }
-                else if (item.DBDataIn2Bytes != null)
-                {
 
-                }
-                //重连
-                //if (item.Result != 0)
-                //    break; 
-            }
-            //若发送失败则重连
-            //OnConnect();
-            return true;
-        }
         public bool Try2SendData(List<OPCUADataBlock> dataBlockList, short maxSendCount = 1)
         {
             foreach (var item in dataBlockList)
@@ -248,7 +221,7 @@ namespace SNTON.Com
                 return nue;
             }
         }
-         private Tuple<bool, short> ReadDataBlock(OPCUADataBlock db, short tryReadCount)
+        private Tuple<bool, short> ReadDataBlock(OPCUADataBlock db, short tryReadCount)
         {
 
             short shortDb = 0;
@@ -291,7 +264,6 @@ namespace SNTON.Com
         {
             try
             {
-                short shortDb = 0;
                 bool sendSuccess = true;
                 //Try to connect while connection is broken
                 //By Song@2018.01.20
@@ -299,20 +271,13 @@ namespace SNTON.Com
                 {
                     Reconnect();
                 }
-                if (db.DBDataIn2Bytes != null)
-                {
-                    shortDb = db.DBDataIn2Bytes[0];
-                }
-                else if (db.DBDataInIn4Bytes != null)
-                {
-                    shortDb = Convert.ToInt16(db.DBDataInIn4Bytes[0]);
-                }
+
                 for (int i = 0; i < maxSendCount || !sendSuccess; i++)
                 {
                     int result = 0;
                     lock (connectLocker)
                     {
-                        _UaClient.Write<dynamic>(db.DBName, shortDb);
+                        _UaClient.Write<dynamic>(db.DBName, db.Value);
                         result = 0;
                     }
 
@@ -422,5 +387,23 @@ namespace SNTON.Com
         //}
         #endregion
         #endregion end of override method
+
+        /// <summary>
+        /// 订阅标签值的变化
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="action"></param>
+        public void SubscribeEvent(string tag, Action<bool, dynamic> action)
+        {
+            _UaClient.Monitor<dynamic>(tag, (x, y) =>
+            {
+                bool r = x.Quality == Hylasoft.Opc.Common.Quality.Good ? true : false;
+                if (action != null)
+                    action.Invoke(r, x.Value);
+            });
+        }
+        #region Test
+        
+        #endregion
     }
 }

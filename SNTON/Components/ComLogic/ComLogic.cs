@@ -57,6 +57,9 @@ namespace SNTON.Components.ComLogic
                 return OPCUAFieldsDescription;
             }
         }
+        /*
+        <CONFIG CommModule="PLC_$EXT$" TelegramDescriptions="$TelegramDescriptionsId$"></CONFIG>
+        */
         [ConfigBoundProperty("CommModule")]
         protected string commModuelGlueId;
         private IOPCUACommModule mxCommModule;
@@ -135,7 +138,7 @@ namespace SNTON.Components.ComLogic
             foreach (var item in keys)
             {
                 var d = FieldsDescription.GetOPCUAField(item);
-                list.Add(new OPCUADataBlock() { Name = d.Name, Type = d.Type });
+                list.Add(new OPCUADataBlock() { Name = d.Name, Type = d.Type, DBName = d.Value });
             }
             return list;
         }
@@ -150,7 +153,7 @@ namespace SNTON.Components.ComLogic
             var li = Trans2DataBlock(list.ToArray());
             bool r = CommModule.Try2SendData(li);
             return r;
-        } 
+        }
         public Tuple<bool, Dictionary<string, dynamic>> ReadData(params string[] keys)
         {
             Dictionary<string, dynamic> dic = new Dictionary<string, dynamic>();
@@ -162,7 +165,10 @@ namespace SNTON.Components.ComLogic
             });
             return new Tuple<bool, Dictionary<string, dynamic>>(r, dic);
         }
-
+        public void SubscribeEvent(string tag, Action<bool, dynamic> action)
+        {
+            CommModule.SubscribeEvent(tag, action); 
+        }
         public virtual void OnConnectExecution()
         {
         }
@@ -186,19 +192,7 @@ namespace SNTON.Components.ComLogic
             return base.CanHandleNeutrino(theNeutrino);
         }
 
-        /// <summary>
-        /// Easy solution to write fields to be sent back to the PLC
-        /// </summary>
-        /// <param name="theField">Key to be written</param>
-        /// <param name="theValue">value to be used</param>
-        /// <param name="dataOut">Neutrino to be worked on</param>
-        private void WriteField(string theField, string theValue, ref Neutrino dataOut)
-        {
-            int byteCount = Encoding.GetEncoding(1252).GetByteCount(theValue);
-            byte[] data = new byte[byteCount];
-            Array.Copy(Encoding.GetEncoding(1252).GetBytes(theValue), data, byteCount);
-            dataOut.AddField(theField, data);
-        }
+
         protected override void StartInternal()
         {
             if (Sequencer != null)

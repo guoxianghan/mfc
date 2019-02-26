@@ -105,9 +105,10 @@ namespace SNTON.Components.ComLogic
         int BACKUP3 = 0;
         void heartbeat()
         {
+            
             BACKUP3 = BACKUP3 == 0 ? 1 : 0;
             
-            var result =this.ReadData("nread");
+            var result =this.ReadData("Heart");
             
         }
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using log4net;
 using SNTON.Com;
+using SNTON.Components.FieldsDescription;
 using SNTON.Components.Parser;
 using SNTON.Constants;
 using System;
@@ -26,6 +27,7 @@ namespace SNTON.Components.ComLogic
         {
 
         }
+
         private IOPCUACommModule com { get; set; }
         public ComLogic() : base(null)
         {
@@ -44,17 +46,28 @@ namespace SNTON.Components.ComLogic
                 return Sequencerid;
             }
         }
-
-        /// <summary>
-        /// 暂存库号，1号；2号；3号暂存库
-        /// </summary>
-        [ConfigBoundProperty("StorageArea")]
-        public int StorageArea = 0;
-        /// <summary>
-        /// 车间号，3号车间，4号车间
-        /// </summary>
-        [ConfigBoundProperty("PlantNo")]
-        public byte PlantNo = 0;
+        [ConfigBoundProperty("TelegramDescriptions")]
+        private string fieldsDescriptionId = "";
+        private OPCUAFieldsDescription OPCUAFieldsDescription;
+        protected OPCUAFieldsDescription FieldsDescription
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref OPCUAFieldsDescription, fieldsDescriptionId, this);
+                return OPCUAFieldsDescription;
+            }
+        }
+        [ConfigBoundProperty("CommModule")]
+        protected string commModuelGlueId;
+        private IOPCUACommModule mxCommModule;
+        protected new IOPCUACommModule CommModule
+        {
+            get
+            {
+                Kernel.Glue.RetrieveComponentInstance(ref mxCommModule, commModuelGlueId, this);
+                return mxCommModule;
+            }
+        }
         /// <summary>
         /// The Business Logic Component responsible for giving us the data we need.
         /// </summary>
@@ -70,19 +83,6 @@ namespace SNTON.Components.ComLogic
             {
                 Kernel.Glue.RetrieveComponentInstance(ref businessLogic, businessLogicId);
                 return businessLogic;
-            }
-        }
-        [ConfigBoundProperty("MXParser")]
-#pragma warning disable 649
-        private string mxparser;
-#pragma warning restore 649
-        private IMXParser mxParse;
-        public IMXParser MXParser
-        {
-            get
-            {
-                Kernel.Glue.RetrieveComponentInstance(ref mxParse, mxparser);
-                return mxParse;
             }
         }
         protected virtual bool ProcessMessage(Neutrino neutrino)
@@ -118,11 +118,51 @@ namespace SNTON.Components.ComLogic
         {
             return base.Send(sendData);
         }
-        public bool SendData(Neutrino data)
+
+        List<OPCUADataBlock> Trans2DataBlock(params KeyValuePair<string, dynamic>[] kvps)
         {
-            bool r = MXParser.SendData(data);
+            List<OPCUADataBlock> list = new List<OPCUADataBlock>();
+            foreach (var item in kvps)
+            {
+                var d = FieldsDescription.GetOPCUAField(item.Key);
+                list.Add(new OPCUADataBlock() { Value = item.Value, Name = d.Name, Type = d.Type });
+            }
+            return list;
+        }
+        List<OPCUADataBlock> Trans2DataBlock(params string[] keys)
+        {
+            List<OPCUADataBlock> list = new List<OPCUADataBlock>();
+            foreach (var item in keys)
+            {
+                var d = FieldsDescription.GetOPCUAField(item);
+                list.Add(new OPCUADataBlock() { Name = d.Name, Type = d.Type });
+            }
+            return list;
+        }
+        public bool SendData(string key, dynamic value)
+        {
+            var list = Trans2DataBlock(new KeyValuePair<string, dynamic>(key, value));
+            bool r = CommModule.Try2SendData(list);
             return r;
         }
+        public bool SendData(Dictionary<string, dynamic> list)
+        {
+            var li = Trans2DataBlock(list.ToArray());
+            bool r = CommModule.Try2SendData(li);
+            return r;
+        } 
+        public Tuple<bool, Dictionary<string, dynamic>> ReadData(params string[] keys)
+        {
+            Dictionary<string, dynamic> dic = new Dictionary<string, dynamic>();
+            List<OPCUADataBlock> list = Trans2DataBlock(keys);
+            bool r = CommModule.Try2ReadData2(list);
+            list.ForEach(x =>
+            {
+                dic.Add(x.Name, x.Value);
+            });
+            return new Tuple<bool, Dictionary<string, dynamic>>(r, dic);
+        }
+
         public virtual void OnConnectExecution()
         {
         }

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <MFC.NET>
   <CONTROLSET>
-    <PARSER Type="SNTON.Components.Parser.MXParser" Id="PLC$EXT$Parser" Enabled="true" Assembly=".\SNTON.DLL" >
+    <PARSER Type="SNTON.Components.Parser.OPCUAParser" Id="PLC$EXT$Parser" Enabled="true" Assembly=".\SNTON.DLL" >
       <CONFIG CommModule="PLC_$EXT$" TelegramDescriptions="$TelegramDescriptionsId$"></CONFIG>
       <MONITORING CheckMaxProcessingTime="1" LogAllProcessingTimes="1"></MONITORING>
     </PARSER>
@@ -25,10 +25,10 @@
       </CONFIG>
       <WATCHDOG Enabled="false" TimeoutInSecs="60" TelegramId="AliveReq"  RetriesBeforeDisconnection="3" ReplyTelegramId="AliveAck"></WATCHDOG>
     </LOGIC>
-    <PLC Type="SNTON.Com.MXQPLCClient" Enabled="true" Id="PLC_$EXT$" Name="NiTech PLC-$EXT$" Assembly=".\SNTON.DLL"  ResourceType="PLC">
+    <PLC Type="SNTON.Com.OPCUAClient" Enabled="true" Id="PLC_$EXT$" Name="NiTech PLC-$EXT$" Assembly=".\SNTON.DLL"  ResourceType="PLC">
       <CONFIG Parser="PLC$EXT$Parser"
               CpuType="34"
-              HostAddress="$HOST$"
+              HostUrl="$HOST$"
               Port="$PORT$"
               ProtocolType="5"
               ComTimeout="1000"

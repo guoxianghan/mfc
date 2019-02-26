@@ -13,12 +13,6 @@ namespace SNTON.Com
         //bool SendData(List<OPCUADataBlock> data);
         bool Try2SendData(List<OPCUADataBlock> dataBlockList, short maxTryReadCount = 1);
         Neutrino Try2ReadData(List<OPCUADataBlock> dataBlockList, short maxReadCount = 1);
-        /// <summary>
-        /// Try to read data with reading result sign feedback
-        /// </summary>
-        /// <param name="dataBlock">Data Block information</param>
-        /// <param name="maxReadCount">max read count while connection is unavailable</param>
-        /// <returns>return true or false sign, data neutrino</returns>
-        Tuple<bool, Neutrino> Try2ReadDataWithSign(List<OPCUADataBlock> dataBlockList, short maxReadCount = 1);
+        bool Try2ReadData2(List<OPCUADataBlock> dataBlockList, short maxReadCount = 1);
     }
 }

@@ -11,8 +11,7 @@
 using System;
 using System.Collections.Generic;
 using SNTON.WebServices;
-using SNTON.WebServices.UserInterfaceBackend.Models;
-using SNTON.Entities.DBTables.Message;
+using SNTON.WebServices.UserInterfaceBackend.Models; 
 
 namespace SNTON.WebServices.UserInterfaceBackend.Responses
 {

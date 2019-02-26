@@ -39,13 +39,13 @@ namespace SNTON.Components.Parser
 
         [ConfigBoundProperty("TelegramDescriptions")]
         private string fieldsDescriptionId = "";
-        private IMXFieldsDescription mxFieldsDescription;
-        protected IMXFieldsDescription FieldsDescription
+        private MXFieldsDescription OPCUAFieldsDescription;
+        protected MXFieldsDescription FieldsDescription
         {
             get
             {
-                Kernel.Glue.RetrieveComponentInstance(ref mxFieldsDescription, fieldsDescriptionId, this);
-                return mxFieldsDescription;
+                Kernel.Glue.RetrieveComponentInstance(ref OPCUAFieldsDescription, fieldsDescriptionId, this);
+                return OPCUAFieldsDescription;
             }
         }
 
@@ -240,7 +240,7 @@ namespace SNTON.Components.Parser
             //foreach (var item in neutrino.GetAllKeys())
             //{
             //    #region MyRegion
-            //    var mx = this.FieldsDescription.GetMXField(item);
+            //    var mx = this.FieldsDescription.GetOPCUAField(item);
             //    switch (mx.Type)
             //    {
             //        case "Int":
@@ -285,12 +285,7 @@ namespace SNTON.Components.Parser
         }
         public Tuple<bool, Neutrino> ReadData(Neutrino neu2Read, bool withReadResultSign = true, short maxReadCount = 1)
         {
-            var datablock = Neutrino2DataBlock(neu2Read);
-            if (withReadResultSign)
-            {
-                return CommModule.Try2ReadDataWithSign(datablock, maxReadCount);
-            }
-            else
+            var datablock = Neutrino2DataBlock(neu2Read); 
             {
                 return new Tuple<bool, Neutrino>(true, CommModule.Try2ReadData(datablock, maxReadCount));
             }
@@ -316,15 +311,7 @@ namespace SNTON.Components.Parser
             neu2Read.TheName = thename;
             neu2Read.AddField(dbname, "0");
             var datablock = Neutrino2DataBlock(neu2Read);
-            var re = CommModule.Try2ReadDataWithSign(datablock, maxReadCount);
-            if (withReadResultSign)
-            {
-                return new Tuple<bool, int>(re.Item1, re.Item2.GetIntOrDefault(dbname));
-            }
-            else
-            {
-                return new Tuple<bool, int>(true, re.Item2.GetIntOrDefault(dbname));
-            }
+            return null;
         }
 
         public Tuple<bool, Neutrino> ReadData(string name, params string[] dbnames)
@@ -339,7 +326,7 @@ namespace SNTON.Components.Parser
                 }
             }
             var datablock = Neutrino2DataBlock(neu2Read);
-            return CommModule.Try2ReadDataWithSign(datablock, 1);
+            return null;
         }
         #endregion End of IMXParser interface
     }

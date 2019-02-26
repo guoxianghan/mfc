@@ -20,14 +20,13 @@ namespace SNTON.Com
 
         protected readonly IList<ILogic> logicList = new List<ILogic>();
 
-        protected string HostAddress { get; set; }
+        [ConfigBoundProperty("HostUrl")]
+        protected string HostUrl { get; set; }
         [ConfigBoundProperty("Port")]
         protected int Port { get; set; }
         [ConfigBoundProperty("Parser")]
         private string parserId = null;
-        private IParser parserInstance;
-        //private int ThreadShutdownTimeout = 5000;
-        //private int tcheckFlagBitThreadTimeout = 5000;
+        private IParser parserInstance;//HostUrl
         #region Property defination
 
         protected string connectionName;

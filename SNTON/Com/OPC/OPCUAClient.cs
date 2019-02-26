@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using Hylasoft.Opc.Ua;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,94 +13,86 @@ using VI.MFC.Components.Sequencer.Sequencehandler;
 using VI.MFC.Logging;
 using VI.MFC.Logic;
 
-namespace SNTON.Com 
+namespace SNTON.Com
 {
     public class OPCUAClient : OPCCom, IOPCUACommModule
     {
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private object connectLocker = new object();
-        public static MXPLCClient Create(XmlNode configNode)
+        public static OPCUAClient Create(XmlNode configNode)
         {
-            MXPLCClient comModule = new MXPLCClient();
+            OPCUAClient comModule = new OPCUAClient();
             comModule.Init(configNode);
+            comModule._UaClient = new UaClient(new Uri(comModule.HostUrl));
             return comModule;
-        } 
-        //public DotUtlType MXDotUtlType = new DotUtlType();
+        }
+        public UaClient _UaClient = null;
         public OPCUAClient()
         {
-            //_MXAxActUtlType = new AxActUtlType();
-            //_axForm.Controls.Add(_MXAxActUtlType);
-            //int i = _MXAxActUtlType.Open();
-            //_MXAxActUtlType.ActLogicalStationNumber = 1;
-            //_MXAxActUtlType.ActPassword = "";
-            //actProgProvider = new ActProgTypeClass();
-
         }
         #region Beginog ICommModule Interface implementation
         public ISequenceHandler InboundSequencer { get; }
         public ISequenceHandler OutboundSequencer { get; }
         public IPacketizer Packetizer { get; }
-
         //Add new virtual method to set connection parameters
         //By Song@2018.01.15.
         protected virtual void SetConnectionParameters()
         {
-            //if (actProgProvider != null)
-            //{
-            //    actProgProvider.ActHostAddress = HostAddress;
-            //    //actProgProvider.ActPortNumber = this.Port;
-            //    actProgProvider.ActCpuType = CpuType;
-            //    actProgProvider.ActUnitType = UnitType;
-            //    actProgProvider.ActProtocolType = ProtocolType;
-            //    //actProgProvider.ActTimeOut = ComTimeout;
-            //}
+
         }
         public void Connect()
         {
             try
             {
-                //if (actProgProvider == null)
-                //{
-                //    actProgProvider = new ActProgTypeClass();
-                //}
-                //SetConnectionParameters();
-                //int isopen = actProgProvider.Open();
-                //if (isopen == MXPLCComm.MXPlcOpened)
-                //{
-                //    //Console.WriteLine("通信线路打开成功," + this.HostAddress);
-                //    OnConnect();
-                //    logger.ErrorMethod("通信线路打开成功," + this.HostAddress);
-                //}
-                //else
-                //{
-                //    IsComConnected = false;
-                //    Console.WriteLine("通信线路打开失败," + this.HostAddress + ",errcode:" + isopen);
-                //    logger.ErrorMethod("通信线路打开失败," + this.HostAddress + ",errcode:" + isopen);
-                //}
+                if (_UaClient == null)
+                {
+                    _UaClient = new UaClient(new Uri(this.HostUrl));
+                }
+                _UaClient.Connect();
+                if (_UaClient.Status == Hylasoft.Opc.Common.OpcStatus.Connected)
+                {
+                    //IsComConnected = true;
+                    OnConnect();
+                    logger.InfoMethod("通信线路打开成功," + this.HostUrl);
+                    Console.WriteLine("通信线路打开成功," + this.HostUrl);
+                }
+                else
+                {
+                    IsComConnected = false;
+                    Console.WriteLine("通信线路打开失败," + this.HostUrl);
+                    logger.InfoMethod("通信线路打开失败," + this.HostUrl);
+                }
+
             }
             catch (Exception ex)
             {
+                IsComConnected = false;
                 logger.ErrorMethod(string.Format("Error while opening the connection {0}", GetGlueId()), ex);
+                Console.WriteLine("通信线路打开失败," + this.HostUrl + "," + ex.Message);
+                logger.ErrorMethod("通信线路打开失败," + this.HostUrl + "," + ex.Message);
             }
         }
         public void Disconnect()
         {
-            //Use close() method to close the communication
-            //actProgProvider.Disconnect();
-            //if (actProgProvider == null)
-            //{
-            //    return;
-            //}
-            //int disconnected = actProgProvider.Close();
-            //if (disconnected == MXPLCComm.MXPlcClosed)
-            //{
-            //    OnDisconnect();
-            //}
-            //else
-            //{
-            //    logger.ErrorMethod(string.Format("Failed to close the connection {0}", GetGlueId()));
-            //}
+            //Use close() method to close the communication 
+            if (_UaClient == null)
+            {
+                return;
+            }
+            //int disconnected = 0;
+            try
+            {
+                if (_UaClient.Status == Hylasoft.Opc.Common.OpcStatus.Connected)
+                {
+                    _UaClient.Dispose();
+                }
+                OnDisconnect();
+            }
+            catch (Exception e)
+            {
+                logger.ErrorMethod(string.Format("Failed to close the connection {0}", GetGlueId()), e);
+            }
         }
         public void GetBytesInSendAndReceiveBuffer(out int bytesInSendBuffer, out int bytesInReceiveBuffer)
         {
@@ -108,7 +101,7 @@ namespace SNTON.Com
         }
         public string GetConnectionName()
         {
-            return connectionName;
+            return "OPCUAClient:opc:tcp//" + this.HostUrl;
         }
         public string GetGlueId()
         {
@@ -174,11 +167,11 @@ namespace SNTON.Com
                 string szlabel = item.DBName;
                 if (item.DBDataInIn4Bytes != null)
                 {
-                     
+
                 }
                 else if (item.DBDataIn2Bytes != null)
                 {
-                     
+
                 }
                 //重连
                 //if (item.Result != 0)
@@ -255,56 +248,7 @@ namespace SNTON.Com
                 return nue;
             }
         }
-        public Tuple<bool, Neutrino> Try2ReadDataWithSign(List<OPCUADataBlock> dataBlockList, short maxReadCount = 1)
-        {
-            Neutrino nue = new Neutrino();
-            //调用三菱发送的方法,发送失败的处理方式
-            //nue.TheName = dataBlockList[0].
-            foreach (var item in dataBlockList)
-            {
-                //int db4; short db2;
-                switch (item.Type)
-                {
-                    case "Int":
-                        var readInt = ReadDataBlock(item, maxReadCount);
-                        if (readInt.Item1)
-                        {
-                            nue.AddField(item.Name, readInt.Item2.ToString());
-                        }
-                        else
-                        {
-                            return new Tuple<bool, Neutrino>(false, nue);
-                        }
-                        break;
-                    case "String":
-                        var readString = ReadDataBlock(item, maxReadCount);
-                        if (readString.Item1)
-                        {
-                            nue.AddField(item.Name, readString.Item2.ToString());
-                        }
-                        else
-                        {
-                            return new Tuple<bool, Neutrino>(false, nue);
-                        }
-                        break;
-                    case "Short":
-                        var readShort = ReadDataBlock(item, maxReadCount);
-                        if (readShort.Item1)
-                        {
-                            nue.AddField(item.Name, readShort.Item2.ToString());
-                        }
-                        else
-                        {
-                            return new Tuple<bool, Neutrino>(false, nue);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return new Tuple<bool, Neutrino>(true, nue);
-        }
-        private Tuple<bool, short> ReadDataBlock(OPCUADataBlock db, short tryReadCount)
+         private Tuple<bool, short> ReadDataBlock(OPCUADataBlock db, short tryReadCount)
         {
 
             short shortDb = 0;
@@ -318,17 +262,22 @@ namespace SNTON.Com
                 }
                 for (int i = 0; i < tryReadCount || !readSuccess; i++)
                 {
-                    //if (actProgProvider.ReadDeviceBlock2(db.DBName, db.DBLength, out shortDb) == MXPLCComm.ReadDataSuccess)
-                    //{
-                    //    readSuccess = true;
-                    //}
-                    //else
-                    //{
-                    //    //Try to reconnect
-                    //    IsComConnected = false;
-                    //    Reconnect();
-                    //    readSuccess = false;
-                    //}
+                    try
+                    {
+                        var result = this._UaClient.Read<dynamic>(db.DBName);
+                        shortDb = result.Value;
+                        if (result.Quality == Hylasoft.Opc.Common.Quality.Good)
+                            readSuccess = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        //Try to reconnect
+                        IsComConnected = false;
+                        Reconnect();
+                        readSuccess = false;
+                        ex.ToString();
+                        logger.ErrorMethod(this.HostUrl + "通信失败；" + ex.ToString(), ex);
+                    }
                 }
                 return new Tuple<bool, short>(readSuccess, shortDb);
             }
@@ -363,6 +312,7 @@ namespace SNTON.Com
                     int result = 0;
                     lock (connectLocker)
                     {
+                        _UaClient.Write<dynamic>(db.DBName, shortDb);
                         result = 0;
                     }
 
@@ -435,6 +385,28 @@ namespace SNTON.Com
         public bool IsConnected()
         {
             return IsComConnected;
+        }
+
+        public bool Try2ReadData2(List<OPCUADataBlock> dataBlockList, short maxReadCount = 1)
+        {
+            foreach (var item in dataBlockList)
+            {
+                if (!IsComConnected)
+                {
+                    Reconnect();
+                    return false;
+                }
+                var r = this._UaClient.Read<dynamic>(item.DBName);
+                if (r.Quality == Hylasoft.Opc.Common.Quality.Good)
+                    item.Value = r.Value;
+                else return false;
+            }
+            return true;
+        }
+
+        public Tuple<bool, Neutrino> Try2ReadDataWithSign(List<OPCUADataBlock> dataBlockList, short maxReadCount = 1)
+        {
+            throw new NotImplementedException();
         }
         #region Comment part
         //public bool TrySendData(List<OPCUADataBlock> data, short maxTrySendCount = 1)

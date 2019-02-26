@@ -146,10 +146,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             MessageResponse obj = new MessageResponse();
             try
             {
-                //logger.InfoMethod($"NewMessageGet request msgLevel is {msgLevel}, time stamp: {DateTime.Now.ToString()}");
-                Console.WriteLine("NewMessageGet" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                obj = BusinessLogic.NewMessageGet(msgLevel);
-                Console.WriteLine("end with NewMessageGet" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
                 //logger.InfoMethod(string.Format("NewMessageGet response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -163,9 +160,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             ResponseDataBase obj = new ResponseDataBase();
             try
             {
-                Console.WriteLine("MessageSource" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                obj = this.BusinessLogic.MessageSource();
-                Console.WriteLine("end with MessageSource" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
             }
             catch (Exception ex)
             {
@@ -186,7 +181,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
                     return obj;
                 }
                 //Console.WriteLine($"MessageSearch request searchRequest is {JsonConvert.SerializeObject(searchRequest)}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.MessageSearch(searchRequest);
+
 
             }
             catch (Exception ex)
@@ -207,7 +202,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"SystemParameterQuery request , time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.SystemParameterQuery();
+
                 //logger.InfoMethod(string.Format("SystemParameterQuery response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -223,7 +218,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"SaveSystemParameter request data is {JsonConvert.SerializeObject(request)}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.SystemParameterSave(request);
+
                 //logger.InfoMethod(string.Format("SaveSystemParameter response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -239,7 +234,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"GetSpoolsByBarcode request barcode is {barcode} , time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetSpoolsByBarcode(barcode);
+
                 //logger.InfoMethod(string.Format("GetSpoolsByBarcode response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -255,7 +250,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"GetSpoolsByMidStorageId request midStorageId is {midStorageId}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetSpoolsByMidStorageId(midStorageId);
+                //obj = BusinessLogic.GetSpoolsByMidStorageId(midStorageId);
                 //logger.InfoMethod(string.Format("GetSpoolsByMidStorageId response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -271,7 +266,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"GetSpoolsByProudctType request proudctType is {proudctType}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetSpoolsByProudctType(proudctType);
+                //obj = BusinessLogic.GetSpoolsByProudctType(proudctType);
                 //logger.InfoMethod(string.Format("GetSpoolsByProudctType response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -290,7 +285,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"EquipConfigStatus request planno is {planno}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.EquipConfigStatus(planno);
+                //obj = BusinessLogic.EquipConfigStatus(planno);
                 //logger.InfoMethod(string.Format("EquipConfigStatus response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -306,7 +301,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"EquipConfigInfo request id is {id}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.EquipConfigInfo(id);
+                //obj = BusinessLogic.EquipConfigInfo(id);
                 //logger.InfoMethod(string.Format("EquipConfigInfo response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -322,7 +317,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"EquipProductionsByGroupID request groupid is {groupid}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.EquipProductionsByGroupID(groupid);
+                //obj = BusinessLogic.EquipProductionsByGroupID(groupid);
                 //logger.InfoMethod(string.Format("EquipProductionsByGroupID response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -338,7 +333,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"EquipProductionsByProductType request producttype is {producttype}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.EquipProductionsByProductType(producttype);
+                //obj = BusinessLogic.EquipProductionsByProductType(producttype);
                 //logger.InfoMethod(string.Format("EquipProductionsByProductType response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -354,7 +349,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"EquipProductionsSearch request search is {JsonConvert.SerializeObject(search)}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.EquipProductionsSearch(search);
+                //obj = BusinessLogic.EquipProductionsSearch(search);
                 logger.InfoMethod(string.Format("EquipProductionsSearch response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -370,7 +365,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"EquipProductionsSearch request , time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetAllEquipControllerConfig();
+                //obj = BusinessLogic.GetAllEquipControllerConfig();
                 logger.InfoMethod(string.Format("EquipProductionsSearch response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -386,7 +381,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"GetEquipControllerConfigByPlantNo request plantno is {plantno}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetEquipControllerConfigByPlantNo(plantno);
+                //obj = BusinessLogic.GetEquipControllerConfigByPlantNo(plantno);
                 logger.InfoMethod(string.Format("GetEquipControllerConfigByPlantNo response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -402,7 +397,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"GetEquipControllerConfigByCtlName request controllername is {controllername}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetEquipControllerConfigByCtlName(controllername);
+                //obj = BusinessLogic.GetEquipControllerConfigByCtlName(controllername);
                 //logger.InfoMethod(string.Format("GetEquipControllerConfigByCtlName response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -419,7 +414,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"GetEquipControllerConfigById request id is {id}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetEquipControllerConfigById(id);
+                //obj = BusinessLogic.GetEquipControllerConfigById(id);
                 //logger.InfoMethod(string.Format("GetEquipControllerConfigById response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -435,7 +430,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"EquipProductionsByProductType request list is {list}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.SaveEquipProductionList(list, oper);
+                //obj = BusinessLogic.SaveEquipProductionList(list, oper);
                 //logger.InfoMethod(string.Format("SaveEquipProductionList response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -451,7 +446,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 //logger.InfoMethod($"EquipConfigs request planno is {planno}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.EquipConfigs(planno);
+                //obj = BusinessLogic.EquipConfigs(planno);
                 //logger.InfoMethod(string.Format("EquipConfigs response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -466,7 +461,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"UpdateEquipProduction request product is {product}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.UpdateEquipProduction(product, oper);
+                //obj = BusinessLogic.UpdateEquipProduction(product, oper);
                 //logger.InfoMethod(string.Format("UpdateEquipProduction response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -484,7 +479,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 //logger.InfoMethod($"AGVConfig request plantno is {plantno}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetAGVConfig(plantno);
+                //obj = BusinessLogic.GetAGVConfig(plantno);
                 //logger.InfoMethod(string.Format("AGVConfig response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -500,7 +495,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 //logger.InfoMethod($"AGVDetail request id is {id}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetAGVDetail(id);
+                //obj = BusinessLogic.GetAGVDetail(id);
                 //logger.InfoMethod(string.Format("AGVDetail response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -516,7 +511,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 //logger.InfoMethod($"AGVConfigInfo request plantno is {plantno}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetAGVConfigInfo(plantno);
+                //obj = BusinessLogic.GetAGVConfigInfo(plantno);
                 //logger.InfoMethod(string.Format("AGVConfigInfo response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -531,7 +526,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 //logger.InfoMethod($"SaveSystemParameter request id is {id}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.CreateEquipTask(id, tasktype, plantno);
+                //obj = BusinessLogic.CreateEquipTask(id, tasktype, plantno);
                 //logger.InfoMethod(string.Format("SaveSystemParameter response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -546,7 +541,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 //logger.InfoMethod($"AGVRouteArchiveResponse request search is {JsonConvert.SerializeObject(search)}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.HistoryAGVRoute(search);
+                //obj = BusinessLogic.HistoryAGVRoute(search);
                 //logger.InfoMethod(string.Format("AGVRouteArchiveResponse response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -564,7 +559,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 //logger.InfoMethod($"MidStorage request areaid is {areaid}, time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.GetMidStorageBase(areaid);
+                //obj = BusinessLogic.GetMidStorageBase(areaid);
                 //logger.InfoMethod(string.Format("MidStorage response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -584,7 +579,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"MidStorageDetail, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.GetMidStorageDetail(areaid);
+                //obj = BusinessLogic.GetMidStorageDetail(areaid);
                 //logger.InfoMethod(string.Format("MidStorage response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -599,11 +594,11 @@ namespace SNTON.WebServices.UserInterfaceBackend
         }
         public object MidStorageDescription(int areaid)
         {
-            MidStorageCountResponse obj;
+            MidStorageCountResponse obj=null;
             try
             {
                 //logger.InfoMethod($"MidStorageDescription,areaid:{areaid}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.MidStorageDescription(areaid);
+                //obj = BusinessLogic.MidStorageDescription(areaid);
                 //logger.InfoMethod($"end with MidStorageDescription,areaid:{areaid}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
             catch (Exception ex)
@@ -621,7 +616,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             {
                 //logger.InfoMethod($"MidStorage request areaid is {areaid}, time stamp: {DateTime.Now.ToString()}");
                 //Console.WriteLine($"MidStorage request areaid is {areaid}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.GetMidStorageInfo(areaid);
+                //obj = BusinessLogic.GetMidStorageInfo(areaid);
                 //Console.WriteLine($"end with MidStorage request areaid is {areaid}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
                 //logger.InfoMethod(string.Format("MidStorage response is {0}", JsonConvert.SerializeObject(obj)));
             }
@@ -637,7 +632,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 //logger.InfoMethod($"MidStorage request id is {id}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.GetMidStorageDetailById(storageid, id);
+                //obj = BusinessLogic.GetMidStorageDetailById(storageid, id);
                 //logger.InfoMethod(string.Format("MidStorage response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -657,9 +652,8 @@ namespace SNTON.WebServices.UserInterfaceBackend
         #region test
         public object TTT()
         {
-            var b = BusinessLogic.TTT();
-            b.data.Add("test message");
-            return b;
+
+            return null;
         }
         public object PostTest(string str)
         {
@@ -675,7 +669,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"暂存库批量出库ExcepitonLineOutStore request storage is {storage}, ids is { JsonConvert.SerializeObject(OriginalId)}time stamp: {DateTime.Now.ToString()}");
-                obj = BusinessLogic.ExcepitonLineOutStore(PlantNo, storage, OriginalId.Split(';'));
+                //obj = BusinessLogic.ExcepitonLineOutStore(PlantNo, storage, OriginalId.Split(';'));
                 //logger.InfoMethod(string.Format("SaveEquipProductionList response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -692,7 +686,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             {
                 //logger.InfoMethod($"EquipCtrlStatus request planno is {plantno}");
                 logger.InfoMethod($"EquipCtrlStatus request, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.EquipCtrlStatus(plantno);
+                //obj = BusinessLogic.EquipCtrlStatus(plantno);
                 //logger.InfoMethod(string.Format("SaveEquipProductionList response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -713,7 +707,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             {
                 //logger.InfoMethod($"EquipTaskStatus request planno is {storageareaid}");
                 Console.WriteLine($"EquipTaskStatus request,PlantNo:{PlantNo},storageareaid:{storageareaid}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.EquipTaskStatus(PlantNo, storageareaid);
+                //obj = BusinessLogic.EquipTaskStatus(PlantNo, storageareaid);
                 //logger.InfoMethod(string.Format("EquipTaskStatus response is {0}", JsonConvert.SerializeObject(obj)));
                 Console.WriteLine($"end with EquipTaskStatus request,PlantNo:{PlantNo},storageareaid:{storageareaid}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
@@ -730,7 +724,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"DeleteEquipTask request taskid is {taskid}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.DeleteEquipTask(taskid);
+                //obj = BusinessLogic.DeleteEquipTask(taskid);
                 //logger.InfoMethod(string.Format("DeleteEquipTask response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -747,7 +741,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             {
                 logger.InfoMethod($"EquipCallInfor request plantno is {plantno} and equipId is {equipId}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
                 Console.WriteLine($"EquipCallInfor request plantno is {plantno} and equipId is {equipId}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.EquipCallInfor(plantno, equipId);
+                //obj = BusinessLogic.EquipCallInfor(plantno, equipId);
                 //logger.InfoMethod(string.Format("DeleteEquipTask response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -764,7 +758,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 Console.WriteLine($"获取正在运行的龙门任务ExceptionRobotArmTask time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.ExceptionRobotArmTask();
+                //obj = BusinessLogic.ExceptionRobotArmTask();
                 //logger.InfoMethod(string.Format("RunningRobotArmTask response is {0}", JsonConvert.SerializeObject(obj)));
             }
             catch (Exception ex)
@@ -784,7 +778,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"龙门任务异常处理SetExceptionRobotArmTask,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.ExceptionRobotArmTask(id, status);
+                //obj = BusinessLogic.ExceptionRobotArmTask(id, status);
             }
             catch (Exception ex)
             {
@@ -802,7 +796,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 Console.WriteLine($"暂存库运行状态StoreageStatus, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.StoreageStatus();
+                //obj = BusinessLogic.StoreageStatus();
             }
             catch (Exception ex)
             {
@@ -820,7 +814,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"start with AGV实时轨迹RealTimeAGVRoute, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.RealTimeAGVRoute();
+                //obj = BusinessLogic.RealTimeAGVRoute();
                 logger.InfoMethod($"end with AGV实时轨迹RealTimeAGVRoute, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
             catch (Exception ex)
@@ -836,7 +830,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"start with AGV实时轨迹RealTimeAGVRouteList, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.RealTimeAGVRouteList();
+                //obj = BusinessLogic.RealTimeAGVRouteList();
                 logger.InfoMethod($"end with AGV实时轨迹RealTimeAGVRouteList, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
             catch (Exception ex)
@@ -857,7 +851,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"InStoreageLineStatus, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.InStoreageLineStatus();
+                //obj = BusinessLogic.InStoreageLineStatus();
             }
             catch (Exception ex)
             {
@@ -882,7 +876,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"清直通线功能ExceptionInStoreLine,plantno:{plantno},storeageareaid:{storeageareaid}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.ExceptionInStoreLine(plantno, storeageareaid);
+                //obj = BusinessLogic.ExceptionInStoreLine(plantno, storeageareaid);
             }
             catch (Exception ex)
             {
@@ -898,7 +892,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"发送扫码口指令SendToExceptionFlow,plantno:{plantno},storeageareaid:{storeageareaid},type:{type}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.SendToExceptionFlow(plantno, storeageareaid, type);
+                //obj = BusinessLogic.SendToExceptionFlow(plantno, storeageareaid, type);
             }
             catch (Exception ex)
             {
@@ -914,7 +908,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"start with RunningAGVTask, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.RunningAGVTask();
+                //obj = BusinessLogic.RunningAGVTask();
                 logger.InfoMethod($"end with RunningAGVTask, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
             catch (Exception ex)
@@ -930,7 +924,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"start with RunningAGVRecoveryTask, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.RunningAGVRecoveryTask();
+                //obj = BusinessLogic.RunningAGVRecoveryTask();
                 logger.InfoMethod($"end with RunningAGVRecoveryTask, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
             catch (Exception ex)
@@ -946,7 +940,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"重发AGV指令SetAGVTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.SetAGVTaskStatus(id, status);
+                //obj = BusinessLogic.SetAGVTaskStatus(id, status);
             }
             catch (Exception ex)
             {
@@ -962,7 +956,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             {
                 //logger.InfoMethod($"重发AGV指令SetAGVTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
                 logger.InfoMethod($"start with GetProduct, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.GetProduct();
+                //obj = BusinessLogic.GetProduct();
                 logger.InfoMethod($"end with GetProduct, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
             catch (Exception ex)
@@ -978,7 +972,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 //logger.InfoMethod($"重发AGV指令SetAGVTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.SaveProductLRRadio(id, lrratio, seqno, IsWarnning);
+                //obj = BusinessLogic.SaveProductLRRadio(id, lrratio, seqno, IsWarnning);
             }
             catch (Exception ex)
             {
@@ -993,7 +987,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"删除设备任务指令SetEquipTaskStatus,id:{id},status:{status}, time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                obj = BusinessLogic.SetEquipTaskStatus(id, status);
+                //obj = BusinessLogic.SetEquipTaskStatus(id, status);
             }
             catch (Exception ex)
             {
@@ -1008,7 +1002,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             try
             {
                 logger.InfoMethod($"查询单丝信息:{JsonConvert.SerializeObject(request)}");
-                obj = BusinessLogic.GetSpoolTask(request);
+                //obj = BusinessLogic.GetSpoolTask(request);
             }
             catch (Exception ex)
             {
@@ -1026,7 +1020,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
                     OriginalIds = "";
                 logger.InfoMethod($"修改库位状态ClearMidStoreage,status:{status}, OriginalIds:{OriginalIds} time stamp: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
                 //if (!string.IsNullOrEmpty(OriginalIds))
-                obj = BusinessLogic.ClearMidStoreage(PlantNo, storageid, status, OriginalIds.Trim().Split(','));
+                //obj = BusinessLogic.ClearMidStoreage(PlantNo, storageid, status, OriginalIds.Trim().Split(','));
                 //else obj.data.Add("错误的库位信息");
             }
             catch (Exception ex)
@@ -1041,7 +1035,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             ResponseDataBase obj = new ResponseDataBase();
             try
             {
-                obj = BusinessLogic.WarningInfo(midstoreno);
+                //obj = BusinessLogic.WarningInfo(midstoreno);
             }
             catch (Exception ex)
             {
@@ -1055,7 +1049,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             ResponseDataBase obj = new ResponseDataBase();
             try
             {
-                obj = BusinessLogic.SaveProductData(data);
+                //obj = BusinessLogic.SaveProductData(data);
             }
             catch (Exception ex)
             {
@@ -1069,7 +1063,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             AGV_KJ_InterfaceResponse obj = new AGV_KJ_InterfaceResponse();
             try
             {
-                obj = BusinessLogic.GetJiKeAGVTask(storagearea);
+                //obj = BusinessLogic.GetJiKeAGVTask(storagearea);
             }
             catch (Exception ex)
             {
@@ -1083,7 +1077,7 @@ namespace SNTON.WebServices.UserInterfaceBackend
             ResponseDataBase obj = new ResponseDataBase();
             try
             {
-                obj = BusinessLogic.SetJiKeAGVTaskStatus(storeage, id, status);
+                //obj = BusinessLogic.SetJiKeAGVTaskStatus(storeage, id, status);
             }
             catch (Exception ex)
             {

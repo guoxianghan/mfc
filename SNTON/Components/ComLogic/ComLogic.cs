@@ -1,14 +1,10 @@
 ﻿using log4net;
 using SNTON.Com;
 using SNTON.Components.FieldsDescription;
-using SNTON.Components.Parser;
-using SNTON.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VI.MFC;
 using VI.MFC.COM;
 using VI.MFC.Components.Parser;
@@ -151,7 +147,7 @@ namespace SNTON.Components.ComLogic
         public bool SendData(Dictionary<string, dynamic> list)
         {
             var li = Trans2DataBlock(list.ToArray());
-            bool r = CommModule.Try2SendData(li); 
+            bool r = CommModule.Try2SendData(li);
             return r;
         }
         public Tuple<bool, Dictionary<string, dynamic>> ReadData(params string[] keys)
@@ -167,8 +163,15 @@ namespace SNTON.Components.ComLogic
         }
         public void SubscribeEvent(string tag, Action<bool, dynamic> action)
         {
-            var db = FieldsDescription.GetOPCUAField(tag);
-            CommModule.SubscribeEvent(db.Value, action); 
+            try
+            {
+                var db = FieldsDescription.GetOPCUAField(tag);
+                CommModule.SubscribeEvent(db.Value, action);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
         public virtual void OnConnectExecution()
         {

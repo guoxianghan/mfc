@@ -166,28 +166,17 @@
     <Compile Include="BusinessLogic\UserInterfaceBackend\IUserInterfaceBackend.cs" />
     <Compile Include="BusinessLogic\UserInterfaceBackend\UIHelper.cs" />
     <Compile Include="BusinessLogic\UserInterfaceBackend\UserInterfaceBackend.cs" />
-    <Compile Include="Components\ACTLogic\ACTLogicBase.cs" />
     <Compile Include="Components\CleanUp\CleanUpBrokerBase.cs" />
     <Compile Include="Components\ComLogic\ComLogic.cs" />
     <Compile Include="Components\ComLogic\EquipLineLogic_.cs" />
     <Compile Include="Components\FieldsDescription\IOPCUAFieldsDescription.cs" />
-    <Compile Include="Components\FieldsDescription\MXFieldsDescription.cs" />
-    <Compile Include="Components\FieldsDescription\IMXFieldsDescription.cs" />
-    <Compile Include="Components\FieldsDescription\MXField.cs" />
     <Compile Include="Components\FieldsDescription\OPCUAFieldsDescription.cs" />
     <Compile Include="Components\LockManager\ILockManager.cs" />
     <Compile Include="Components\LockManager\LockedObject.cs" />
     <Compile Include="Components\LockManager\LockManager.cs" />
     <Compile Include="Components\LockManager\LockRequests.cs" />
-    <Compile Include="Components\Parser\IMXParser.cs" />
-    <Compile Include="Components\Parser\MXParser.cs" />
     <Compile Include="Components\Textkeys\ITextKeysReadIn.cs" />
     <Compile Include="Components\Textkeys\TextKeysReadIn.cs" />
-    <Compile Include="Com\IMXCommModule.cs" />
-    <Compile Include="Com\McProtocol.cs" />
-    <Compile Include="Com\MXDataBlock.cs" />
-    <Compile Include="Com\MXPLCClient.cs" />
-    <Compile Include="Com\MXQPLCClient.cs" />
     <Compile Include="Com\OPC\IOPCUACommModule.cs" />
     <Compile Include="Com\OPC\OPCCom.cs" />
     <Compile Include="Com\OPC\OPCUAClient.cs" />
@@ -202,8 +191,6 @@
     <Compile Include="Entities\Business\SortationChuteTransient.cs" />
     <Compile Include="Entities\Business\SortationSelfPickUp.cs" />
     <Compile Include="Entities\DBTables\EntityBase.cs" />
-    <Compile Include="Com\MXTPLCClient.cs" />
-    <Compile Include="Com\MXCom.cs" />
     <Compile Include="SNTON.cs" />
     <Compile Include="Misc\RoundRobin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -285,6 +272,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BusinessLogic\Sortation\" />
+    <Folder Include="Components\Parser\" />
     <Folder Include="WebServices\UserInterfaceBackend\Models\SystemParameter\" />
   </ItemGroup>
   <ItemGroup>

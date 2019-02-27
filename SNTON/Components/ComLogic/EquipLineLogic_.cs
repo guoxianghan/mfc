@@ -425,6 +425,10 @@ namespace SNTON.Components.ComLogic
                     var mach = this.BusinessLogic.tblProdCodeStructMachProvider.GettblProdCodeStructMachs(null, item.ToArray());
                     if (mach != null && mach.Count != 0)
                         machstructcode.AddRange(mach);
+                    else
+                    {
+                        this.BusinessLogic.MessageInfoProvider.Add(null, new MessageEntity() { Created = DateTime.Now, MsgContent = item.Key, MsgLevel = 5, Source = "单丝作业标准书未绑定" });
+                    }
                 }
             }
             catch (Exception ex)

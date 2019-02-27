@@ -180,7 +180,10 @@ LEFT JOIN [tblProdCode] P ON B.ProdCode=P.ProdCode where C.GroupID='{1}' AND B.S
                         try
                         {
                             if (string.IsNullOrEmpty(item.Supply1))
+                            {
+                                logger.ErrorMethod("单丝作业标准书未绑定" + item.StructBarCode);
                                 continue;
+                            }
                             if (!sb.ToString().Trim(',').Contains(item.Supply1.Trim()))
                                 sb.Append("'" + item.Supply1.Trim() + "',");
                             if (!string.IsNullOrWhiteSpace(item.Supply2) && !sb.ToString().Trim(',').Contains(item.Supply2.Trim()))
@@ -191,10 +194,22 @@ LEFT JOIN [tblProdCode] P ON B.ProdCode=P.ProdCode where C.GroupID='{1}' AND B.S
                             logger.ErrorMethod("单丝作业标准书未绑定", ex);
                         }
                     }
+                    if (string.IsNullOrEmpty(sb.ToString()))
+                    {
+                        return new List<tblProdCodeStructMachEntity>();
+                    }
                     string sqlc06 = @"select B.StructBarCode,B.ProdCode,B.ProdLength,P.Const,C.CName,B.[TitleProdName],B.Supply1,B.SupplyQty1,B.Supply2,B.SupplyQty2,B.SpoolType from tblProdCodeStructMark B 
 Inner Join tblCommon C on C.CodeID = B.SpoolType
 LEFT JOIN[tblProdCode] P ON B.ProdCode = P.ProdCode where C.GroupID IN ({1}) AND B.StructBarCode IN ({0})";
-                    var list4 = ReadSqlList<tblProdCodeStructMarkEntity>(null, string.Format(sqlc06, sb.ToString().TrimEnd(','), "'C26','C06'"));
+                    List<tblProdCodeStructMarkEntity> list4 = new List<tblProdCodeStructMarkEntity>();
+                    try
+                    {
+                        list4 = ReadSqlList<tblProdCodeStructMarkEntity>(null, string.Format(sqlc06, sb.ToString().TrimEnd(','), "'C26','C06'"));
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.ErrorMethod("查询机台号失败", ex);
+                    }
                     foreach (var item in ret)
                     {
                         item.ProdCodeStructMark3 = list.FirstOrDefault(x => x.StructBarCode.Trim() == item.StructBarCode.Trim());

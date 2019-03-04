@@ -257,7 +257,6 @@
     <Compile Include="Constants\PermutationAndCombination.cs" />
     <Compile Include="Constants\SNTONCommConstants.cs" />
     <Compile Include="Constants\SNTONConstants.cs" />
-    <Compile Include="Constants\SNTONMath.cs" />
     <Compile Include="Constants\SNTONTelegram.cs" />
     <Compile Include="Entities\Business\FedExException.cs" />
     <Compile Include="Entities\Business\SortationChuteTransient.cs" />

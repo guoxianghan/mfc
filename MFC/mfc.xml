@@ -238,7 +238,7 @@
       </VARIABLES>
     </CONTROLSET>
 
-    <CONTROLSET Name ="PLC_MidStoreLine3" Enabled ="true" path =".\Controlsets\MidStoreLineControlset.xml">
+    <CONTROLSET Name ="PLC_MidStoreLine3" Enabled ="false" path =".\Controlsets\MidStoreLineControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="MidStoreLine3"/>
         <VARIABLE Name="$HOST$" Value="192.168.120.75"/>
@@ -292,7 +292,7 @@
       </VARIABLES>
     </CONTROLSET>
     <!--A2 区-->
-    <CONTROLSET Name ="PLC_EquipLine2" Enabled ="false" path =".\Controlsets\EquipLineControlset.xml">
+    <CONTROLSET Name ="PLC_EquipLine2" Enabled ="true" path =".\Controlsets\EquipLineControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="EquipLine2"/>
         <VARIABLE Name="$TelegramDescriptionsId$" Value="EquipLine2Descriptions"/>

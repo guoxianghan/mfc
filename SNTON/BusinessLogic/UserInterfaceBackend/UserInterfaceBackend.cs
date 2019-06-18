@@ -1343,13 +1343,13 @@ namespace SNTON.BusinessLogic
         {
             AGVTaskResponse obj = new AGVTaskResponse();
 
-            var s1l1 = this.AGVTasksProvider.GetAGVTasks(5, "StorageArea=1 AND StorageLineNo=1", null);
-            var s1l2 = this.AGVTasksProvider.GetAGVTasks(5, "StorageArea=1 AND StorageLineNo=2", null);
-            var s2l1 = this.AGVTasksProvider.GetAGVTasks(5, "StorageArea=2 AND StorageLineNo=1", null);
-            var s2l2 = this.AGVTasksProvider.GetAGVTasks(5, "StorageArea=2 AND StorageLineNo=2", null);
-            var s3l1 = this.AGVTasksProvider.GetAGVTasks(5, "StorageArea=3 AND StorageLineNo=1", null);
-            var s3l2 = this.AGVTasksProvider.GetAGVTasks(5, "StorageArea=3 AND StorageLineNo=2", null);
-            var kong = this.AGVTasksProvider.GetAGVTasks(20, "TaskType=1 AND IsDeleted=0 AND [Status] <=20", null);
+            var s1l1 = this.AGVTasksProvider.GetAGVTasks(5, $"StorageArea=1 AND StorageLineNo=1 AND CREATED>='{DateTime.Now.AddDays(-3)}'", null);
+            var s1l2 = this.AGVTasksProvider.GetAGVTasks(5, $"StorageArea=1 AND StorageLineNo=2 AND CREATED>='{DateTime.Now.AddDays(-3)}'", null);
+            var s2l1 = this.AGVTasksProvider.GetAGVTasks(5, $"StorageArea=2 AND StorageLineNo=1 AND CREATED>='{DateTime.Now.AddDays(-3)}'", null);
+            var s2l2 = this.AGVTasksProvider.GetAGVTasks(5, $"StorageArea=2 AND StorageLineNo=2 AND CREATED>='{DateTime.Now.AddDays(-3)}'", null);
+            var s3l1 = this.AGVTasksProvider.GetAGVTasks(5, $"StorageArea=3 AND StorageLineNo=1 AND CREATED>='{DateTime.Now.AddDays(-3)}'", null);
+            var s3l2 = this.AGVTasksProvider.GetAGVTasks(5, $"StorageArea=3 AND StorageLineNo=2 AND CREATED>='{DateTime.Now.AddDays(-3)}'", null);
+            var kong = this.AGVTasksProvider.GetAGVTasks(20, $"TaskType=1 AND IsDeleted=0 AND [Status] <=20 AND CREATED>='{DateTime.Now.AddDays(-3)}'", null);
             List<AGVTasksEntity> d = new List<AGVTasksEntity>();
             if (s1l1 != null)
                 d.AddRange(s1l1);

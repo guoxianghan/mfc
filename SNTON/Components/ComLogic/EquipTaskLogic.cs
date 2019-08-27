@@ -22,6 +22,7 @@ using log4net;
 using System.Reflection;
 using VI.MFC.Utils.ConfigBinder;
 using VI.MFC;
+using SNTON.Com;
 
 namespace SNTON.Components.ComLogic
 {
@@ -54,7 +55,7 @@ namespace SNTON.Components.ComLogic
         public override void Init(XmlNode configNode)
         {
             base.Init(configNode);
-            thread_InitOutStoreTask = new VIThreadEx(RunCreateTask, null, "thread for InitRobotAGVTask", 8000);
+            thread_InitOutStoreTask = new VIThreadEx(RunCreateTask, null, "thread for InitRobotAGVTask", 10000);
             thread_Init_JK_AGV_Task = new VIThreadEx(Init_JK_AGV_Task, null, "thread for InitRobotAGVTask", 8000);
 
         }
@@ -81,6 +82,15 @@ namespace SNTON.Components.ComLogic
         }
         void RunCreateTask()
         {
+            string sql = $"UPDATE [SNTON].[AGVTasks] SET ISDELETED=1 WHERE  ISDELETED=0 AND Status BETWEEN 1 AND 127  AND [StorageLineNo]=1 AND  CREATED<='{DateTime.Now.AddHours(-6)}' ";
+            try
+            {
+                DbHelperSQL.ExecuteSql(sql);
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorMethod("删除未完成的AGV任务失败", ex);
+            }
             try
             {
                 InitAGVUnionTask();
@@ -109,9 +119,9 @@ namespace SNTON.Components.ComLogic
             var taskouttime = this.BusinessLogic.SystemParametersProvider.GetSystemParamrters(3, null);
             if (taskouttime != null)
                 minutes = Convert.ToInt32(taskouttime.ParameterValue.Trim());
-            var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"Status IN (0,10) AND PlantNo=3 AND Created<='{DateTime.Now.AddMinutes(-minutes)}'", null);
+            var equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"Status IN (0,10) AND StorageArea=3 AND PlantNo=3 AND Created<='{DateTime.Now.AddMinutes(-minutes)}'", null);
             //equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities($"TASKGUID='D178EFE4-3AE5-4BC6-9C39-33D32A1AB81E'", null);
-            //equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Id IN(37029,37020)", null);
+            //equiptsks = this.BusinessLogic.EquipTaskViewProvider.GetEquipTaskViewEntities("Id IN(142127,142126)", null);
             var agvrunningtsk = this.BusinessLogic.AGVTasksProvider.GetAGVTasks("IsDeleted=0 and TaskType=2 AND [Status] IN(1,2,3,4,8)", null);
             if (agvrunningtsk == null)
                 agvrunningtsk = new List<AGVTasksEntity>();
@@ -178,6 +188,9 @@ namespace SNTON.Components.ComLogic
                 #region MyRegion 
                 if (item.Count() < 2)
                     continue;
+                String agvroute = item.Key.ToString().Trim();
+                //if (!agvroute.Contains("ST-3A-11 ") && !agvroute.Contains("ST-3A-10 "))
+                //    continue;
                 bool iscreated = false;
                 int result = 0;
                 var equiptsks = item.OrderBy(x => x.Id).Take(2).ToList();

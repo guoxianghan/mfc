@@ -292,7 +292,7 @@
       </VARIABLES>
     </CONTROLSET>
     <!--A2 区-->
-    <CONTROLSET Name ="PLC_EquipLine2" Enabled ="true" path =".\Controlsets\EquipLineControlset.xml">
+    <CONTROLSET Name ="PLC_EquipLine2" Enabled ="false" path =".\Controlsets\EquipLineControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="EquipLine2"/>
         <VARIABLE Name="$TelegramDescriptionsId$" Value="EquipLine2Descriptions"/>
@@ -305,7 +305,7 @@
       </VARIABLES>
     </CONTROLSET>
 	
-    <CONTROLSET Name ="EquipTaskLogic" Enabled ="false" path =".\Controlsets\EquipTaskControlset.xml">
+    <CONTROLSET Name ="EquipTaskLogic" Enabled ="true" path =".\Controlsets\EquipTaskControlset.xml">
       <VARIABLES>
         <VARIABLE Name="$EXT$" Value="EquipTask"/> 
         <VARIABLE Name="$PlantNo$" Value="3"/>
